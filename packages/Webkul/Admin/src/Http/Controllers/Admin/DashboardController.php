@@ -26,6 +26,8 @@ class DashboardController extends Controller
         $this->dashboardHelper = $dashboardHelper;
 
         $this->dashboardHelper->setCards();
+        // 建構函式先setcards，
+
     }
 
     /**
@@ -34,20 +36,23 @@ class DashboardController extends Controller
      * @return \Illuminate\View\View
      */
     public function index()
-    {$cards = $this->dashboardHelper->getCards();
-
+    {
+        $cards = $this->dashboardHelper->getCards();
+           // $cards是取得 登入後的dashboard的內容
         if ($dateRange = request('date-range')) {
-            $dateRange = explode(",", $dateRange);
-
-            $endDate = $dateRange[1];
-            $startDate = $dateRange[0];
+            $dateRange = explode(",", $dateRange);  // explode() 區分數組，利用逗號做區分
+            $endDate = $dateRange[1];               // dateRange的結束時間
+            $startDate = $dateRange[0];             // dateRange的開始時間
         } else {
+            // Carbon::可以擷取當前時間
             $endDate = Carbon::now()->format('Y-m-d');
-            
             $startDate = Carbon::now()->subMonth()->addDays(1)->format('Y-m-d');
         }
-
         return view('admin::dashboard.index', compact('cards', 'startDate', 'endDate'));
+                         //用compact呼叫方式是什麼 cards、startDate、endDate
+                         //利用compact將資料變成   cards=>" "、startDate=>" "、endDate=>" "
+                         //cards的內容
+                         
     }
 
     /**

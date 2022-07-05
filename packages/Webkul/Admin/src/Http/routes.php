@@ -29,7 +29,7 @@ Route::group(['middleware' => ['web']], function () {
         Route::group(['middleware' => ['user']], function () {
             Route::get('logout', 'Webkul\Admin\Http\Controllers\User\SessionController@destroy')->name('admin.session.destroy');
 
-            // Dashboard Route
+            // Dashboard Route index or template
             Route::get('dashboard', 'Webkul\Admin\Http\Controllers\Admin\DashboardController@index')->name('admin.dashboard.index');
 
             Route::get('template', 'Webkul\Admin\Http\Controllers\Admin\DashboardController@template')->name('admin.dashboard.template');
@@ -57,6 +57,7 @@ Route::group(['middleware' => ['web']], function () {
                 Route::get('', 'AccountController@edit')->name('admin.user.account.edit');
 
                 Route::put('update', 'AccountController@update')->name('admin.user.account.update');
+                
             });
 
             // Leads Routes

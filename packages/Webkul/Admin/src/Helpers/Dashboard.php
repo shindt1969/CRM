@@ -140,8 +140,10 @@ class Dashboard
         $this->cards = array_map(function ($card) {
             if (isset($card['label'])) {
                 $card['label'] = trans($card['label']);
-            }
+                // dashboard_cards 定義dashboard當中卡片的內容，總共11張
+                // $card 的內是dashboard_cards當中的label
 
+            }
             return $card;
         }, config('dashboard_cards'));
     }

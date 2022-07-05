@@ -14,18 +14,22 @@ class SessionController extends Controller
      */
     public function create()
     {
+       
         if (auth()->guard('user')->check()) {
             return redirect()->route('admin.dashboard.index');
+             //利用guard() 檢查 是否為user。如果為user顯示dashboard.index
         } else {
             if (strpos(url()->previous(), 'admin') !== false) {
                 $intendedUrl = url()->previous();
+                // 檢查過來的URL值是否包含admin，如果沒有就$intendedUrl等於跳轉前的URL
             } else {
                 $intendedUrl = route('admin.dashboard.index');
+                 // 讓$intendedUrl 等於 get的dashboard
             }
-
             session()->put('url.intended', $intendedUrl);
-
+                 // 將URL利用session做紀錄
             return view('admin::sessions.login');
+                // check() 回到失敗後登入畫面
         }
     }
 
@@ -34,28 +38,31 @@ class SessionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    //post login
     public function store()
     {
         $this->validate(request(), [
             'email'    => 'required|email',
             'password' => 'required',
         ]);
-
         if (! auth()->guard('user')->attempt(request(['email', 'password']), request('remember'))) {
             session()->flash('error', trans('admin::app.sessions.login.login-error'));
-
+            //  1.帳號或密碼錯誤
             return redirect()->back();
         }
-
+            //  2.判斷登入者的status，status資料從資料庫抓取。
+            //  找看看有沒有auth()->guard('user')->user()->status寫在哪裡MODEL。
         if (auth()->guard('user')->user()->status == 0) {
             session()->flash('warning', trans('admin::app.sessions.login.activate-warning'));
-
+            // 將已經logout狀態作登出
             auth()->guard('user')->logout();
-
             return redirect()->route('admin.session.create');
+            //  2.1 轉跳到'admin.session.create'，在routes.php
         }
-
         return redirect()->intended(route('admin.dashboard.index'));
+            // 1.1判斷帳號密碼正確，尋找有沒有session()->put()的內容，
+            // 如果有就導向session()->put()的內容  如果沒有就導向admin.dashboard.index
+ 
     }
 
     /**
