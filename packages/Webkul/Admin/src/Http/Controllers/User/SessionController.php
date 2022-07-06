@@ -9,27 +9,25 @@ class SessionController extends Controller
 {
     /**
      * Show the form for creating a new resource.
+     * 檢查user 
+     * 檢查過來的URL值是否包含admin，如果沒有就$intendedUrl等於跳轉前的URL
+     * 將URL利用session做紀錄
+     * check() 回到失敗後登入畫面
      *
      * @return \Illuminate\View\View
      */
     public function create()
     {
-       
         if (auth()->guard('user')->check()) {
             return redirect()->route('admin.dashboard.index');
-             //利用guard() 檢查 是否為user。如果為user顯示dashboard.index
         } else {
             if (strpos(url()->previous(), 'admin') !== false) {
                 $intendedUrl = url()->previous();
-                // 檢查過來的URL值是否包含admin，如果沒有就$intendedUrl等於跳轉前的URL
             } else {
                 $intendedUrl = route('admin.dashboard.index');
-                 // 讓$intendedUrl 等於 get的dashboard
             }
             session()->put('url.intended', $intendedUrl);
-                 // 將URL利用session做紀錄
             return view('admin::sessions.login');
-                // check() 回到失敗後登入畫面
         }
     }
 
