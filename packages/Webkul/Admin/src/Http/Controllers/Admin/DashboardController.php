@@ -32,7 +32,15 @@ class DashboardController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
+     * dashboardHelper=Dashboard ->Dashboard.php->getCards()->setCards()
+     * ->dashboard_cards.php->app.php->得到字串
+     * dateRange的結束時間
+     * dateRange的開始時間
+     * Carbon::可以擷取當前時間
+     * 利用compact將資料變成   cards=>" "、startDate=>" "、endDate=>" "
+     * compact('cards', 'startDate', 'endDate') cards', 'startDate', 'endDate' 
+     * 的內容會丟到，index.blade->admin::app.dashboard.cards。但是在index.blade.php找不到使用方式
+     * 
      * @return \Illuminate\View\View
      */
     public function index()
@@ -40,19 +48,17 @@ class DashboardController extends Controller
         $cards = $this->dashboardHelper->getCards();
            // $cards是取得 登入後的dashboard的內容
         if ($dateRange = request('date-range')) {
-            $dateRange = explode(",", $dateRange);  // explode() 區分數組，利用逗號做區分
-            $endDate = $dateRange[1];               // dateRange的結束時間
-            $startDate = $dateRange[0];             // dateRange的開始時間
+            $dateRange = explode(",", $dateRange);  
+            $endDate = $dateRange[1];               
+            $startDate = $dateRange[0];             
         } else {
-            // Carbon::可以擷取當前時間
+           
             $endDate = Carbon::now()->format('Y-m-d');
             $startDate = Carbon::now()->subMonth()->addDays(1)->format('Y-m-d');
         }
         return view('admin::dashboard.index', compact('cards', 'startDate', 'endDate'));
-                         //用compact呼叫方式是什麼 cards、startDate、endDate
-                         //利用compact將資料變成   cards=>" "、startDate=>" "、endDate=>" "
-                         //cards的內容
                          
+
     }
 
     /**

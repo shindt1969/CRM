@@ -148,6 +148,7 @@
                         v-else
                         src="{{ asset('vendor/webkul/admin/assets/images/empty-state-icon.svg') }}"
                     />
+                                <!-- empty-state-icon.svg的位置在mix-manifest.json -->
 
                     <span>{{ __('admin::app.dashboard.no_record_found') }}</span>
                 </div>
@@ -155,13 +156,15 @@
         </div>
     </script>
 
+
+        <!-- admin::app.dashboard.cards ->app.php->dashboard->cards->  只有得到一串字串 Cards -->
+
     <script type="text/x-template" id="card-filter-template">
         <div class="card-filter-container">
             <div class="toggle-btn dropdown-toggle">
                 <span>{{ __('admin::app.dashboard.cards') }}</span>
                 <i class="icon arrow-down-icon"></i>
             </div>
-
             <div class="dropdown-list">
                 <div class="dropdown-container">
                     <ul>
