@@ -5,6 +5,7 @@ namespace Webkul\Admin\Http\Controllers\Admin;
 use Carbon\Carbon;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Admin\Helpers\Dashboard as DashboardHelper;
+use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
@@ -73,31 +74,49 @@ class DashboardController extends Controller
 
     /**
      * Returns json data for dashboard card.
+     * 
+     * 
      */
     public function getCardData()
     {
         $cardData = $this->dashboardHelper->getFormattedCardData(request()->all());
+         
+        // Log::error($cardData);
+        // Log::error("---------------xxxxx-----------------------");
+        // Log::error(request()->all());
 
         return response()->json($cardData);
+
+     
     }
 
     /**
      * Returns json data for available dashboard cards.
+     * 
+     * dashboardHelper=Dashboard ->Dashboard.php->getCards()->setCards()
+     * setCards() 裡面是 -> dashboard_cards-> admin.products.index(總共有四個view_url)
+     * admin.products.index->Route::get('', 'ProductController@index')->
+     * return app(\Webkul\Admin\DataGrids\Product\ProductDataGrid::class)
+     * 
+     * dashboardHelper->getCards() 出來的是 11張卡片 ，的 php 陣列  key => 值
+     * 
      * 
      * @return \Illuminate\Http\Response
      */
     public function getCards()
     {
         $response = $this->dashboardHelper->getCards();;
-
+        // Log::error($response);
+        // Log::error("--------------------------------------");
         $response = array_map(function ($card) {
             if ($card['view_url'] ?? false) {
                 $card['view_url'] = route($card['view_url'], $card['url_params'] ?? []);
             }
-
             return $card;
         }, $response);
-
+        // Log::error($response);
+        // Log::error("--------------------------------------");
+        // Log::error(response()->json($response));
         return response()->json($response);
     }
 

@@ -47,7 +47,7 @@
                                     "display": false
                                 },
                                 "ticks": {
-                                    "fontColor": '#263238',
+                                    "fontColor": '#7d6cf0',
                                 }
                             }
                         ],

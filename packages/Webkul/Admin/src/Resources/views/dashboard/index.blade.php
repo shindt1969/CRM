@@ -35,6 +35,10 @@
         {{-- <button type="button" @click="exportDashboard">Export</button> --}}
     </script>
 
+
+    <!-- 利用 Vue.component('cards-collection'  ->methods: { getDashboardCards:-> 
+            route('admin.api.dashboard.cards.index'->DashboardController->getCards()-> 11卡片的陣列
+    -->
     <script type="text/x-template" id="cards-collection-template">
         <draggable v-model="filteredCards" @change="onRowDrop" class="dashboard-content">
             <div v-for="(filteredCardRow, index) in filteredCards" :key="index">
@@ -64,6 +68,10 @@
             </div>
         </draggable>
     </script>
+
+
+
+     <!-- this.$http.get(`{{ route('admin.api.dashboard.card.index') }} ->Dashboard->getFormattedCardData( -->
 
     <script type="text/x-template" id="card-template">
         <div class="db-wg-spinner" v-if="! dataLoaded">
@@ -148,8 +156,7 @@
                         v-else
                         src="{{ asset('vendor/webkul/admin/assets/images/empty-state-icon.svg') }}"
                     />
-                                <!-- empty-state-icon.svg的位置在mix-manifest.json -->
-
+                                <!-- empty-state-icon.svg的位置在assets/images-->
                     <span>{{ __('admin::app.dashboard.no_record_found') }}</span>
                 </div>
             </template>
@@ -228,6 +235,8 @@
             }
         });
 
+
+        // this.$http.get(`{{ route('admin.api.dashboard.cards.index') }} ->Dashboard->getCards()
         Vue.component('cards-collection', {
             template: "#cards-collection-template",
 
@@ -375,6 +384,8 @@
             }
         });
 
+           
+        
         Vue.component('card-component', {
             template: "#card-template",
 
@@ -386,14 +397,12 @@
                     dataCollection: {},
                 }
             },
-
             created: function () {
                 if (this.cardType != "custom_card") {
                     this.getCardData(this.cardId, "{{ $startDate }},{{ $endDate }}", "date-range");
                 } else {
                     this.dataLoaded = true;
                 }
-
                 EventBus.$on('applyCardFilter', updatedData => {
                     if (this.cardId == updatedData.cardId) {
                         this.getCardData(updatedData.cardId, updatedData.filterValue);
