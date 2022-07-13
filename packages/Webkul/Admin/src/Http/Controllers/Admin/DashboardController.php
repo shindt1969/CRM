@@ -74,20 +74,12 @@ class DashboardController extends Controller
 
     /**
      * Returns json data for dashboard card.
-     * 
-     * 
      */
     public function getCardData()
     {
         $cardData = $this->dashboardHelper->getFormattedCardData(request()->all());
-         
-        // Log::error($cardData);
-        // Log::error("---------------xxxxx-----------------------");
-        // Log::error(request()->all());
 
         return response()->json($cardData);
-
-     
     }
 
     /**
@@ -105,18 +97,16 @@ class DashboardController extends Controller
      */
     public function getCards()
     {
-        $response = $this->dashboardHelper->getCards();;
-        // Log::error($response);
-        // Log::error("--------------------------------------");
+        $response = $this->dashboardHelper->getCards();
+
         $response = array_map(function ($card) {
             if ($card['view_url'] ?? false) {
                 $card['view_url'] = route($card['view_url'], $card['url_params'] ?? []);
             }
+
             return $card;
         }, $response);
-        // Log::error($response);
-        // Log::error("--------------------------------------");
-        // Log::error(response()->json($response));
+
         return response()->json($response);
     }
 

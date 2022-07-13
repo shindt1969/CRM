@@ -2,13 +2,14 @@
 
 namespace Webkul\Admin\Http\Controllers\Setting;
 
-use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Webkul\User\Repositories\RoleRepository;
-use Webkul\User\Repositories\GroupRepository;
-use Webkul\User\Repositories\UserRepository;
+use Illuminate\Support\Facades\Event;
 use Webkul\Admin\Notifications\User\Create;
+use Webkul\User\Repositories\RoleRepository;
+use Webkul\User\Repositories\UserRepository;
 use Webkul\Admin\Http\Controllers\Controller;
+use Webkul\User\Repositories\GroupRepository;
 
 class UserController extends Controller
 {

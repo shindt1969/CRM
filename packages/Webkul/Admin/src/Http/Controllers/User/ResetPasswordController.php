@@ -23,17 +23,24 @@ class ResetPasswordController extends Controller
      */
     public function create($token = null)
     {
-        return view('admin::sessions.reset-password')->with([
-            'token' => $token,
-            'email' => request('email'),
+        // return view('admin::sessions.reset-password')->with([
+        //     'token' => $token,
+        //     'email' => request('email'),
+        // ]);
+        return response()->json([
+            'status' => "OK",
+            'token' => $token
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
+     * $this->broker()->reset() 檢查 password 跟 token 之後 call resetPassword
+     * broker 的原型在 vendor\laravel\framework\src\Illuminate\Auth\Passwords\PasswordBroker.php
      *
      * @return \Illuminate\Http\Response
      */
+    
     public function store()
     {
         try {
@@ -50,18 +57,32 @@ class ResetPasswordController extends Controller
             );
 
             if ($response == Password::PASSWORD_RESET) {
-                return redirect()->route('admin.dashboard.index');
+                // return redirect()->route('admin.dashboard.index');
+                return response()->json([
+                    'status' => "OK",
+                ]);
             }
 
-            return back()
-                ->withInput(request(['email']))
-                ->withErrors([
-                    'email' => trans($response),
-                ]);
+            // return back()
+            //     ->withInput(request(['email']))
+            //     ->withErrors([
+            //         'email' => trans($response),
+            //     ]);
+            return response()->json([
+                'status' => "Failed",
+                'email' => trans($response)
+            ]);
+
+
         } catch(\Exception $exception) {
             session()->flash('error', trans($exception->getMessage()));
 
-            return redirect()->back();
+            return response()->json([
+                'status' => "Failed",
+                'error' => trans($exception->getMessage())
+            ]);
+
+            // return redirect()->back();
         }
     }
 

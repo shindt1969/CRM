@@ -35,10 +35,13 @@
         {{-- <button type="button" @click="exportDashboard">Export</button> --}}
     </script>
 
+<<<<<<< HEAD
 
     <!-- 利用 Vue.component('cards-collection'  ->methods: { getDashboardCards:-> 
             route('admin.api.dashboard.cards.index'->DashboardController->getCards()-> 11卡片的陣列
     -->
+=======
+>>>>>>> 0fa886d3c97cbc90b7f7ff5bebefa78cef4b70a0
     <script type="text/x-template" id="cards-collection-template">
         <draggable v-model="filteredCards" @change="onRowDrop" class="dashboard-content">
             <div v-for="(filteredCardRow, index) in filteredCards" :key="index">

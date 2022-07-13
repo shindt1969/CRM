@@ -41,12 +41,13 @@ class ProductController extends Controller
             return app(\Webkul\Admin\DataGrids\Product\ProductDataGrid::class)->toJson();
         }
 
-        return view('admin::products.index');
+        // return view('admin::products.index');
     }
 
     /**
      * Show the form for creating a new resource.
      *
+     *************************** 不用 **********************************
      * @return \Illuminate\View\View
      */
     public function create()
@@ -70,12 +71,16 @@ class ProductController extends Controller
 
         session()->flash('success', trans('admin::app.products.create-success'));
 
-        return redirect()->route('admin.products.index');
+        // return redirect()->route('admin.products.index');
+        return response()->json([
+            'status' => "OK",
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
+     * *************************** 不用 **********************************
      * @param  int  $id
      * @return \Illuminate\View\View
      */
@@ -103,7 +108,10 @@ class ProductController extends Controller
 
         session()->flash('success', trans('admin::app.products.update-success'));
 
-        return redirect()->route('admin.products.index');
+        // return redirect()->route('admin.products.index');
+        return response()->json([
+            'status' => "OK",
+        ]);
     }
 
     /**
