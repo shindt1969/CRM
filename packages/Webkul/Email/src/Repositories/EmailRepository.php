@@ -8,6 +8,8 @@ use Webkul\Email\Helpers\Parser;
 use Webkul\Email\Helpers\Htmlfilter;
 use Webkul\Core\Eloquent\Repository;
 
+
+
 class EmailRepository extends Repository
 {
     /**

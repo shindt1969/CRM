@@ -1,5 +1,6 @@
 <?php
 
+
 namespace Webkul\Admin\Http\Controllers\Mail;
 
 use Illuminate\Support\Facades\Event;

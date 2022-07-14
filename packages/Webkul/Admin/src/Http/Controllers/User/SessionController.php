@@ -4,15 +4,18 @@ namespace Webkul\Admin\Http\Controllers\User;
 
 use Illuminate\Support\Facades\Auth;
 use Webkul\Admin\Http\Controllers\Controller;
+use App\Http\Controllers\ResponseJsonController;
 
 class SessionController extends Controller
 {
+
+    public function __construct(ResponseJsonController $ResponseJsonController)
+    {
+        $this->ResponseJsonController = $ResponseJsonController;
+    }
     /**
      * Show the form for creating a new resource.
-     * 檢查user 
-     * 檢查過來的URL值是否包含admin，如果沒有就$intendedUrl等於跳轉前的URL
-     * 將URL利用session做紀錄
-     * check() 回到失敗後登入畫面
+     ****************************** 不用 *********************************
      *
      * @return \Illuminate\View\View
      */
@@ -33,6 +36,8 @@ class SessionController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * 驗證 email 格式，password required
+     * 
      *
      * @return \Illuminate\Http\Response
      */
@@ -46,20 +51,18 @@ class SessionController extends Controller
         if (! auth()->guard('user')->attempt(request(['email', 'password']), request('remember'))) {
             session()->flash('error', trans('admin::app.sessions.login.login-error'));
             //  1.帳號或密碼錯誤
-            return redirect()->back();
+            return $this->ResponseJsonController->ReturnFailMsg(trans('admin::app.sessions.login.login-error'));
+            // return redirect()->back();
         }
-            //  2.判斷登入者的status，status資料從資料庫抓取。
-            //  找看看有沒有auth()->guard('user')->user()->status寫在哪裡MODEL。
+
         if (auth()->guard('user')->user()->status == 0) {
             session()->flash('warning', trans('admin::app.sessions.login.activate-warning'));
-            // 將已經logout狀態作登出
             auth()->guard('user')->logout();
-            return redirect()->route('admin.session.create');
-            //  2.1 轉跳到'admin.session.create'，在routes.php
+            return $this->ResponseJsonController->ReturnFailMsg(trans('admin::app.sessions.login.activate-warning'));
+            // return redirect()->route('admin.session.create');
         }
-        return redirect()->intended(route('admin.dashboard.index'));
-            // 1.1判斷帳號密碼正確，尋找有沒有session()->put()的內容，
-            // 如果有就導向session()->put()的內容  如果沒有就導向admin.dashboard.index
+        return $this->ResponseJsonController->ReturnSuccessMsg('OK');
+        // return redirect()->intended(route('admin.dashboard.index'));
  
     }
 
@@ -72,6 +75,7 @@ class SessionController extends Controller
     {
         auth()->guard('user')->logout();
 
-        return redirect()->route('admin.session.create');
+        return $this->ResponseJsonController->ReturnSuccessMsg('OK');
+        // return redirect()->route('admin.session.create');
     }
 }
