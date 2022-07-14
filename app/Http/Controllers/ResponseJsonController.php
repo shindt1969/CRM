@@ -12,17 +12,17 @@ class ResponseJsonController extends Controller
         if (is_array($data))
         {
             $ok = array("status" => true);
-            return array_merge($ok, $data);
+            return  json_encode(array_merge($ok, $data));
         }
         else
         {
-            return array("status" => true, "Message" => $data);
+            return  json_encode(array("status" => true, "Message" => $data));
         }
 
     }
 
     public function ReturnFailMsg($data)
     {
-        return array("status" => false, 'error' => $data);
+        return  json_encode(array("status" => false, 'error' => $data));
     }
 }
