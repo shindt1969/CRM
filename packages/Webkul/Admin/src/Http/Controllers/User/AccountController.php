@@ -16,7 +16,6 @@ class AccountController extends Controller
     public function edit()
     {
         $user = auth()->guard('user')->user();
-
         return view('admin::user.account.edit', compact('user'));
     }
 

@@ -100,5 +100,3 @@ class User extends Authenticatable implements UserContract
         return in_array($permission, $this->role->permissions);
     }
 }
-
-// 維持內容 去把VIEW抽掉，再用POSTamn，EX 撈清單

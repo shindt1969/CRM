@@ -2,17 +2,14 @@
 
 namespace Webkul\Admin\Http\Controllers\User;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Admin\Http\Controllers\Controller;
 use App\Http\Controllers\ResponseJsonController;
 
 class SessionController extends Controller
 {
-
-    public function __construct(ResponseJsonController $ResponseJsonController)
-    {
-        $this->ResponseJsonController = $ResponseJsonController;
-    }
     /**
      * Show the form for creating a new resource.
      ****************************** 不用 *********************************
@@ -42,15 +39,16 @@ class SessionController extends Controller
      * @return \Illuminate\Http\Response
      */
     //post login
-    public function store()
+    public function store(Request $request)
     {
         $this->validate(request(), [
             'email'    => 'required|email',
             'password' => 'required',
         ]);
-        if (! auth()->guard('user')->attempt(request(['email', 'password']), request('remember'))) {
+
+        // 1.帳號或密碼錯誤
+        if (!auth()->guard('user')->attempt(request(['email', 'password']), request('remember'))) {
             session()->flash('error', trans('admin::app.sessions.login.login-error'));
-            //  1.帳號或密碼錯誤
             return $this->ResponseJsonController->ReturnFailMsg(trans('admin::app.sessions.login.login-error'));
             // return redirect()->back();
         }
@@ -63,7 +61,7 @@ class SessionController extends Controller
         }
         return $this->ResponseJsonController->ReturnSuccessMsg('OK');
         // return redirect()->intended(route('admin.dashboard.index'));
- 
+
     }
 
     /**
