@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Event;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Attribute\Http\Requests\AttributeForm;
 use Webkul\Product\Repositories\ProductRepository;
-use App\Http\Controllers\ResponseJsonController;
 class ProductController extends Controller
 {
     /**
@@ -23,10 +22,11 @@ class ProductController extends Controller
      *
      * @return void
      */
-    public function __construct(ProductRepository $productRepository,ResponseJsonController $ResponseJsonController)
+
+    public function __construct(ProductRepository $productRepository)
     {
         $this->productRepository = $productRepository;
-        $this->ResponseJsonController = $ResponseJsonController;
+        // $this->ResponseJsonController = $ResponseJsonController;
         request()->request->add(['entity_type' => 'products']);
     }
 
@@ -109,7 +109,7 @@ class ProductController extends Controller
         session()->flash('success', trans('admin::app.products.update-success'));
 
         // return redirect()->route('admin.products.index');
-        return $this->ResponseJsonController->ReturnSuccessMsg('OK');
+        return $this->ReturnJsonSuccessMsg('OK');
     }
 
     /**
@@ -122,7 +122,7 @@ class ProductController extends Controller
         $results = $this->productRepository->findWhere([
             ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);
-        return $this->ResponseJsonController->ReturnSuccessMsg($results);
+        return $this->ReturnJsonSuccessMsg($results);
         // return response()->json($results);
     }
 

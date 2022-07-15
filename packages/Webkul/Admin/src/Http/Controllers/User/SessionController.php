@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Admin\Http\Controllers\Controller;
-use App\Http\Controllers\ResponseJsonController;
 
 class SessionController extends Controller
 {
@@ -49,17 +48,17 @@ class SessionController extends Controller
         // 1.帳號或密碼錯誤
         if (!auth()->guard('user')->attempt(request(['email', 'password']), request('remember'))) {
             session()->flash('error', trans('admin::app.sessions.login.login-error'));
-            return $this->ResponseJsonController->ReturnFailMsg(trans('admin::app.sessions.login.login-error'));
+            return $this->ReturnJsonFailMsg(trans('admin::app.sessions.login.login-error'));
             // return redirect()->back();
         }
 
         if (auth()->guard('user')->user()->status == 0) {
             session()->flash('warning', trans('admin::app.sessions.login.activate-warning'));
             auth()->guard('user')->logout();
-            return $this->ResponseJsonController->ReturnFailMsg(trans('admin::app.sessions.login.activate-warning'));
+            return $this->ReturnJsonFailMsg(trans('admin::app.sessions.login.activate-warning'));
             // return redirect()->route('admin.session.create');
         }
-        return $this->ResponseJsonController->ReturnSuccessMsg('OK');
+        return $this->ReturnJsonSuccessMsg('OK');
         // return redirect()->intended(route('admin.dashboard.index'));
 
     }
@@ -73,7 +72,7 @@ class SessionController extends Controller
     {
         auth()->guard('user')->logout();
 
-        return $this->ResponseJsonController->ReturnSuccessMsg('OK');
+        return $this->ReturnJsonSuccessMsg('OK');
         // return redirect()->route('admin.session.create');
     }
 }
