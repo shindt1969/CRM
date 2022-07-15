@@ -23,10 +23,9 @@ class ProductController extends Controller
      *
      * @return void
      */
-    public function __construct(ProductRepository $productRepository,ResponseJsonController $ResponseJsonController)
+    public function __construct(ProductRepository $productRepository)
     {
         $this->productRepository = $productRepository;
-        $this->ResponseJsonController = $ResponseJsonController;
         request()->request->add(['entity_type' => 'products']);
     }
 
@@ -143,13 +142,23 @@ class ProductController extends Controller
 
             Event::dispatch('settings.products.delete.after', $id);
 
-            return response()->json([
+            return $this->ResponseJsonController->ReturnSuccessMsg([
                 'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.product')]),
             ], 200);
+
+
+            // return response()->json([
+            //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.product')]),
+            // ], 200);
         } catch(\Exception $exception) {
-            return response()->json([
+
+            return $this->ResponseJsonController->ReturnSuccessMsg([
                 'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.products.product')]),
             ], 400);
+
+            // return response()->json([
+            //     'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.products.product')]),
+            // ], 400);
         }
     }
 
@@ -168,6 +177,12 @@ class ProductController extends Controller
             Event::dispatch('product.delete.after', $productId);
         }
 
+  
+        // return $this->ResponseJsonController->ReturnSuccessMsg([
+        //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.title')]),
+        // ]);
+
+        
         return response()->json([
             'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.title')]),
         ]);
