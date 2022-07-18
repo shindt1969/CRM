@@ -1,6 +1,6 @@
 <?php
 
-// Route::group(['middleware' => ['web']], function () {
+Route::group(['middleware' => ['web']], function () {
     Route::get('/', 'Webkul\Admin\Http\Controllers\Controller@redirectToLogin')->name('krayin.home');
 
     Route::prefix(config('app.admin_path'))->group(function () {
@@ -26,7 +26,7 @@
         Route::get('mail/inbound-parse', 'Webkul\Admin\Http\Controllers\Mail\EmailController@inboundParse')->name('admin.mail.inbound_parse');
 
         // Admin Routes
-        // Route::group(['middleware' => ['user']], function () {
+        Route::group(['middleware' => ['user']], function () {
             Route::get('logout', 'Webkul\Admin\Http\Controllers\User\SessionController@destroy')->name('admin.session.destroy');
 
             // Dashboard Route index or template
@@ -416,6 +416,6 @@
 
                 Route::post('{slug?}', 'ConfigurationController@store')->name('admin.configuration.index.store');
             });
-        // });
+        });
     });
-// });
+});

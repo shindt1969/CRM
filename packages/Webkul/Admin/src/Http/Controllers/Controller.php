@@ -18,15 +18,15 @@ class Controller extends BaseController
     {
         if (is_array($data)) {
             $ok = array("status" => true);
-            return  json_encode(array_merge($ok, $data));
+            return json_encode(array_merge($ok, $data));
         } else {
-            return  json_encode(array("status" => true, "Message" => $data));
+            return json_encode(array("status" => true, "Message" => $data));
         }
     }
 
     public function ReturnJsonFailMsg($data)
     {
-        return  json_encode(array("status" => false, 'error' => $data));
+        return json_encode(array("status" => false, 'error' => $data));
     }
 
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
