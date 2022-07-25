@@ -11,6 +11,7 @@ use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Contact\Repositories\PersonRepository;
 use Webkul\Lead\Repositories\LeadRepository;
 use Webkul\User\Repositories\UserRepository;
+use Illuminate\Support\Facades\Log;
 
 class ActivityController extends Controller
 {
@@ -109,8 +110,10 @@ class ActivityController extends Controller
             return response()->json([
                 'activities' => $activities,
             ]);
+            // return $this->ReturnJsonSuccessMsg('ok1' );
         } else {
             return app(\Webkul\Admin\DataGrids\Activity\ActivityDataGrid::class)->toJson();
+            // return $this->ReturnJsonSuccessMsg('ok2' );
         }
     }
 
@@ -127,10 +130,13 @@ class ActivityController extends Controller
             request('participants'),
             request('id')
         );
+        
+        Log::info("test checkIfOverlapping" );
 
         return response()->json([
             'overlapping' => $isOverlapping,
         ]);
+
     }
 
     /**
@@ -146,6 +152,13 @@ class ActivityController extends Controller
             'schedule_from' => 'required_unless:type,note',
             'schedule_to'   => 'required_unless:type,note',
         ]);
+        
+        Log::info(json_encode($this->validate(request(), [
+            'type'          => 'required',
+            'comment'       => 'required_if:type,note',
+            'schedule_from' => 'required_unless:type,note',
+            'schedule_to'   => 'required_unless:type,note',
+        ]) ));
 
         Event::dispatch('activity.create.before');
 
@@ -153,6 +166,8 @@ class ActivityController extends Controller
             'is_done' => request('type') == 'note' ? 1 : 0,
             'user_id' => auth()->guard('user')->user()->id,
         ]));
+
+        Log::info(json_encode($activity));
 
         if (request('participants')) {
             if (is_array(request('participants.users'))) {
@@ -181,13 +196,15 @@ class ActivityController extends Controller
         Event::dispatch('activity.create.after', $activity);
 
         session()->flash('success', trans('admin::app.activities.create-success', ['type' => trans('admin::app.activities.' . $activity->type)]));
+        
+        Log::info("okcheck" );
 
         return redirect()->back();
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
+     *不用
      * @param  int  $id
      * @return \Illuminate\View\View
      */
@@ -209,6 +226,8 @@ class ActivityController extends Controller
         Event::dispatch('activity.update.before', $id);
 
         $activity = $this->activityRepository->update(request()->all(), $id);
+
+        Log::info(json_encode($activity));
 
         if (request('participants')) {
             $activity->participants()->delete();
@@ -260,8 +279,10 @@ class ActivityController extends Controller
     {
         $count = 0;
 
-        $data = request()->all();
+        
 
+        $data = request()->all();
+        Log::info(json_encode( $data));
         foreach (request('rows') as $activityId) {
             Event::dispatch('activity.update.before', $activityId);
 
@@ -273,6 +294,8 @@ class ActivityController extends Controller
 
             $count++;
         }
+
+        Log::info(json_encode($activity));
 
         if (! $count) {
             return response()->json([
@@ -317,9 +340,16 @@ class ActivityController extends Controller
             'file' => 'required',
         ]);
 
+        Log::info(json_encode($this->validate(request(), [
+            'file' => 'required',
+        ])));
+
         Event::dispatch('activities.file.create.before');
 
         $file = $this->fileRepository->upload(request()->all());
+
+
+        Log::info($file);
 
         if ($file) {
             if ($leadId = request('lead_id')) {
@@ -329,9 +359,11 @@ class ActivityController extends Controller
             }
 
             Event::dispatch('activities.file.create.after', $file);
-
+            return $this->ReturnJsonSuccessMsg('ok' );
             session()->flash('success', trans('admin::app.activities.file-upload-success'));
         } else {
+
+            return $this->ReturnJsonFailMsg("not ok");
             session()->flash('error', trans('admin::app.activities.file-upload-error'));
         }
 
@@ -385,6 +417,8 @@ class ActivityController extends Controller
      */
     public function massDestroy()
     {
+
+        Log::info(json_encode(request('rows')));
         foreach (request('rows') as $activityId) {
             Event::dispatch('activity.delete.before', $activityId);
 
@@ -392,7 +426,9 @@ class ActivityController extends Controller
 
             Event::dispatch('activity.delete.after', $activityId);
         }
-
+        Log::info(response()->json([
+            'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.activities.title')])
+        ]));
         return response()->json([
             'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.activities.title')])
         ]);

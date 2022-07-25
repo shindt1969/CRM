@@ -5,6 +5,8 @@ namespace Webkul\Admin\Http\Controllers\Setting;
 use Illuminate\Support\Facades\Event;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\User\Repositories\RoleRepository;
+use Illuminate\Support\Facades\Log;
+
 
 class RoleController extends Controller
 {

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Validator;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Lead\Repositories\SourceRepository;
+use Illuminate\Support\Facades\Log;
 
 class SourceController extends Controller
 {
@@ -51,10 +52,10 @@ class SourceController extends Controller
         $validator = Validator::make(request()->all(), [
             'name' => 'required|unique:lead_sources,name'
         ]);
-        
+        Log::info(json_encode(request()->all()));
+
         if ($validator->fails()) {
             session()->flash('error', trans('admin::app.settings.sources.name-exists'));
-
             return redirect()->back();
         }
 
@@ -94,6 +95,9 @@ class SourceController extends Controller
             'name' => 'required|unique:lead_sources,name,' . $id,
         ]);
 
+        $data=request()->all();
+        Log::info(json_encode($data));
+
         Event::dispatch('settings.source.update.before', $id);
 
         $source = $this->sourceRepository->update(request()->all(), $id);
@@ -114,6 +118,8 @@ class SourceController extends Controller
     public function destroy($id)
     {
         $source = $this->sourceRepository->findOrFail($id);
+        $data=request()->all();
+        Log::info(json_encode($data));
 
         try {
             Event::dispatch('settings.source.delete.before', $id);

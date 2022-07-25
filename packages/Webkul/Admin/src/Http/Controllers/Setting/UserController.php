@@ -11,6 +11,7 @@ use Webkul\User\Repositories\UserRepository;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\User\Repositories\GroupRepository;
 
+
 class UserController extends Controller
 {
     /**
@@ -49,7 +50,7 @@ class UserController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
+     *不用
      * @return \Illuminate\View\View
      */
     public function index()
@@ -57,8 +58,13 @@ class UserController extends Controller
         if (request()->ajax()) {
             return app(\Webkul\Admin\DataGrids\Setting\UserDataGrid::class)->toJson();
         }
+        Log::info(app(\Webkul\Admin\DataGrids\Setting\UserDataGrid::class)->toJson());
 
+            // return $this->ReturnJsonSuccessMsg('reback ok');
+
+        // return(app(\Webkul\Admin\DataGrids\Setting\UserDataGrid::class)->toJson());
         return view('admin::settings.users.index');
+
     }
 
     /**
@@ -71,6 +77,9 @@ class UserController extends Controller
         $roles = $this->roleRepository->all();
 
         $groups = $this->groupRepository->all();
+
+        Log::info($roles);
+        Log::info($groups);
 
         return view('admin::settings.users.create', compact('groups', 'roles'));
     }
@@ -91,6 +100,7 @@ class UserController extends Controller
         ]);
 
         $data = request()->all();
+        Log::info(json_encode($data));
 
         if (isset($data['password']) && $data['password']) {
             $data['password'] = bcrypt($data['password']);
@@ -113,11 +123,8 @@ class UserController extends Controller
         } catch (\Exception $e) {
             report($e);
         }
-
         Event::dispatch('settings.user.create.after', $admin);
-
         session()->flash('success', trans('admin::app.settings.users.create-success'));
-
         return redirect()->route('admin.settings.users.index');
     }
 
@@ -134,6 +141,8 @@ class UserController extends Controller
         $roles = $this->roleRepository->all();
 
         $groups = $this->groupRepository->all();
+
+        Log::info(json_encode($admin));
 
         return view('admin::settings.users.edit', compact('admin', 'groups', 'roles'));
     }
@@ -155,6 +164,8 @@ class UserController extends Controller
         ]);
 
         $data = request()->all();
+
+        Log::info(json_encode($data));
 
         if (! $data['password']) {
             unset($data['password'], $data['confirm_password']);
@@ -192,16 +203,18 @@ class UserController extends Controller
     public function destroy($id)
     {
         if (auth()->guard('user')->user()->id == $id) {
+            Log::info(json_encode("1"));
+
             return response()->json([
                 'message' => trans('admin::app.settings.users.delete-failed'),
             ], 400);
         } else if ($this->userRepository->count() == 1) {
+            Log::info(json_encode("2"));
             return response()->json([
                 'message' => trans('admin::app.settings.users.last-delete-error'),
             ], 400);
         } else {
             Event::dispatch('settings.user.delete.before', $id);
-
             try {
                 $this->userRepository->delete($id);
 
@@ -226,6 +239,8 @@ class UserController extends Controller
     public function massUpdate()
     {
         $count = 0;
+        $data = request()->all();
+        Log::info(json_encode($data));
 
         foreach (request('rows') as $userId) {
             if (auth()->guard('user')->user()->id == $userId) {
@@ -262,6 +277,9 @@ class UserController extends Controller
     public function massDestroy()
     {
         $count = 0;
+
+        $data = request()->all();
+        Log::info(json_encode($data));
 
         foreach (request('rows') as $userId) {
             if (auth()->guard('user')->user()->id == $userId) {

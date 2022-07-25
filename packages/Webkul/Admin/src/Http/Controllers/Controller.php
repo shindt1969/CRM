@@ -3,18 +3,30 @@
 namespace Webkul\Admin\Http\Controllers;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use App\Http\Controllers\ResponseJsonController;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+// use App\Http\Controllers\ResponseJsonController;
+use Webkul\Admin\Functions\ResponseJson;
+
+
+
 
 class Controller extends BaseController
 {
-    protected $ResponseJsonController;
-
-    public function __construct(ResponseJsonController $ResponseJsonController)
+    public function ReturnJsonSuccessMsg($data)
     {
-        $this->ResponseJsonController = $ResponseJsonController;
+        if (is_array($data)) {
+            $ok = array("status" => true);
+            return  json_encode(array_merge($ok, $data));
+        } else {
+            return  json_encode(array("status" => true, "Message" => $data));
+        }
+    }
+
+    public function ReturnJsonFailMsg($data)
+    {
+        return  json_encode(array("status" => false, 'error' => $data));
     }
 
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
