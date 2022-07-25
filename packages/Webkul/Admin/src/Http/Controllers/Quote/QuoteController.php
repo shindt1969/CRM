@@ -2,13 +2,14 @@
 
 namespace Webkul\Admin\Http\Controllers\Quote;
 
-use Illuminate\Support\Facades\Event;
 use Barryvdh\DomPDF\Facade as PDF;
-use Webkul\Admin\DataGrids\Quote\QuoteDataGrid;
-use Webkul\Admin\Http\Controllers\Controller;
-use Webkul\Attribute\Http\Requests\AttributeForm;
-use Webkul\Quote\Repositories\QuoteRepository;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Event;
 use Webkul\Lead\Repositories\LeadRepository;
+use Webkul\Admin\Http\Controllers\Controller;
+use Webkul\Quote\Repositories\QuoteRepository;
+use Webkul\Admin\DataGrids\Quote\QuoteDataGrid;
+use Webkul\Attribute\Http\Requests\AttributeForm;
 
 class QuoteController extends Controller
 {
@@ -63,6 +64,8 @@ class QuoteController extends Controller
     /**
      * Show the form for creating a new resource.
      *
+     ************************ 不用 *************************
+     * add quote item 的時候，會受到 ProductController 的 search 的 retuen json 格式影響
      * @return \Illuminate\View\View
      */
     public function create()
@@ -94,12 +97,13 @@ class QuoteController extends Controller
 
         session()->flash('success', trans('admin::app.quotes.create-success'));
 
-        return redirect()->route('admin.quotes.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.quotes.create-success'));
+        // return redirect()->route('admin.quotes.index');
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
+     ************************* 不用 *************************
      * @param  int  $id
      * @return \Illuminate\View\View
      */
@@ -135,7 +139,8 @@ class QuoteController extends Controller
 
         session()->flash('success', trans('admin::app.quotes.update-success'));
 
-        return redirect()->route('admin.quotes.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.quotes.update-success'));
+        // return redirect()->route('admin.quotes.index');
     }
 
     /**
@@ -149,7 +154,8 @@ class QuoteController extends Controller
             ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);
 
-        return response()->json($results);
+        return $this->ReturnJsonSuccessMsg($results);
+        // return response()->json($results);
     }
 
     /**
@@ -169,13 +175,15 @@ class QuoteController extends Controller
 
             Event::dispatch('quote.delete.after', $id);
 
-            return response()->json([
-                'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.quotes.quote')]),
-            ], 200);
+            // return response()->json([
+            //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.quotes.quote')]),
+            // ], 200);
+            return $this->ReturnJsonSuccessMsg(trans('admin::app.response.destroy-success', ['name' => trans('admin::app.quotes.quote')]));
         } catch(\Exception $exception) {
-            return response()->json([
-                'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.quotes.quote')]),
-            ], 400);
+            // return response()->json([
+            //     'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.quotes.quote')]),
+            // ], 400);
+            return $this->ReturnJsonSuccessMsg(trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.quotes.quote')]));
         }
     }
 
@@ -194,14 +202,15 @@ class QuoteController extends Controller
             Event::dispatch('quote.delete.after', $quoteId);
         }
 
-        return response()->json([
-            'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.quotes.title')]),
-        ]);
+        // return response()->json([
+        //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.quotes.title')]),
+        // ]);
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.response.destroy-success', ['name' => trans('admin::app.quotes.title')]));
     }
 
     /**
      * Print and download the for the specified resource.
-     *
+     ************************** 不用 *************************
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */

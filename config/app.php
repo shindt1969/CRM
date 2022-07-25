@@ -210,6 +210,7 @@ return [
         Prettus\Repository\Providers\RepositoryServiceProvider::class,
         Konekt\Concord\ConcordServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
+        Tymon\JWTAuth\Providers\LaravelServiceProvider::class,  // jwt auth
 
         /*
          * Application Service Providers...

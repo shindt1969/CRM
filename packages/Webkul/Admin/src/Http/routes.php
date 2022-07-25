@@ -26,7 +26,7 @@ Route::group(['middleware' => ['web']], function () {
         Route::get('mail/inbound-parse', 'Webkul\Admin\Http\Controllers\Mail\EmailController@inboundParse')->name('admin.mail.inbound_parse');
 
         // Admin Routes
-        Route::group(['middleware' => ['user']], function () {
+        Route::group(['middleware' => ['api']], function () {
             Route::get('logout', 'Webkul\Admin\Http\Controllers\User\SessionController@destroy')->name('admin.session.destroy');
 
             // Dashboard Route index or template

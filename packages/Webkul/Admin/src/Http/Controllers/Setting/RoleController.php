@@ -2,9 +2,10 @@
 
 namespace Webkul\Admin\Http\Controllers\Setting;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Event;
-use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\User\Repositories\RoleRepository;
+use Webkul\Admin\Http\Controllers\Controller;
 
 class RoleController extends Controller
 {
@@ -28,7 +29,7 @@ class RoleController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
+     ************************** 不用 *************************
      * @return \Illuminate\View\View
      */
     public function index()
@@ -38,11 +39,12 @@ class RoleController extends Controller
         }
 
         return view('admin::settings.roles.index');
+
     }
 
     /**
      * Show the form for creating a new resource.
-     *
+     ************************** 不用 *************************
      * @return \Illuminate\View\View
      */
     public function create()
@@ -80,12 +82,13 @@ class RoleController extends Controller
 
         session()->flash('success', trans('admin::app.settings.roles.create-success'));
 
-        return redirect()->route('admin.settings.roles.index');
+        // return redirect()->route('admin.settings.roles.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.roles.create-success'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
+     ************************** 不用 *************************
      * @param  int  $id
      * @return \Illuminate\View\View
      */
@@ -127,7 +130,8 @@ class RoleController extends Controller
 
         session()->flash('success', trans('admin::app.settings.roles.update-success'));
 
-        return redirect()->route('admin.settings.roles.index');
+        // return redirect()->route('admin.settings.roles.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.roles.update-success'));
     }
 
     /**
@@ -181,6 +185,7 @@ class RoleController extends Controller
             }
         }
 
-        return response()->json($response, $response['responseCode']);
+        // return response()->json($response, $response['responseCode']);
+        return $this->ReturnJsonSuccessMsg($response);
     }
 }

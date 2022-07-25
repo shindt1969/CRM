@@ -41,7 +41,7 @@ class ProductController extends Controller
             return app(\Webkul\Admin\DataGrids\Product\ProductDataGrid::class)->toJson();
         }
 
-        // return view('admin::products.index');
+        return view('admin::products.index');
     }
 
     /**

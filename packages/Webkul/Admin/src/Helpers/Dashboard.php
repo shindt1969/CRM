@@ -778,11 +778,6 @@ class Dashboard
             'startDateFilter' => $startDateFilter,
         ) = $this->getDateRangeDetails($requestData);
 
-        // Log::info($cardId);
-        // ,$endDate,$startDate,$totalWeeks,$endDateFilter,$startDateFilter
-
-        Log::error($this->cards);
-
         foreach ($this->cards as $card) {
             if (isset($card['card_id']) && $card['card_id'] == $cardId) {
                 if (isset($card['class_name'])) {
@@ -812,10 +807,6 @@ class Dashboard
                 $totalWeeks
             )
             : $cardData ?? false;
-
-            // Log::info("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-            // Log::info($cardData);
-
 
         return $cardData;
     }

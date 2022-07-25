@@ -20,7 +20,7 @@ class Controller extends BaseController
             $ok = array("status" => true);
             return json_encode(array_merge($ok, $data));
         } else {
-            return json_encode(array("status" => true, "Message" => $data));
+            return json_encode(array("status" => true, "message" => $data));
         }
     }
 

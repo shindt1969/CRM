@@ -29,7 +29,7 @@ class GroupController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
+     ************************** 不用 *************************
      * @return \Illuminate\View\View
      */
     public function index()
@@ -43,7 +43,7 @@ class GroupController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
+     ************************** 不用 *************************
      * @return \Illuminate\View\View
      */
     public function create()
@@ -70,12 +70,13 @@ class GroupController extends Controller
 
         session()->flash('success', trans('admin::app.settings.groups.create-success'));
 
-        return redirect()->route('admin.settings.groups.index');
+        // return redirect()->route('admin.settings.groups.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.groups.create-success'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
+     ************************** 不用 *************************
      * @param  int  $id
      * @return \Illuminate\View\View
      */
@@ -106,7 +107,8 @@ class GroupController extends Controller
 
         session()->flash('success', trans('admin::app.settings.groups.update-success'));
 
-        return redirect()->route('admin.settings.groups.index');
+        // return redirect()->route('admin.settings.groups.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.groups.update-success'));
     }
 
     /**
@@ -126,17 +128,20 @@ class GroupController extends Controller
 
             Event::dispatch('settings.group.delete.after', $id);
 
-            return response()->json([
-                'message' => trans('admin::app.settings.groups.destroy-success'),
-            ], 200);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.groups.destroy-success'),
+            // ], 200);
+            return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.groups.destroy-success'));
         } catch(\Exception $exception) {
-            return response()->json([
-                'message' => trans('admin::app.settings.groups.delete-failed'),
-            ], 400);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.groups.delete-failed'),
+            // ], 400);
+            return $this->ReturnJsonFailMsg(trans('admin::app.settings.groups.delete-failed'));
         }
 
-        return response()->json([
-            'message' => trans('admin::app.settings.groups.delete-failed'),
-        ], 400);
+        // return response()->json([
+        //     'message' => trans('admin::app.settings.groups.delete-failed'),
+        // ], 400);
+        return $this->ReturnJsonFailMsg(trans('admin::app.settings.groups.delete-failed'));
     }
 }

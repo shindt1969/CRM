@@ -44,8 +44,6 @@ class TagController extends Controller
         }
 
         Event::dispatch('leads.tag.create.after', $lead);
-
-
         
         // return response()->json([
         //     'status'  => true,

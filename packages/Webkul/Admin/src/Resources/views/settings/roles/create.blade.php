@@ -128,7 +128,6 @@
                 } else {
                     $('.tree-wrapper').addClass('hide')
                 }
-
             })
         });
     </script>

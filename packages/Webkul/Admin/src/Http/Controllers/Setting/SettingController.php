@@ -8,7 +8,7 @@ class SettingController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
+     ***************************** 不用 *************************
      * @return \Illuminate\View\View
      */
     public function index()

@@ -58,8 +58,8 @@ class SessionController extends Controller
             return $this->ReturnJsonFailMsg(trans('admin::app.sessions.login.activate-warning'));
             // return redirect()->route('admin.session.create');
         }
-        return $this->ReturnJsonSuccessMsg('OK');
-        // return redirect()->intended(route('admin.dashboard.index'));
+        // return $this->ReturnJsonSuccessMsg('OK');
+        return redirect()->intended(route('admin.dashboard.index'));
 
     }
 

@@ -32,7 +32,7 @@ class OrganizationController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
+     **************************** 不用 *************************
      * @return \Illuminate\View\View
      */
     public function index()
@@ -46,7 +46,7 @@ class OrganizationController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
+     **************************** 不用 *************************
      * @return \Illuminate\View\View
      */
     public function create()
@@ -71,12 +71,13 @@ class OrganizationController extends Controller
 
         session()->flash('success', trans('admin::app.contacts.organizations.create-success'));
 
-        return redirect()->route('admin.contacts.organizations.index');
+        // return redirect()->route('admin.contacts.organizations.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.contacts.organizations.create-success'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
+     ***************************** 不用 *************************
      * @param  int  $id
      * @return \Illuminate\View\View
      */
@@ -104,7 +105,8 @@ class OrganizationController extends Controller
 
         session()->flash('success', trans('admin::app.contacts.organizations.update-success'));
 
-        return redirect()->route('admin.contacts.organizations.index');
+        // return redirect()->route('admin.contacts.organizations.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.contacts.organizations.update-success'));
     }
 
     /**
@@ -124,13 +126,15 @@ class OrganizationController extends Controller
 
             Event::dispatch('contact.organization.delete.after', $id);
 
-            return response()->json([
-                'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.contacts.organizations.organization')]),
-            ], 200);
+            // return response()->json([
+            //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.contacts.organizations.organization')]),
+            // ], 200);
+            return $this->ReturnJsonSuccessMsg(trans('admin::app.response.destroy-success', ['name' => trans('admin::app.contacts.organizations.organization')]));
         } catch(\Exception $exception) {
-            return response()->json([
-                'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.contacts.organizations.organization')]),
-            ], 400);
+            // return response()->json([
+            //     'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.contacts.organizations.organization')]),
+            // ], 400);
+            return $this->ReturnJsonSuccessMsg(trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.contacts.organizations.organization')]));
         }
     }
 
@@ -149,8 +153,10 @@ class OrganizationController extends Controller
             Event::dispatch('contact.organization.delete.after', $organizationId);
         }
 
-        return response()->json([
-            'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.contacts.organizations.title')])
-        ]);
+        // return response()->json([
+        //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.contacts.organizations.title')])
+        // ]);
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.response.destroy-success', ['name' => trans('admin::app.contacts.organizations.title')]));
+
     }
 }
