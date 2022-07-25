@@ -3,6 +3,7 @@
 namespace Webkul\Admin\Http\Controllers\Product;
 
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Attribute\Http\Requests\AttributeForm;
 use Webkul\Product\Repositories\ProductRepository;
@@ -143,33 +144,47 @@ class ProductController extends Controller
 
             Event::dispatch('settings.products.delete.after', $id);
 
-            return response()->json([
+            return $this->ReturnJsonSuccessMsg([
                 'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.product')]),
             ], 200);
+
+            // return response()->json([
+            //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.product')]),
+            // ], 200);
         } catch(\Exception $exception) {
-            return response()->json([
+
+            return $this->ReturnJsonFailMsg([
                 'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.products.product')]),
             ], 400);
+
+            // return response()->json([
+            //     'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.products.product')]),
+            // ], 400);
         }
     }
 
     /**
      * Mass Delete the specified resources.
      *
+     * 
+     * 在postman當中 傳 'rows':["2","3"]，表示能夠集體刪除
+     * 
      * @return \Illuminate\Http\Response
      */
     public function massDestroy()
     {
+        Log::info(request());
+        Log::info(request('rows'));
         foreach (request('rows') as $productId) {
             Event::dispatch('product.delete.before', $productId);
-
             $this->productRepository->delete($productId);
-
             Event::dispatch('product.delete.after', $productId);
         }
-
-        return response()->json([
+        return $this->ReturnJsonSuccessMsg([
             'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.title')]),
         ]);
+        // return response()->json([
+        //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.title')]),
+        // ]);
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Event;
 use Webkul\User\Repositories\RoleRepository;
 use Webkul\Admin\Http\Controllers\Controller;
 
+
 class RoleController extends Controller
 {
     /**

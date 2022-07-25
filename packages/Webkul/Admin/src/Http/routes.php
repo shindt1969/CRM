@@ -24,7 +24,14 @@ Route::group(['middleware' => ['web']], function () {
         Route::post('reset-password', 'Webkul\Admin\Http\Controllers\User\ResetPasswordController@store')->name('admin.reset_password.store');
 
         Route::get('mail/inbound-parse', 'Webkul\Admin\Http\Controllers\Mail\EmailController@inboundParse')->name('admin.mail.inbound_parse');
-
+        
+        Route::group([
+            // 'prefix'    => 'leadstest',
+            'namespace' => 'Webkul\Admin\Http\Controllers\Lead',
+        ], function () {
+            Route::post('createtest', 'LeadController@store');
+        });
+       
         // Admin Routes
         Route::group(['middleware' => ['api']], function () {
             Route::get('logout', 'Webkul\Admin\Http\Controllers\User\SessionController@destroy')->name('admin.session.destroy');

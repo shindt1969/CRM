@@ -9,6 +9,7 @@ use Webkul\Admin\Http\Requests\LeadForm;
 use Webkul\Lead\Repositories\LeadRepository;
 use Webkul\Lead\Repositories\PipelineRepository;
 use Webkul\Lead\Repositories\StageRepository;
+use Illuminate\Support\Facades\Log;
 
 class LeadController extends Controller
 {
@@ -58,7 +59,9 @@ class LeadController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
+     **************************** 不用 **********************************
+     *暫時找不到 return view('admin::leads.index');
+     * 
      * @return \Illuminate\View\View
      */
     public function index()
@@ -69,18 +72,23 @@ class LeadController extends Controller
     /**
      * Returns a listing of the resource.
      *
+     * 
+     * 
      * @return \Illuminate\Http\Response
      */
     public function get()
     {
         if (request('view_type')) {
+
+            
             return app(\Webkul\Admin\DataGrids\Lead\LeadDataGrid::class)->toJson();
         } else {
             $createdAt = request('created_at') ?? null;
 
+
             if ($createdAt && isset($createdAt["bw"])) {
                 $createdAt = explode(",", $createdAt["bw"]);
-
+               
                 $createdAt[0] .= ' 00:01';
 
                 $createdAt[1] = $createdAt[1]
@@ -88,40 +96,53 @@ class LeadController extends Controller
                     : Carbon::now()->format('Y-m-d 23:59');
             } else {
                 $createdAt = null;
+                // Log::info($createdAt);
             }
 
             if (request('pipeline_id')) {
                 $pipeline = $this->pipelineRepository->find(request('pipeline_id'));
+                // Log::info($pipeline);
             } else {
                 $pipeline = $this->pipelineRepository->getDefaultPipeline();
             }
 
             $leads = $this->leadRepository->getLeads($pipeline->id, request('search') ?? '', $createdAt)->toArray();
-
+            // Log::info($leads);
             $totalCount = [];
 
             foreach ($leads as $key => $lead) {
                 $totalCount[$lead['status']] = ($totalCount[$lead['status']] ?? 0) + (float) $lead['lead_value'];
 
                 $leads[$key]['lead_value'] = core()->formatBasePrice($lead['lead_value']);
+
+                // Log::info($totalCount);
             }
 
             $totalCount = array_map(function ($count) {
                 return core()->formatBasePrice($count);
             }, $totalCount);
 
-            return response()->json([
-                'blocks'      => $leads,
-                'stage_names' => $pipeline->stages->pluck('name'),
-                'stages'      => $pipeline->stages->toArray(),
-                'total_count' => $totalCount,
-            ]);
+                Log::info($totalCount);
+                Log::info('$totalCount');
+                return $this->ReturnJsonSuccessMsg( [
+                        'blocks'      => $leads,
+                        'stage_names' => $pipeline->stages->pluck('name'),
+                        'stages'      => $pipeline->stages->toArray(),
+                        'total_count' => $totalCount,
+                    ] );
+
+            // return response()->json([
+            //     'blocks'      => $leads,
+            //     'stage_names' => $pipeline->stages->pluck('name'),
+            //     'stages'      => $pipeline->stages->toArray(),
+            //     'total_count' => $totalCount,
+            // ]);
         }
     }
 
     /**
      * Show the form for creating a new resource.
-     *
+     **************************** 不用 **********************************
      * @return \Illuminate\View\View
      */
     public function create()
@@ -131,20 +152,35 @@ class LeadController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
+     * postman json格式
+     * {
+     *"lead_pipeline_stage_id": "",
+     *"person" :["123"],
+     *"title" : "itleadfore",
+     *"lead_value" :"1234",
+     *"name":"trypostman",
+     *"emails":"123postman"
+     *}
+     * 
      * @param \Webkul\Admin\Http\Requests\LeadForm $request
      * @return \Illuminate\Http\Response
      */
     public function store(LeadForm $request)
     {
+        Log::info("try");
         Event::dispatch('lead.create.before');
 
         $data = request()->all();
 
+        Log::info(json_encode($data));
+        Log::info('$data' );
         $data['status'] = 1;
-
         if ($data['lead_pipeline_stage_id']) {
+
             $stage = $this->stageRepository->findOrFail($data['lead_pipeline_stage_id']);
+
+            Log::info($stage );
+            Log::info('$stage' );
 
             $data['lead_pipeline_id'] = $stage->lead_pipeline_id;
         } else {
@@ -152,13 +188,18 @@ class LeadController extends Controller
 
             $stage = $pipeline->stages()->first();
 
+            Log::info($pipeline );
+            Log::info('$pipeline' );
+
             $data['lead_pipeline_id'] = $pipeline->id;
 
             $data['lead_pipeline_stage_id'] = $stage->id;
         }
 
         if (in_array($stage->code, ['won', 'lost'])) {
+
             $data['closed_at'] = Carbon::now();
+
         }
 
         $lead = $this->leadRepository->create($data);
@@ -166,8 +207,10 @@ class LeadController extends Controller
         Event::dispatch('lead.create.after', $lead);
 
         session()->flash('success', trans('admin::app.leads.create-success'));
+        Log::info("flat1" );
+        // return redirect()->route('admin.leads.index', $data['lead_pipeline_id']);
+        return $this->ReturnJsonSuccessMsg('ok' );
 
-        return redirect()->route('admin.leads.index', $data['lead_pipeline_id']);
     }
 
     /**
@@ -195,7 +238,7 @@ class LeadController extends Controller
                 }
             }
         }
-
+        // return $this->ReturnJsonSuccessMsg(compact('lead') );
         return view('admin::leads.view', compact('lead'));
     }
 
@@ -210,6 +253,7 @@ class LeadController extends Controller
     {
         Event::dispatch('lead.update.before', $id);
         $data = request()->all();
+        Log::info(json_encode($data));
 
         if ($data['lead_pipeline_stage_id']) {
             $stage = $this->stageRepository->findOrFail($data['lead_pipeline_stage_id']);
@@ -237,9 +281,12 @@ class LeadController extends Controller
             session()->flash('success', trans('admin::app.leads.update-success'));
 
             if (request()->has('closed_at')) {
-                return redirect()->back();
+                // return redirect()->back();
+                return   $this->ReturnJsonSuccessMsg('ok' );
             } else {
-               return redirect()->route('admin.leads.index', $data['lead_pipeline_id']);
+            //    return redirect()->route('admin.leads.index', $data['lead_pipeline_id']);
+
+               return   $this->ReturnJsonSuccessMsg('ok2' );
             }
         }
     }
@@ -255,7 +302,8 @@ class LeadController extends Controller
             ['title', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);
 
-        return response()->json($results);
+        return   $this->ReturnJsonSuccessMsg('search ok' );
+        // return response()->json($results);
     }
 
     /*
@@ -275,12 +323,14 @@ class LeadController extends Controller
 
             Event::dispatch('lead.delete.after', $id);
 
-            return response()->json([
+            return $this->ReturnJsonSuccessMsg([
                 'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.leads.lead')]),
             ], 200);
+
         } catch (\Exception $exception) {
-            return response()->json([
-                'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.leads.lead')]),
+
+            return $this->ReturnJsonFailMsg([
+                'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.products.product')]),
             ], 400);
         }
     }
@@ -293,6 +343,7 @@ class LeadController extends Controller
     public function massUpdate()
     {
         $data = request()->all();
+        Log::info(json_encode($data));
 
         foreach ($data['rows'] as $leadId) {
             $lead = $this->leadRepository->find($leadId);
@@ -303,7 +354,7 @@ class LeadController extends Controller
 
             Event::dispatch('lead.update.before', $leadId);
         }
-
+        Log::info("here");
         return response()->json([
             'message' => trans('admin::app.response.update-success', ['name' => trans('admin::app.leads.title')])
         ]);
