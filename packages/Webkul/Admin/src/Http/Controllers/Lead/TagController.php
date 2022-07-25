@@ -44,11 +44,14 @@ class TagController extends Controller
         }
 
         Event::dispatch('leads.tag.create.after', $lead);
+
+
         
-        return response()->json([
-            'status'  => true,
-            'message' => trans('admin::app.leads.tag-create-success'),
-        ], 200);
+        // return response()->json([
+        //     'status'  => true,
+        //     'message' => trans('admin::app.leads.tag-create-success'),
+        // ], 200);
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.leads.tag-create-success'));
     }
 
     /**
@@ -68,9 +71,10 @@ class TagController extends Controller
 
         Event::dispatch('leads.tag.delete.after', $lead);
         
-        return response()->json([
-            'status'  => true,
-            'message' => trans('admin::app.leads.tag-destroy-success'),
-        ], 200);
+        // return response()->json([
+        //     'status'  => true,
+        //     'message' => trans('admin::app.leads.tag-destroy-success'),
+        // ], 200);
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.leads.tag-destroy-success'));
     }
 }

@@ -11,6 +11,7 @@ class AccountController extends Controller
     /**
      * Show the form for creating a new resource.
      *
+     * ****************************不用******************************
      * @return \Illuminate\View\View
      */
     public function edit()
@@ -42,13 +43,15 @@ class AccountController extends Controller
         if (! Hash::check($data['current_password'], auth()->guard('user')->user()->password)) {
             session()->flash('warning', trans('admin::app.user.account.password-match'));
 
-            return redirect()->back();
+            // return redirect()->back();
+            return $this->ReturnJsonFailMsg(trans('admin::app.user.account.password-match'));
         }
 
         if( isset($data['role_id']) || isset($data['view_permission']) ) {
             session()->flash('warning', trans('admin::app.user.account.permission-denied'));
 
-            return redirect()->back();
+            // return redirect()->back();
+            return $this->ReturnJsonFailMsg(trans('admin::app.user.account.permission-denied'));
         }
 
         if (! $data['password']) {
@@ -75,6 +78,7 @@ class AccountController extends Controller
 
         session()->flash('success', trans('admin::app.user.account.account-save'));
 
-        return redirect()->route('admin.dashboard.index');
+        // return redirect()->route('admin.dashboard.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.user.account.account-save'))
     }
 }
