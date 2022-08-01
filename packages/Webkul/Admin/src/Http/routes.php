@@ -319,7 +319,6 @@ Route::group(['middleware' => ['web']], function () {
                     Route::get('download', 'AttributeController@download')->name('admin.settings.attributes.download');
                 });
 
-
                 // Lead Pipelines Routes
                 Route::prefix('pipelines')->group(function () {
                     Route::get('', 'PipelineController@index')->name('admin.settings.pipelines.index');
@@ -377,8 +376,7 @@ Route::group(['middleware' => ['web']], function () {
                     Route::put('edit/{id}', 'EmailTemplateController@update')->name('admin.settings.email_templates.update');
 
                     Route::delete('{id}', 'EmailTemplateController@destroy')->name('admin.settings.email_templates.delete');
-                });
-
+                }); 
 
                 // Workflows Routes
                 Route::prefix('workflows')->group(function () {

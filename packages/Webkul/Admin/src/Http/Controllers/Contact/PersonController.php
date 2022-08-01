@@ -3,6 +3,7 @@
 namespace Webkul\Admin\Http\Controllers\Contact;
 
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Attribute\Http\Requests\AttributeForm;
 use Webkul\Contact\Repositories\PersonRepository;
@@ -63,6 +64,7 @@ class PersonController extends Controller
      */
     public function store(AttributeForm $request)
     {
+
         Event::dispatch('contacts.person.create.before');
 
         $person = $this->personRepository->create($this->sanitizeRequestedPersonData());
@@ -84,7 +86,6 @@ class PersonController extends Controller
     public function edit($id)
     {
         $person = $this->personRepository->findOrFail($id);
-
         return view('admin::contacts.persons.edit', compact('person'));
     }
 
@@ -97,6 +98,7 @@ class PersonController extends Controller
      */
     public function update(AttributeForm $request, $id)
     {
+        Log::info($request);
         Event::dispatch('contacts.person.update.before', $id);
 
         $person = $this->personRepository->update($this->sanitizeRequestedPersonData(), $id);
@@ -120,8 +122,8 @@ class PersonController extends Controller
             ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);
 
-        // return response()->json($results);
-        return $this->ReturnJsonSuccessMsg($results);
+        return response()->json($results);
+        // return $this->ReturnJsonSuccessMsg($results);
     }
 
     /**

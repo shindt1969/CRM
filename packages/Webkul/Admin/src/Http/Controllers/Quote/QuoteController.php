@@ -123,6 +123,7 @@ class QuoteController extends Controller
      */
     public function update(AttributeForm $request, $id)
     {
+
         Event::dispatch('quote.update.before', $id);
 
         $quote = $this->quoteRepository->update(request()->all(), $id);
@@ -183,7 +184,7 @@ class QuoteController extends Controller
             // return response()->json([
             //     'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.quotes.quote')]),
             // ], 400);
-            return $this->ReturnJsonSuccessMsg(trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.quotes.quote')]));
+            return $this->ReturnJsonFailMsg(trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.quotes.quote')]));
         }
     }
 
@@ -194,6 +195,8 @@ class QuoteController extends Controller
      */
     public function massDestroy()
     {
+        Log::info(request());
+        // Log::info(request('rows'));
         foreach (request('rows') as $quoteId) {
             Event::dispatch('quote.delete.before', $quoteId);
 

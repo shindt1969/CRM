@@ -115,15 +115,12 @@ class LeadController extends Controller
 
                 $leads[$key]['lead_value'] = core()->formatBasePrice($lead['lead_value']);
 
-                // Log::info($totalCount);
             }
 
             $totalCount = array_map(function ($count) {
                 return core()->formatBasePrice($count);
             }, $totalCount);
 
-                Log::info($totalCount);
-                Log::info('$totalCount');
                 return $this->ReturnJsonSuccessMsg( [
                         'blocks'      => $leads,
                         'stage_names' => $pipeline->stages->pluck('name'),
