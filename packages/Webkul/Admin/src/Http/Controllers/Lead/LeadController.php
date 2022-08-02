@@ -238,8 +238,8 @@ class LeadController extends Controller
                 }
             }
         }
-        // return $this->ReturnJsonSuccessMsg(compact('lead') );
-        return view('admin::leads.view', compact('lead'));
+        return $this->ReturnJsonSuccessMsg(compact('lead') );
+        // return view('admin::leads.view', compact('lead'));
     }
 
     /**
