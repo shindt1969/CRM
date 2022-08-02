@@ -2,6 +2,7 @@
 
 namespace Webkul\Admin\Http\Controllers\Setting;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Validator;
 use Webkul\Tag\Repositories\TagRepository;
@@ -48,6 +49,14 @@ class TagController extends Controller
      */
     public function store()
     {
+        $data = request()->all();
+        Log::info(json_encode($data));
+
+
+        Log::info($this->validate(request(), [
+            'name' => 'required|unique:tags,name',
+        ]));
+
         if (request()->ajax()) {
             $this->validate(request(), [
                 'name' => 'required|unique:tags,name',
@@ -63,12 +72,14 @@ class TagController extends Controller
                 return redirect()->back();
             }
         }
-
         Event::dispatch('settings.tag.create.before');
+
 
         $tag = $this->tagRepository->create(array_merge([
             'user_id' => auth()->guard('user')->user()->id,
         ], request()->all()));
+
+        Log::info(json_encode($tag));
 
         Event::dispatch('settings.tag.create.after', $tag);
 
@@ -95,6 +106,9 @@ class TagController extends Controller
     {
         $tag = $this->tagRepository->findOrFail($id);
 
+
+        // return $this->ReturnJsonSuccessMsg('OK');
+
         return view('admin::settings.tags.edit', compact('tag'));
     }
 
@@ -109,6 +123,9 @@ class TagController extends Controller
         $validator = Validator::make(request()->all(), [
             'name' => 'required|unique:tags,name,' . $id,
         ]);
+
+        $data = request()->all();
+        Log::info(json_encode($data));
 
         if ($validator->fails()) {
             session()->flash('error', $validator->errors()->first('name'));
@@ -143,10 +160,12 @@ class TagController extends Controller
             $this->tagRepository->delete($id);
 
             Event::dispatch('settings.tag.delete.after', $id);
-
-            return response()->json([
+            return $this->ReturnJsonSuccessMsg([
                 'message' => trans('admin::app.settings.tags.delete-success'),
             ], 200);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.tags.delete-success'),
+            // ], 200);
         } catch(\Exception $exception) {
             return response()->json([
                 'message' => trans('admin::app.settings.tags.delete-failed'),
@@ -179,6 +198,9 @@ class TagController extends Controller
      */
     public function massDestroy()
     {
+        $data = request()->all();
+        Log::info(json_encode($data));
+
         foreach (request('rows') as $tagId) {
             Event::dispatch('settings.tag.delete.before', $tagId);
 

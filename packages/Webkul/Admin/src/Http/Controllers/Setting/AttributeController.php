@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Core\Contracts\Validations\Code;
+use Illuminate\Support\Facades\Log;
 
 class AttributeController extends Controller
 {
@@ -60,12 +61,14 @@ class AttributeController extends Controller
      */
     public function store()
     {
+        $data = request()->all();
+        Log::info(json_encode($data));
+
         $this->validate(request(), [
             'code' => ['required', 'unique:attributes,code,NULL,NULL,entity_type,' . request('entity_type'), new Code],
             'name' => 'required',
             'type' => 'required',
         ]);
-
         Event::dispatch('settings.attribute.create.before');
 
         request()->request->add(['quick_add' => 1]);
@@ -101,6 +104,10 @@ class AttributeController extends Controller
      */
     public function update($id)
     {
+        $data = request()->all();
+        Log::info(json_encode($data));
+
+
         $this->validate(request(), [
             'code' => ['required', 'unique:attributes,code,NULL,NULL,entity_type,' . $id, new Code],
             'name' => 'required',
@@ -181,8 +188,12 @@ class AttributeController extends Controller
      */
     public function massDestroy()
     {
-        $count = 0;
 
+        $data = request()->all();
+        Log::info(json_encode($data));
+
+        $count = 0;
+        
         foreach (request('rows') as $attributeId) {
             $attribute = $this->attributeRepository->find($attributeId);
 

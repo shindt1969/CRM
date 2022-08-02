@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Event;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Admin\Http\Requests\PipelineForm;
 use Webkul\Lead\Repositories\PipelineRepository;
+use Illuminate\Support\Facades\Log;
 
 class PipelineController extends Controller
 {
@@ -58,6 +59,11 @@ class PipelineController extends Controller
      */
     public function store(PipelineForm $request)
     {
+
+        $data = request()->all();
+        Log::info(json_encode($data));
+
+
         $request->validated();
 
         $request->merge([
@@ -84,7 +90,10 @@ class PipelineController extends Controller
      * @return \Illuminate\View\View
      */
     public function edit($id)
+    
     {
+
+        
         $pipeline = $this->pipelineRepository->findOrFail($id);
 
         return view('admin::settings.pipelines.edit', compact('pipeline'));
@@ -98,6 +107,10 @@ class PipelineController extends Controller
      */
     public function update(PipelineForm $request, $id)
     {
+        $data = request()->all();
+        Log::info(json_encode($data));
+
+
         $request->validated();
 
         $request->merge([

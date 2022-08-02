@@ -5,6 +5,7 @@ namespace Webkul\Admin\Http\Controllers\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Event;
 use Webkul\Admin\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 
 class AccountController extends Controller
 {
@@ -27,6 +28,11 @@ class AccountController extends Controller
      */
     public function update()
     {
+
+        $data = request()->all();
+        Log::info(json_encode($data));
+
+
         $isPasswordChanged = false;
 
         $user = auth()->guard('user')->user();
@@ -79,6 +85,6 @@ class AccountController extends Controller
         session()->flash('success', trans('admin::app.user.account.account-save'));
 
         // return redirect()->route('admin.dashboard.index');
-        return $this->ReturnJsonSuccessMsg(trans('admin::app.user.account.account-save'))
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.user.account.account-save'));
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Event;
 
 use Webkul\User\Repositories\GroupRepository;
 use Webkul\Admin\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 
 class GroupController extends Controller
 {
@@ -58,6 +59,10 @@ class GroupController extends Controller
      */
     public function store()
     {
+
+        $data = request()->all();
+        Log::info(json_encode( $data));
+
         $this->validate(request(), [
             'name' => 'required|unique:groups,name',
         ]);
@@ -95,6 +100,9 @@ class GroupController extends Controller
      */
     public function update($id)
     {
+
+        $data = request()->all();
+        Log::info(json_encode( $data));
         $this->validate(request(), [
             'name' => 'required|unique:groups,name,' . $id,
         ]);
@@ -120,6 +128,10 @@ class GroupController extends Controller
     public function destroy($id)
     {
         $group = $this->groupRepository->findOrFail($id);
+
+
+        $data = request()->all();
+        Log::info(json_encode( $data));
 
         try {
             Event::dispatch('settings.group.delete.before', $id);

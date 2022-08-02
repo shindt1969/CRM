@@ -116,8 +116,12 @@ class DashboardController extends Controller
      */
     public function updateCards()
     {
-        $requestData = request()->all();
 
+        $data = request()->all();
+        Log::info(json_encode($data));
+        Log::info("123");
+
+        $requestData = request()->all();
         $cards = $this->dashboardHelper->getCards();
 
         foreach ($requestData['cards'] as $requestedCardData) {
