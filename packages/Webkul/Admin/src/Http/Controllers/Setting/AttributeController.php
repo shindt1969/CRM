@@ -3,6 +3,7 @@
 namespace Webkul\Admin\Http\Controllers\Setting;
 
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Admin\Http\Controllers\Controller;
@@ -169,11 +170,14 @@ class AttributeController extends Controller
      * @param  string  $lookup
      * @return \Illuminate\Http\Response
      */
-    public function lookup($lookup)
+    public function lookup($lookup=null)
     {
         $results = $this->attributeRepository->getLookUpOptions($lookup, request()->input('query'));
 
         // return response()->json($results);
+        Log::info("------------------------------------");
+
+        Log::info($results);
         return $this->ReturnJsonSuccessMsg($results);
     }
 

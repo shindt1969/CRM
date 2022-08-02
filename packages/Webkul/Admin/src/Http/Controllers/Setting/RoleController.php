@@ -62,6 +62,7 @@ class RoleController extends Controller
      */
     public function store()
     {
+        Log::info(request());
         $this->validate(request(), [
             'name'            => 'required',
             'permission_type' => 'required',
@@ -110,6 +111,7 @@ class RoleController extends Controller
      */
     public function update($id)
     {
+        Log::info(request());
         $this->validate(request(), [
             'name'            => 'required',
             'permission_type' => 'required',
@@ -143,6 +145,7 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
+        Log::info(request());
         $response = [
             'responseCode' => 400,
         ];
