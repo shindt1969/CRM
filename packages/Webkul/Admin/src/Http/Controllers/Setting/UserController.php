@@ -246,24 +246,18 @@ class UserController extends Controller
             if (auth()->guard('user')->user()->id == $userId) {
                 continue;
             }
-
             Event::dispatch('settings.user.update.before', $userId);
-
             $this->userRepository->update([
                 'status' => request('value'),
             ], $userId);
-
             Event::dispatch('settings.user.update.after', $userId);
-
             $count++;
         }
-
         if (! $count) {
             return response()->json([
                 'message' => trans('admin::app.settings.users.mass-update-failed'),
             ], 400);
         }
-
         return response()->json([
             'message' => trans('admin::app.settings.users.mass-update-success'),
         ]);
