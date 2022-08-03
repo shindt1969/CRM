@@ -55,15 +55,15 @@ class UserController extends Controller
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Setting\UserDataGrid::class)->toJson();
-        }
-        Log::info(app(\Webkul\Admin\DataGrids\Setting\UserDataGrid::class)->toJson());
-
+        // Log::info($this->userRepository->all());
+        // if (request()->ajax()) {
+        //     return app(\Webkul\Admin\DataGrids\Setting\UserDataGrid::class)->toJson();
+        // }
             // return $this->ReturnJsonSuccessMsg('reback ok');
 
         // return(app(\Webkul\Admin\DataGrids\Setting\UserDataGrid::class)->toJson());
-        return view('admin::settings.users.index');
+        // return view('admin::settings.users.index');
+        return $this->ReturnJsonSuccessMsg($this->userRepository->all());
 
     }
 
@@ -78,8 +78,6 @@ class UserController extends Controller
 
         $groups = $this->groupRepository->all();
 
-        Log::info($roles);
-        Log::info($groups);
 
         return view('admin::settings.users.create', compact('groups', 'roles'));
     }
@@ -142,7 +140,8 @@ class UserController extends Controller
 
         $groups = $this->groupRepository->all();
 
-        Log::info(json_encode($admin));
+        // Log::info(json_encode($admin));
+        Log::info(json_encode($this->userRepository->all()));
 
         return view('admin::settings.users.edit', compact('admin', 'groups', 'roles'));
     }

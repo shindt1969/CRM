@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Storage;
 use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Core\Contracts\Validations\Code;
-use Illuminate\Support\Facades\Log;
 
 class AttributeController extends Controller
 {

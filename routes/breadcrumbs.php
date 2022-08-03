@@ -1,7 +1,9 @@
 <?php
 
+use Illuminate\Support\Facades\Log;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
+
 
 // Dashboard
 Breadcrumbs::for('dashboard', function (BreadcrumbTrail $trail) {
@@ -189,6 +191,7 @@ Breadcrumbs::for('settings.roles.edit', function (BreadcrumbTrail $trail, $role)
 // Settings > Users
 Breadcrumbs::for('settings.users', function (BreadcrumbTrail $trail) {
     $trail->parent('settings');
+    Log::info('breadcrumbs user index');
     $trail->push(trans('admin::app.layouts.users'), route('admin.settings.users.index'));
 });
 
