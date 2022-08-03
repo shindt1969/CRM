@@ -129,7 +129,6 @@ class GroupController extends Controller
     {
         $group = $this->groupRepository->findOrFail($id);
 
-
         $data = request()->all();
         Log::info(json_encode( $data));
 

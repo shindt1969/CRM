@@ -294,6 +294,9 @@ Route::group(['middleware' => ['web']], function () {
                     Route::put('mass-update', 'UserController@massUpdate')->name('admin.settings.users.mass_update');
 
                     Route::put('mass-destroy', 'UserController@massDestroy')->name('admin.settings.users.mass_delete');
+
+
+
                 });
 
                 // Attributes Routes
