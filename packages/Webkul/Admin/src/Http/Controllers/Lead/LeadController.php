@@ -66,9 +66,17 @@ class LeadController extends Controller
      */
     public function index()
     {
+
+        // return $this->ReturnJsonSuccessMsg($this->leadRepository->all());
         return view('admin::leads.index');
     }
 
+
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->leadRepository->findOrFail($id));
+
+    }
     /**
      * Returns a listing of the resource.
      *
@@ -206,7 +214,7 @@ class LeadController extends Controller
         session()->flash('success', trans('admin::app.leads.create-success'));
         Log::info("flat1" );
         // return redirect()->route('admin.leads.index', $data['lead_pipeline_id']);
-        return $this->ReturnJsonSuccessMsg('ok' );
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.roles.create-success') );
 
     }
 
@@ -279,11 +287,11 @@ class LeadController extends Controller
 
             if (request()->has('closed_at')) {
                 // return redirect()->back();
-                return   $this->ReturnJsonSuccessMsg('ok' );
+                return   $this->ReturnJsonFailMsg('not ok' );
             } else {
             //    return redirect()->route('admin.leads.index', $data['lead_pipeline_id']);
 
-               return   $this->ReturnJsonSuccessMsg('ok2' );
+               return   $this->ReturnJsonSuccessMsg(trans('admin::app.leads.update-success') );
             }
         }
     }
@@ -299,9 +307,12 @@ class LeadController extends Controller
             ['title', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);
 
-        return   $this->ReturnJsonSuccessMsg('search ok' );
+        // return   $this->ReturnJsonSuccessMsg('search ok' );
         // return response()->json($results);
+        return $this->ReturnJsonSuccessMsg($results);
     }
+
+    
 
     /*
      * Remove the specified resource from storage.
@@ -352,9 +363,15 @@ class LeadController extends Controller
             Event::dispatch('lead.update.before', $leadId);
         }
         Log::info("here");
-        return response()->json([
+
+
+        return $this->ReturnJsonSuccessMsg([
             'message' => trans('admin::app.response.update-success', ['name' => trans('admin::app.leads.title')])
         ]);
+
+        // return response()->json([
+        //     'message' => trans('admin::app.response.update-success', ['name' => trans('admin::app.leads.title')])
+        // ]);
     }
 
     /**
@@ -372,8 +389,12 @@ class LeadController extends Controller
             Event::dispatch('lead.delete.after', $leadId);
         }
 
-        return response()->json([
+        return $this->ReturnJsonSuccessMsg([
             'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.leads.title')]),
         ]);
+
+        // return response()->json([
+        //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.leads.title')]),
+        // ]);
     }
 }

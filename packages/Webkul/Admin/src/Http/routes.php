@@ -72,6 +72,11 @@ Route::group(['middleware' => ['web']], function () {
                 'prefix'    => 'leads',
                 'namespace' => 'Webkul\Admin\Http\Controllers\Lead',
             ], function () {
+
+                Route::get('', 'LeadController@index')->name('admin.leads.index');
+
+                Route::get('{id?}', 'LeadController@indexById')->name('admin.leads.indexById');
+
                 Route::get('create', 'LeadController@create')->name('admin.leads.create');
 
                 Route::post('create', 'LeadController@store')->name('admin.leads.store');
@@ -93,8 +98,6 @@ Route::group(['middleware' => ['web']], function () {
                 Route::delete('{lead_id}/{tag_id?}', 'TagController@delete')->name('admin.leads.tags.delete');
 
                 Route::get('get/{pipeline_id?}', 'LeadController@get')->name('admin.leads.get');
-
-                Route::get('{pipeline_id?}', 'LeadController@index')->name('admin.leads.index');
 
                 Route::group([
                     'prefix'    => 'quotes',
@@ -250,6 +253,8 @@ Route::group(['middleware' => ['web']], function () {
                 // Groups Routes
                 Route::prefix('groups')->group(function () {
                     Route::get('', 'GroupController@index')->name('admin.settings.groups.index');
+                    
+                    Route::get('{id?}', 'GroupController@indexById')->name('admin.settings.groups.indexById');
 
                     Route::get('create', 'GroupController@create')->name('admin.settings.groups.create');
 
@@ -280,6 +285,8 @@ Route::group(['middleware' => ['web']], function () {
                 // Users Routes
                 Route::prefix('users')->group(function () {
                     Route::get('', 'UserController@index')->name('admin.settings.users.index');
+
+                    Route::get('{id?}', 'UserController@indexById')->name('admin.settings.users.indexById');
 
                     Route::get('create', 'UserController@create')->name('admin.settings.users.create');
 
@@ -356,6 +363,9 @@ Route::group(['middleware' => ['web']], function () {
                 Route::prefix('types')->group(function () {
                     Route::get('', 'TypeController@index')->name('admin.settings.types.index');
 
+                    Route::get('{id?}', 'TypeController@indexById')->name('admin.settings.tags.indexById');
+
+
                     Route::post('create', 'TypeController@store')->name('admin.settings.types.store');
 
                     Route::get('edit/{id?}', 'TypeController@edit')->name('admin.settings.types.edit');
@@ -400,6 +410,8 @@ Route::group(['middleware' => ['web']], function () {
                 // Tags Routes
                 Route::prefix('tags')->group(function () {
                     Route::get('', 'TagController@index')->name('admin.settings.tags.index');
+
+                    Route::get('{id?}', 'TagController@indexById')->name('admin.settings.tags.indexById');
 
                     Route::post('create', 'TagController@store')->name('admin.settings.tags.store');
 

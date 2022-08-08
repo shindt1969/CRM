@@ -60,12 +60,18 @@ class UserController extends Controller
         //     return app(\Webkul\Admin\DataGrids\Setting\UserDataGrid::class)->toJson();
         // }
             // return $this->ReturnJsonSuccessMsg('reback ok');
-
         // return(app(\Webkul\Admin\DataGrids\Setting\UserDataGrid::class)->toJson());
         // return view('admin::settings.users.index');
         return $this->ReturnJsonSuccessMsg($this->userRepository->all());
 
     }
+
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->userRepository->findOrFail($id));
+            
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -79,7 +85,9 @@ class UserController extends Controller
         $groups = $this->groupRepository->all();
 
 
-        return view('admin::settings.users.create', compact('groups', 'roles'));
+        return $this->ReturnJsonSuccessMsg($roles,$groups);
+
+        // return view('admin::settings.users.create', compact('groups', 'roles'));
     }
 
     /**

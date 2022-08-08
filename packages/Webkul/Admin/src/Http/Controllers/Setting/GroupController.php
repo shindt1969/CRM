@@ -35,11 +35,18 @@ class GroupController extends Controller
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Setting\GroupDataGrid::class)->toJson();
-        }
+        // if (request()->ajax()) {
+        //     return app(\Webkul\Admin\DataGrids\Setting\GroupDataGrid::class)->toJson();
+        // }
+        return $this->ReturnJsonSuccessMsg($this->groupRepository->all());
+        // return view('admin::settings.groups.index');
+    }
 
-        return view('admin::settings.groups.index');
+
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->groupRepository->findOrFail($id));
+
     }
 
     /**

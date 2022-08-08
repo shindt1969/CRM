@@ -35,11 +35,19 @@ class TypeController extends Controller
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Setting\TypeDataGrid::class)->toJson();
-        }
+        return $this->ReturnJsonSuccessMsg($this->typeRepository->all());
 
-        return view('admin::settings.types.index');
+        // if (request()->ajax()) {
+        //     return app(\Webkul\Admin\DataGrids\Setting\TypeDataGrid::class)->toJson();
+        // }
+        // return view('admin::settings.types.index');
+    }
+
+
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->typeRepository->findOrFail($id));
+
     }
 
     /**

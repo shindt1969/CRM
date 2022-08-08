@@ -35,11 +35,11 @@ class TagController extends Controller
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Setting\TagDataGrid::class)->toJson();
-        }
-
-        return view('admin::settings.tags.index');
+        // if (request()->ajax()) {
+        //     return app(\Webkul\Admin\DataGrids\Setting\TagDataGrid::class)->toJson();
+        // }
+        return $this->ReturnJsonSuccessMsg($this->tagRepository->all());
+        // return view('admin::settings.tags.index');
     }
 
     /**
