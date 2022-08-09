@@ -63,7 +63,6 @@ class PipelineController extends Controller
         $data = request()->all();
         Log::info(json_encode($data));
 
-
         $request->validated();
 
         $request->merge([
@@ -93,7 +92,6 @@ class PipelineController extends Controller
     
     {
 
-        
         $pipeline = $this->pipelineRepository->findOrFail($id);
 
         return view('admin::settings.pipelines.edit', compact('pipeline'));

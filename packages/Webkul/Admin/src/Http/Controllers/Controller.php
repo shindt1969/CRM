@@ -14,7 +14,7 @@ use Webkul\Admin\Functions\ResponseJson;
 
 class Controller extends BaseController
 {
-    public function ReturnJsonSuccessMsg($data)
+    public static function ReturnJsonSuccessMsg($data)
     {
         if (is_array($data)) {
             $ok = array("status" => true);
@@ -24,7 +24,7 @@ class Controller extends BaseController
         }
     }
 
-    public function ReturnJsonFailMsg($data)
+    public static function ReturnJsonFailMsg($data)
     {
         return response()->json(array("status" => false, 'error' => $data));
     }

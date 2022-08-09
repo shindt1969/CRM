@@ -4,6 +4,9 @@ namespace Webkul\Admin;
 
 class Bouncer
 {
+    protected $choose_guard = 'user';
+
+
     /**
      * Checks if user allowed or not for certain action
      *
@@ -12,10 +15,11 @@ class Bouncer
      */
     public function hasPermission($permission)
     {
-        if (auth()->guard('user')->check() && auth()->guard('user')->user()->role->permission_type == 'all') {
+
+        if (auth()->guard($this->choose_guard)->check() && auth()->guard($this->choose_guard)->user()->role->permission_type == 'all') {
             return true;
         } else {
-            if (! auth()->guard('user')->check() || ! auth()->guard('user')->user()->hasPermission($permission)) {
+            if (! auth()->guard($this->choose_guard)->check() || ! auth()->guard($this->choose_guard)->user()->hasPermission($permission)) {
                 return false;
             }
         }
@@ -31,7 +35,8 @@ class Bouncer
      */
     public static function allow($permission)
     {
-        if (! auth()->guard('user')->check() || ! auth()->guard('user')->user()->hasPermission($permission)) {
+        $self = new static;
+        if (! auth()->guard($self->choose_guard)->check() || ! auth()->guard($self->choose_guard)->user()->hasPermission($permission)) {
             abort(401, 'This action is unauthorized');
         }
     }

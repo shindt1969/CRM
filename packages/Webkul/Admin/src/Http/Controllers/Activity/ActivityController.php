@@ -86,7 +86,13 @@ class ActivityController extends Controller
      */
     public function index()
     {
-        return view('admin::activities.index');
+        // return view('admin::activities.index');
+        return $this->ReturnJsonSuccessMsg($this->activityRepository->all());
+
+    }
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->activityRepository->findOrFail($id));
     }
 
     /**

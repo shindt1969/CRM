@@ -98,7 +98,6 @@ class UserController extends Controller
         ]);
 
         $data = request()->all();
-        Log::info($data);
 
         if (isset($data['password']) && $data['password']) {
             $data['password'] = bcrypt($data['password']);
