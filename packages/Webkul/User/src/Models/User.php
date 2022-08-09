@@ -6,8 +6,9 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Storage;
 use Webkul\User\Contracts\User as UserContract;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements UserContract
+class User extends Authenticatable implements UserContract,JWTSubject
 {
     use Notifiable;
 

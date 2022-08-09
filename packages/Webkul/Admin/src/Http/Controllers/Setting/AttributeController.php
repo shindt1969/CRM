@@ -36,11 +36,21 @@ class AttributeController extends Controller
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Setting\AttributeDataGrid::class)->toJson();
-        }
+        // if (request()->ajax()) {
+        //     return app(\Webkul\Admin\DataGrids\Setting\AttributeDataGrid::class)->toJson();
+        // }
 
-        return view('admin::settings.attributes.index');
+        // return view('admin::settings.attributes.index');
+
+        return $this->ReturnJsonSuccessMsg($this->attributeRepository->all());
+
+    }
+
+
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->attributeRepository->findOrFail($id));
+
     }
 
     /**

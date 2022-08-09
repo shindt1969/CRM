@@ -58,8 +58,14 @@ class DashboardController extends Controller
             $startDate = Carbon::now()->subMonth()->addDays(1)->format('Y-m-d');
         }
         return view('admin::dashboard.index', compact('cards', 'startDate', 'endDate'));
+
+
+
+        // return $this->ReturnJsonSuccessMsg($this->dashboardHelper->getCards());
                          
     }
+
+
 
     /**
      * Display a listing of the resource.
@@ -78,7 +84,9 @@ class DashboardController extends Controller
     {
         $cardData = $this->dashboardHelper->getFormattedCardData(request()->all());
 
-        return response()->json($cardData);
+
+        return $this->ReturnJsonSuccessMsg($cardData);
+        // return response()->json($cardData);
     }
 
     /**
@@ -106,7 +114,9 @@ class DashboardController extends Controller
             return $card;
         }, $response);
 
-        return response()->json($response);
+
+        return $this->ReturnJsonSuccessMsg($response);
+        // return response()->json($response);
     }
 
     /**
@@ -134,7 +144,7 @@ class DashboardController extends Controller
                 }
             }
         }
-
-        return response()->json($cards);
+        return $this->ReturnJsonSuccessMsg($cards);
+        // return response()->json($cards);
     }
 }

@@ -169,6 +169,8 @@ Route::group(['middleware' => ['web']], function () {
 
                 Route::get('{route?}', 'EmailController@index')->name('admin.mail.index');
 
+                Route::get('{id?}', 'EmailController@indexById')->name('admin.mail.indexById');
+
                 Route::get('{route?}/{id?}', 'EmailController@view')->name('admin.mail.view');
 
                 Route::delete('{id?}', 'EmailController@destroy')->name('admin.mail.delete');
@@ -309,6 +311,8 @@ Route::group(['middleware' => ['web']], function () {
                 // Attributes Routes
                 Route::prefix('attributes')->group(function () {
                     Route::get('', 'AttributeController@index')->name('admin.settings.attributes.index');
+
+                    Route::get('{id?}', 'AttributeController@indexById')->name('admin.settings.attributes.indexById');
 
                     Route::get('create', 'AttributeController@create')->name('admin.settings.attributes.create');
 
