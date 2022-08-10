@@ -291,4 +291,11 @@ return [
         'Menu' => Webkul\Admin\Facades\Menu::class,
     ],
 
+    'error_code' => [
+        'invalid_token' => '0',
+        'no_token' => '1',
+        'can_not_find_this_record' => '2', // 找不到該筆資料
+        'field_error' => '3' // 欄位錯誤
+    ]
+
 ];
