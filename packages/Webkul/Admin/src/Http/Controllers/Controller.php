@@ -2,18 +2,31 @@
 
 namespace Webkul\Admin\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-// use App\Http\Controllers\ResponseJsonController;
-use Webkul\Admin\Functions\ResponseJson;
 
 
 
 
 class Controller extends BaseController
 {
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function redirectToLogin()
+    {
+        // return redirect()->route('admin.session.create');
+    }
+
     public static function ReturnJsonSuccessMsg($data)
     {
         if (is_array($data)) {
@@ -29,15 +42,12 @@ class Controller extends BaseController
         return response()->json(array("status" => false, 'error' => $data));
     }
 
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function redirectToLogin()
+    public function validate($request, $rule)
     {
-        // return redirect()->route('admin.session.create');
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            throw new HttpResponseException(Controller::ReturnJsonFailMsg(config('app.error_code.field_error')));
+        }
+
     }
 }

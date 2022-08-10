@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Event;
 use Webkul\User\Repositories\RoleRepository;
 use Webkul\Admin\Http\Controllers\Controller;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
 class RoleController extends Controller
@@ -65,7 +67,6 @@ class RoleController extends Controller
      */
     public function store()
     {
-        Log::info(request());
         $this->validate(request(), [
             'name'            => 'required',
             'permission_type' => 'required',
@@ -118,7 +119,6 @@ class RoleController extends Controller
             'name'            => 'required',
             'permission_type' => 'required',
         ]);
-        Log::info(request());
 
 
         Event::dispatch('settings.role.update.before', $id);
@@ -130,18 +130,7 @@ class RoleController extends Controller
                 $roleData['permissions'] = [];
             }
         }
-        Log::info("end");
-
-        try{
-            $role = $this->roleRepository->update($roleData, $id);
-        }catch(ModelNotFoundException $e){
-            throw new HttpResponseException(response()->json(Controller::ReturnJsonFailMsg('2')));
-        }
-
-        
-    
-
-
+        $role = $this->roleRepository->update($roleData, $id);
         Event::dispatch('settings.role.update.after', $role);
 
         // session()->flash('success', trans('admin::app.settings.roles.update-success'));
@@ -158,7 +147,6 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        Log::info(request());
         $response = [
             'responseCode' => 400,
         ];

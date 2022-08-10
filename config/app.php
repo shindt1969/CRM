@@ -292,4 +292,12 @@ return [
         'Menu' => Webkul\Admin\Facades\Menu::class,
     ],
 
+    'error_code' => [
+        'invalid_token' => '0',
+        'no_token' => '1',
+        'token_expired' => '2',
+        'can_not_find_this_record' => '3', // 找不到該筆資料
+        'field_error' => '4' // 欄位錯誤
+    ]
+
 ];

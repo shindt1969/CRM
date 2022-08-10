@@ -4,9 +4,13 @@ namespace Webkul\Core\Eloquent;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Container\Container as App;
+use Webkul\Admin\Http\Controllers\Controller;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Traits\CacheableRepository;
 use Prettus\Repository\Contracts\CacheableInterface;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 
 abstract class Repository extends BaseRepository implements CacheableInterface {
 
@@ -136,4 +140,16 @@ abstract class Repository extends BaseRepository implements CacheableInterface {
     {
         return $this->model;
     }
+
+    public function update(array $attributes, $id)
+    {
+        try{
+            $role = parent::update($attributes, $id);
+        }catch(ModelNotFoundException $e){
+            Log::info("id: ".$id);
+            throw new HttpResponseException(Controller::ReturnJsonFailMsg(config('app.error_code.can_not_find_this_record')));
+            // throw new HttpResponseException(Controller::ReturnJsonFailMsg("haha"));
+        }
+    }
+
 }

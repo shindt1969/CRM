@@ -158,13 +158,6 @@ class ActivityController extends Controller
             'schedule_from' => 'required_unless:type,note',
             'schedule_to'   => 'required_unless:type,note',
         ]);
-        
-        Log::info(json_encode($this->validate(request(), [
-            'type'          => 'required',
-            'comment'       => 'required_if:type,note',
-            'schedule_from' => 'required_unless:type,note',
-            'schedule_to'   => 'required_unless:type,note',
-        ]) ));
 
         Event::dispatch('activity.create.before');
 
@@ -345,10 +338,6 @@ class ActivityController extends Controller
         $this->validate(request(), [
             'file' => 'required',
         ]);
-
-        Log::info(json_encode($this->validate(request(), [
-            'file' => 'required',
-        ])));
 
         Event::dispatch('activities.file.create.before');
 

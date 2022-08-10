@@ -2,11 +2,12 @@
 
 namespace Webkul\Admin\Http\Controllers\Product;
 
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Event;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Attribute\Http\Requests\AttributeForm;
 use Webkul\Product\Repositories\ProductRepository;
+
 class ProductController extends Controller
 {
     /**
@@ -134,15 +135,14 @@ class ProductController extends Controller
     public function search()
     {
 
-        // $this->validate(request(), [
-        //     'query' => 'required'
-        // ]);
-        Log::info("test");
+        $this->validate(request(), [
+            'query' => 'required',
+        ]);
+
         $results = $this->productRepository->findWhere([
             ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);
         return $this->ReturnJsonSuccessMsg($results);
-        // return response()->json($results);
     }
 
     /**

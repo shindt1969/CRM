@@ -4,9 +4,11 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Tymon\JWTAuth\Exceptions\JWTException;
 use Webkul\Admin\Http\Controllers\Controller;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\Log;
 
 class EnsureTokenIsValid
 {
@@ -22,13 +24,20 @@ class EnsureTokenIsValid
         try{
             auth()->invalidate();
         }
-        catch(TokenInvalidException $te){
+        catch(TokenInvalidException $ie){
             // invalid token
-            return Controller::ReturnJsonFailMsg('0');
+            Log::info(request()->header());
+            return Controller::ReturnJsonFailMsg(config("app.error_code.invalid_token"));
+        }
+        catch(TokenExpiredException $ee){
+            // Token expired
+            Log::info(request()->header());
+            return Controller::ReturnJsonFailMsg(config("app.error_code.token_expired"));
         }
         catch(JWTException $je){
-            // No token
-            return Controller::ReturnJsonFailMsg('1');
+            // Token expired
+            Log::info(request()->header());
+            return Controller::ReturnJsonFailMsg(config("app.error_code.token_expired"));
         }
         return $next($request);
     }
