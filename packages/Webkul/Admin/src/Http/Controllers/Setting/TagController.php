@@ -67,7 +67,7 @@ class TagController extends Controller
             ]);
 
             if ($validator->fails()) {
-                session()->flash('error', $validator->errors()->first('name'));
+                // session()->flash('error', $validator->errors()->first('name'));
 
                 return redirect()->back();
             }
@@ -90,7 +90,7 @@ class TagController extends Controller
                 'message' => trans('admin::app.settings.tags.create-success'),
             ]);
         } else {
-            session()->flash('success', trans('admin::app.settings.tags.create-success'));
+            // session()->flash('success', trans('admin::app.settings.tags.create-success'));
 
             return redirect()->route('admin.settings.tags.index');
         }
@@ -128,7 +128,7 @@ class TagController extends Controller
         Log::info(json_encode($data));
 
         if ($validator->fails()) {
-            session()->flash('error', $validator->errors()->first('name'));
+            // session()->flash('error', $validator->errors()->first('name'));
 
             return redirect()->back();
         }
@@ -139,7 +139,7 @@ class TagController extends Controller
 
         Event::dispatch('settings.tag.update.after', $tag);
 
-        session()->flash('success', trans('admin::app.settings.tags.update-success'));
+        // session()->flash('success', trans('admin::app.settings.tags.update-success'));
 
         return redirect()->route('admin.settings.tags.index');
     }

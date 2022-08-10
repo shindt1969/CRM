@@ -345,6 +345,8 @@
                 Route::prefix('pipelines')->group(function () {
                     Route::get('', 'PipelineController@index')->name('admin.settings.pipelines.index');
 
+                    Route::get('{id?}', 'PipelineController@indexById')->name('admin.settings.pipelines.indexById');
+
                     Route::get('create', 'PipelineController@create')->name('admin.settings.pipelines.create');
 
                     Route::post('create', 'PipelineController@store')->name('admin.settings.pipelines.store');

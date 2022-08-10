@@ -129,7 +129,7 @@ class UserController extends Controller
             report($e);
         }
         Event::dispatch('settings.user.create.after', $admin);
-        session()->flash('success', trans('admin::app.settings.users.create-success'));
+        // session()->flash('success', trans('admin::app.settings.users.create-success'));
         return redirect()->route('admin.settings.users.index');
     }
 
@@ -195,7 +195,7 @@ class UserController extends Controller
 
         Event::dispatch('settings.user.update.after', $admin);
 
-        session()->flash('success', trans('admin::app.settings.users.update-success'));
+        // session()->flash('success', trans('admin::app.settings.users.update-success'));
 
         return redirect()->route('admin.settings.users.index');
     }

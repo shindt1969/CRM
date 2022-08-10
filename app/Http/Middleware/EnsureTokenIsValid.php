@@ -4,8 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Webkul\Admin\Http\Controllers\Controller;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class EnsureTokenIsValid
 {
@@ -22,7 +23,12 @@ class EnsureTokenIsValid
             auth()->invalidate();
         }
         catch(TokenInvalidException $te){
-            return Controller::ReturnJsonFailMsg('Invalid token');
+            // invalid token
+            return Controller::ReturnJsonFailMsg('0');
+        }
+        catch(JWTException $je){
+            // No token
+            return Controller::ReturnJsonFailMsg('1');
         }
         return $next($request);
     }

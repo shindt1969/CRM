@@ -46,22 +46,22 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $cards = $this->dashboardHelper->getCards();
-           // $cards是取得 登入後的dashboard的內容
-        if ($dateRange = request('date-range')) {
-            $dateRange = explode(",", $dateRange);  
-            $endDate = $dateRange[1];               
-            $startDate = $dateRange[0];             
-        } else {
+        // $cards = $this->dashboardHelper->getCards();
+        //    // $cards是取得 登入後的dashboard的內容
+        // if ($dateRange = request('date-range')) {
+        //     $dateRange = explode(",", $dateRange);  
+        //     $endDate = $dateRange[1];               
+        //     $startDate = $dateRange[0];             
+        // } else {
            
-            $endDate = Carbon::now()->format('Y-m-d');
-            $startDate = Carbon::now()->subMonth()->addDays(1)->format('Y-m-d');
-        }
-        return view('admin::dashboard.index', compact('cards', 'startDate', 'endDate'));
+        //     $endDate = Carbon::now()->format('Y-m-d');
+        //     $startDate = Carbon::now()->subMonth()->addDays(1)->format('Y-m-d');
+        // }
+        // return view('admin::dashboard.index', compact('cards', 'startDate', 'endDate'));
 
 
 
-        // return $this->ReturnJsonSuccessMsg($this->dashboardHelper->getCards());
+        return $this->ReturnJsonSuccessMsg($this->dashboardHelper->getCards());
                          
     }
 

@@ -35,11 +35,17 @@ class PipelineController extends Controller
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Setting\PipelineDataGrid::class)->toJson();
-        }
+        return $this->ReturnJsonSuccessMsg($this->pipelineRepository->all());
+        // if (request()->ajax()) {
+        //     return app(\Webkul\Admin\DataGrids\Setting\PipelineDataGrid::class)->toJson();
+        // }
+        // return view('admin::settings.pipelines.index');
+    }
 
-        return view('admin::settings.pipelines.index');
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->pipelineRepository->findOrFail($id));
+
     }
 
     /**
@@ -75,7 +81,7 @@ class PipelineController extends Controller
 
         Event::dispatch('settings.pipeline.create.after', $pipeline);
 
-        session()->flash('success', trans('admin::app.settings.pipelines.create-success'));
+        // session()->flash('success', trans('admin::app.settings.pipelines.create-success'));
 
         // return redirect()->route('admin.settings.pipelines.index');
         return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.pipelines.create-success'));
@@ -121,7 +127,7 @@ class PipelineController extends Controller
 
         Event::dispatch('settings.pipeline.update.after', $pipeline);
 
-        session()->flash('success', trans('admin::app.settings.pipelines.update-success'));
+        // session()->flash('success', trans('admin::app.settings.pipelines.update-success'));
 
         // return redirect()->route('admin.settings.pipelines.index');
         return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.pipelines.update-success'));
@@ -150,7 +156,6 @@ class PipelineController extends Controller
                 'lead_pipeline_stage_id' => $defaultPipeline->stages()->first()->id,
             ]);
         }
-
         try {
             Event::dispatch('settings.pipeline.delete.before', $id);
 
