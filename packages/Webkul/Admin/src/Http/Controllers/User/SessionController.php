@@ -18,13 +18,11 @@ class SessionController extends Controller
     public function create()
     {
         if (auth()->guard('user')->check()) {
-            Log::info("01");
             return redirect()->route('admin.dashboard.index');
         } else {
             if (strpos(url()->previous(), 'admin') !== false) {
                 $intendedUrl = url()->previous();
             } else {
-                Log::info("02");
                 $intendedUrl = route('admin.dashboard.index');
             }
             session()->put('url.intended', $intendedUrl);
@@ -40,29 +38,38 @@ class SessionController extends Controller
      * @return \Illuminate\Http\Response
      */
     //post login
-    public function store(Request $request)
+    // public function store(Request $request)
+    public function store()
     {
+        Log::info(request());
+
         $this->validate(request(), [
             'email'    => 'required|email',
             'password' => 'required',
         ]);
 
+        $credentials = request(['email', 'password']);
+
+        if (! $token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        return $this->ReturnJsonSuccessMsg(["_token"=>$token]);
+
         // 1.帳號或密碼錯誤
-        if (!auth()->guard('user')->attempt(request(['email', 'password']), request('remember'))) {
-            session()->flash('error', trans('admin::app.sessions.login.login-error'));
-            return $this->ReturnJsonFailMsg(trans('admin::app.sessions.login.login-error'));
-            // return redirect()->back();
-        }
+        // if (!auth()->guard('user')->attempt(request(['email', 'password']), request('remember'))) {
+        //     session()->flash('error', trans('admin::app.sessions.login.login-error'));
+        //     return $this->ReturnJsonFailMsg(trans('admin::app.sessions.login.login-error'));
+        //     // return redirect()->back();
+        // }
 
-        if (auth()->guard('user')->user()->status == 0) {
-            session()->flash('warning', trans('admin::app.sessions.login.activate-warning'));
-            auth()->guard('user')->logout();
-            return $this->ReturnJsonFailMsg(trans('admin::app.sessions.login.activate-warning'));
-            // return redirect()->route('admin.session.create');
-        }
-        // return $this->ReturnJsonSuccessMsg('OK');
-        return redirect()->intended(route('admin.dashboard.index'));
-
+        // if (auth()->guard('user')->user()->status == 0) {
+        //     session()->flash('warning', trans('admin::app.sessions.login.activate-warning'));
+        //     auth()->guard('user')->logout();
+        //     return $this->ReturnJsonFailMsg(trans('admin::app.sessions.login.activate-warning'));
+        //     // return redirect()->route('admin.session.create');
+        // }
+        // // return $this->ReturnJsonSuccessMsg('OK');
+        // return redirect()->intended(route('admin.dashboard.index'));
     }
 
     /**
@@ -72,7 +79,7 @@ class SessionController extends Controller
      */
     public function destroy()
     {
-        auth()->guard('user')->logout();
+        auth()->guard('api')->logout();
 
         return $this->ReturnJsonSuccessMsg('OK');
         // return redirect()->route('admin.session.create');

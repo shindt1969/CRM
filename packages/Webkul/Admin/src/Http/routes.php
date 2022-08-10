@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['middleware' => ['web']], function () {
+// Route::group(['middleware' => ['web']], function () {
     Route::get('/', 'Webkul\Admin\Http\Controllers\Controller@redirectToLogin')->name('krayin.home');
 
     Route::prefix(config('app.admin_path'))->group(function () {
@@ -8,7 +8,7 @@ Route::group(['middleware' => ['web']], function () {
         Route::get('/', 'Webkul\Admin\Http\Controllers\Controller@redirectToLogin');
 
         // Login Routes
-        Route::get('login', 'Webkul\Admin\Http\Controllers\User\SessionController@create')->name('admin.session.create');
+        // Route::get('login', 'Webkul\Admin\Http\Controllers\User\SessionController@create')->name('admin.session.create');
 
         //login post route to admin auth controller
         Route::post('login', 'Webkul\Admin\Http\Controllers\User\SessionController@store')->name('admin.session.store');
@@ -33,7 +33,7 @@ Route::group(['middleware' => ['web']], function () {
         });
        
         // Admin Routes
-        Route::group(['middleware' => ['api']], function () {
+        Route::group(['middleware' => ['api','verifiedtoken']], function () {
             Route::get('logout', 'Webkul\Admin\Http\Controllers\User\SessionController@destroy')->name('admin.session.destroy');
 
             // Dashboard Route index or template
@@ -113,6 +113,8 @@ Route::group(['middleware' => ['web']], function () {
             ], function () {
                 Route::get('', 'QuoteController@index')->name('admin.quotes.index');
 
+                Route::get('{id}', 'QuoteController@indexById')->name('admin.quotes.indexById');
+
                 Route::get('create/{id?}', 'QuoteController@create')->name('admin.quotes.create');
 
                 Route::post('create', 'QuoteController@store')->name('admin.quotes.store');
@@ -134,7 +136,9 @@ Route::group(['middleware' => ['web']], function () {
             ], function () {
                 Route::get('', 'ActivityController@index')->name('admin.activities.index');
 
-                Route::get('get', 'ActivityController@get')->name('admin.activities.get');
+                Route::get('{id?}', 'ActivityController@indexById')->name('admin.activities.indexById');
+
+                // Route::get('get', 'ActivityController@get')->name('admin.activities.get');
 
                 Route::post('is-overlapping', 'ActivityController@checkIfOverlapping')->name('admin.activities.check_overlapping');
 
@@ -229,6 +233,8 @@ Route::group(['middleware' => ['web']], function () {
             ], function () {
                 Route::get('', 'ProductController@index')->name('admin.products.index');
 
+                Route::get('{id?}', 'ProductController@indexById')->name('admin.products.indexById');
+
                 Route::get('create', 'ProductController@create')->name('admin.products.create');
 
                 Route::post('create', 'ProductController@store')->name('admin.products.store');
@@ -272,6 +278,8 @@ Route::group(['middleware' => ['web']], function () {
                 // Roles Routes
                 Route::prefix('roles')->group(function () {
                     Route::get('', 'RoleController@index')->name('admin.settings.roles.index');
+
+                    Route::get('{id?}', 'RoleController@indexById')->name('admin.settings.roles.indexById');
 
                     Route::get('create', 'RoleController@create')->name('admin.settings.roles.create');
 
@@ -442,4 +450,4 @@ Route::group(['middleware' => ['web']], function () {
             });
         });
     });
-});
+// });

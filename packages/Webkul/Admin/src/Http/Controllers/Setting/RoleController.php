@@ -35,12 +35,15 @@ class RoleController extends Controller
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Setting\RoleDataGrid::class)->toJson();
-        }
+        
+        // return response()->json(auth()->user());
+        return $this->ReturnJsonSuccessMsg($this->roleRepository->all());
 
-        return view('admin::settings.roles.index');
+    }
 
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->roleRepository->findOrFail($id));
     }
 
     /**

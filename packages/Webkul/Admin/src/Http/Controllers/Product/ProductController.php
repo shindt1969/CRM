@@ -38,12 +38,25 @@ class ProductController extends Controller
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Product\ProductDataGrid::class)->toJson();
-        }
+        return $this->ReturnJsonSuccessMsg($this->productRepository->all());
 
-        return view('admin::products.index');
+        // if (request()->ajax()) {
+        //     return app(\Webkul\Admin\DataGrids\Product\ProductDataGrid::class)->toJson();
+        // }
+
+        // return view('admin::products.index');
     }
+
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->productRepository->findOrFail($id));
+
+    }
+
+
+
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -120,6 +133,11 @@ class ProductController extends Controller
      */
     public function search()
     {
+
+        // $this->validate(request(), [
+        //     'query' => 'required'
+        // ]);
+        Log::info("test");
         $results = $this->productRepository->findWhere([
             ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);

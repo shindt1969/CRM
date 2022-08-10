@@ -83,8 +83,6 @@ class EmailController extends Controller
 
         //         return view('admin::mail.index');
         // }
-
-
         return $this->ReturnJsonSuccessMsg($this->emailRepository->all());
     }
 
@@ -94,9 +92,6 @@ class EmailController extends Controller
         return $this->ReturnJsonSuccessMsg($this->emailRepository->findOrFail($id));
 
     }
-
-
-
 
     /**
      * Display a resource.

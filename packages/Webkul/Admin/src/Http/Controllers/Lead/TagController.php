@@ -45,9 +45,7 @@ class TagController extends Controller
         if (! $lead->tags->contains(request('id'))) {
             $lead->tags()->attach(request('id'));
         }
-
         Event::dispatch('leads.tag.create.after', $lead);
-    
         // Log::info(json_encode(trans('admin::app.leads.tag-create-success')));
         // return response()->json([
         //     'status'  => true,

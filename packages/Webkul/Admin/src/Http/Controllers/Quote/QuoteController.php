@@ -54,11 +54,16 @@ class QuoteController extends Controller
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(QuoteDataGrid::class)->toJson();
-        }
+        // if (request()->ajax()) {
+        //     return app(QuoteDataGrid::class)->toJson();
+        // }
+        // return view('admin::quotes.index');
+        return $this->ReturnJsonSuccessMsg($this->quoteRepository->all());
+    }
 
-        return view('admin::quotes.index');
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->quoteRepository->findOrFail($id));
     }
 
     /**

@@ -3,14 +3,25 @@
 namespace Webkul\User\Models;
 
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Storage;
 use Webkul\User\Contracts\User as UserContract;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements UserContract,JWTSubject
+class User extends Authenticatable implements JWTSubject, UserContract
 {
-    use Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+    public function getJWTCustomClaims()
+    {
+        return[];
+    }
 
     /**
      * The attributes that are mass assignable.
