@@ -41,6 +41,7 @@ class SessionController extends Controller
     // public function store(Request $request)
     public function store()
     {
+        Log::info(request());
         $this->validate(request(), [
             'email'    => 'required|email',
             'password' => 'required',
@@ -52,22 +53,6 @@ class SessionController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         return $this->ReturnJsonSuccessMsg(["_token"=>$token]);
-
-        // 1.帳號或密碼錯誤
-        // if (!auth()->guard('user')->attempt(request(['email', 'password']), request('remember'))) {
-        //     session()->flash('error', trans('admin::app.sessions.login.login-error'));
-        //     return $this->ReturnJsonFailMsg(trans('admin::app.sessions.login.login-error'));
-        //     // return redirect()->back();
-        // }
-
-        // if (auth()->guard('user')->user()->status == 0) {
-        //     session()->flash('warning', trans('admin::app.sessions.login.activate-warning'));
-        //     auth()->guard('user')->logout();
-        //     return $this->ReturnJsonFailMsg(trans('admin::app.sessions.login.activate-warning'));
-        //     // return redirect()->route('admin.session.create');
-        // }
-        // // return $this->ReturnJsonSuccessMsg('OK');
-        // return redirect()->intended(route('admin.dashboard.index'));
     }
 
     /**

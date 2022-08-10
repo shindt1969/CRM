@@ -85,7 +85,7 @@ class RoleController extends Controller
 
         Event::dispatch('settings.role.create.after', $role);
 
-        session()->flash('success', trans('admin::app.settings.roles.create-success'));
+        // session()->flash('success', trans('admin::app.settings.roles.create-success'));
 
         // return redirect()->route('admin.settings.roles.index');
         return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.roles.create-success'));
@@ -114,11 +114,12 @@ class RoleController extends Controller
      */
     public function update($id)
     {
-        Log::info(request());
         $this->validate(request(), [
             'name'            => 'required',
             'permission_type' => 'required',
         ]);
+        Log::info(request());
+
 
         Event::dispatch('settings.role.update.before', $id);
 
@@ -129,12 +130,21 @@ class RoleController extends Controller
                 $roleData['permissions'] = [];
             }
         }
+        Log::info("end");
 
-        $role = $this->roleRepository->update($roleData, $id);
+        try{
+            $role = $this->roleRepository->update($roleData, $id);
+        }catch(ModelNotFoundException $e){
+            throw new HttpResponseException(response()->json(Controller::ReturnJsonFailMsg('2')));
+        }
+
+        
+    
+
 
         Event::dispatch('settings.role.update.after', $role);
 
-        session()->flash('success', trans('admin::app.settings.roles.update-success'));
+        // session()->flash('success', trans('admin::app.settings.roles.update-success'));
 
         // return redirect()->route('admin.settings.roles.index');
         return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.roles.update-success'));
@@ -158,11 +168,11 @@ class RoleController extends Controller
         if ($role->admins && $role->admins->count() >= 1) {
             $response['message'] = trans('admin::app.settings.roles.being-used');
 
-            session()->flash('error', $response['message']);
+            // session()->flash('error', $response['message']);
         } else if ($this->roleRepository->count() == 1) {
             $response['message'] = trans('admin::app.settings.roles.last-delete-error');
 
-            session()->flash('error', $response['message']);
+            // session()->flash('error', $response['message']);
         } else {
             try {
                 Event::dispatch('settings.role.delete.before', $id);
@@ -181,14 +191,14 @@ class RoleController extends Controller
                         'message'      => $message,
                     ];
 
-                    session()->flash('success', $message);
+                    // session()->flash('success', $message);
                 }
             } catch (\Exception $exception) {
                 $message = $exception->getMessage();
 
                 $response['message'] = $message;
 
-                session()->flash('error', $message);
+                // session()->flash('error', $message);
             }
         }
 
