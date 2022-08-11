@@ -377,8 +377,7 @@
                 Route::prefix('types')->group(function () {
                     Route::get('', 'TypeController@index')->name('admin.settings.types.index');
 
-                    Route::get('{id?}', 'TypeController@indexById')->name('admin.settings.tags.indexById');
-
+                    Route::get('{id?}', 'TypeController@indexById')->name('admin.settings.types.indexById');
 
                     Route::post('create', 'TypeController@store')->name('admin.settings.types.store');
 

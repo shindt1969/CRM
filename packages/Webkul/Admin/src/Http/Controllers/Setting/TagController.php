@@ -42,6 +42,12 @@ class TagController extends Controller
         // return view('admin::settings.tags.index');
     }
 
+
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->tagRepository->findOrFail($id));
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -50,12 +56,6 @@ class TagController extends Controller
     public function store()
     {
         $data = request()->all();
-        Log::info(json_encode($data));
-
-
-        Log::info($this->validate(request(), [
-            'name' => 'required|unique:tags,name',
-        ]));
 
         if (request()->ajax()) {
             $this->validate(request(), [
@@ -132,7 +132,7 @@ class TagController extends Controller
 
             return redirect()->back();
         }
-        
+
         Event::dispatch('settings.tag.update.before', $id);
 
         $tag = $this->tagRepository->update(request()->all(), $id);
@@ -166,7 +166,7 @@ class TagController extends Controller
             // return response()->json([
             //     'message' => trans('admin::app.settings.tags.delete-success'),
             // ], 200);
-        } catch(\Exception $exception) {
+        } catch (\Exception $exception) {
             return response()->json([
                 'message' => trans('admin::app.settings.tags.delete-failed'),
             ], 400);
@@ -184,6 +184,11 @@ class TagController extends Controller
      */
     public function search()
     {
+
+        $this->validate(request(), [
+            'query' => 'required',
+        ]);
+
         $results = $this->tagRepository->findWhere([
             ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);

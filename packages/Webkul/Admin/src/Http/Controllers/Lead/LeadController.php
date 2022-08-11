@@ -211,7 +211,7 @@ class LeadController extends Controller
 
         Event::dispatch('lead.create.after', $lead);
 
-        session()->flash('success', trans('admin::app.leads.create-success'));
+        // session()->flash('success', trans('admin::app.leads.create-success'));
         Log::info("flat1" );
         // return redirect()->route('admin.leads.index', $data['lead_pipeline_id']);
         return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.roles.create-success') );
@@ -283,7 +283,7 @@ class LeadController extends Controller
                 'message' => trans('admin::app.leads.update-success'),
             ]);
         } else {
-            session()->flash('success', trans('admin::app.leads.update-success'));
+            // session()->flash('success', trans('admin::app.leads.update-success'));
 
             if (request()->has('closed_at')) {
                 // return redirect()->back();
