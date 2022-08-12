@@ -216,7 +216,7 @@
             ], function () {
                 Route::get('', 'ProductController@index')->name('admin.products.index');
 
-                Route::get('{id?}', 'ProductController@indexById')->name('admin.products.indexById');
+                Route::get('{id}', 'ProductController@indexById')->name('admin.products.indexById')->where('id', '[0-9]+');
 
                 Route::get('create', 'ProductController@create')->name('admin.products.create');
 
@@ -274,6 +274,8 @@
                 // Users Routes
                 Route::prefix('users')->group(function () {
                     Route::get('', 'UserController@index')->name('admin.settings.users.index');
+
+                    Route::get('{id}', 'UserController@index')->name('admin.settings.users.index')->where('id', '[0-9]+');
 
                     Route::get('create', 'UserController@create')->name('admin.settings.users.create');
 
@@ -347,7 +349,7 @@
                 // Lead Types Routes
                 Route::prefix('types')->group(function () {
                     Route::get('', 'TypeController@index')->name('admin.settings.types.index');
-                    
+
                     Route::get('{id?}', 'TypeController@indexById')->name('admin.settings.types.indexById');
 
                     Route::post('create', 'TypeController@store')->name('admin.settings.types.store');
@@ -358,7 +360,6 @@
 
                     Route::delete('{id}', 'TypeController@destroy')->name('admin.settings.types.delete');
                 });
-
 
                 // Email Templates Routes
                 Route::prefix('email-templates')->group(function () {

@@ -182,7 +182,7 @@ class TagController extends Controller
             'query' => 'required',
         ]);
 
-        $results = $this->tagRepository->findWhere([
+        $results = $this->tagRepository->search([
             ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);
 

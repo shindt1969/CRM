@@ -29,9 +29,9 @@ class Handler extends AppExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        if (! config('app.debug')) {
-            return $this->renderCustomResponse($request, $exception);
-        }
+        // if (! config('app.debug')) {
+        //     return $this->renderCustomResponse($request, $exception);
+        // }
         return parent::render($request, $exception);
     }
 
@@ -51,10 +51,10 @@ class Handler extends AppExceptionHandler
         return redirect()->guest(route('customer.session.index'));
     }
 
-    private function isAdminUri()
-    {
-        return strpos(Request::path(), 'admin') !== false ? true : false;
-    }
+    // private function isAdminUri()
+    // {
+    //     return strpos(Request::path(), 'admin') !== false ? true : false;
+    // }
 
     /**
      * Render custom HTTP response.
@@ -63,35 +63,35 @@ class Handler extends AppExceptionHandler
      * @param  \Throwable  $exception
      * @return \Illuminate\Http\Response|null
      */
-    private function renderCustomResponse($request, Throwable $exception)
-    {
-        $path = $this->isAdminUri() ? 'admin' : 'front';
+    // private function renderCustomResponse($request, Throwable $exception)
+    // {
+    //     $path = $this->isAdminUri() ? 'admin' : 'front';
 
-        if ($path == "front") {
-            // return redirect()->route('admin.session.create');
-        }
+    //     if ($path == "front") {
+    //         // return redirect()->route('admin.session.create');
+    //     }
 
-        if ($exception instanceof HttpException) {
-            $statusCode = in_array($exception->getStatusCode(), [401, 403, 404, 503]) ? $exception->getStatusCode() : 500;
+    //     if ($exception instanceof HttpException) {
+    //         $statusCode = in_array($exception->getStatusCode(), [401, 403, 404, 503]) ? $exception->getStatusCode() : 500;
 
-            return $this->response($path, $statusCode);
-        } elseif ($exception instanceof ModelNotFoundException) {
-            return $this->response($path, 404);
-        } elseif ($exception instanceof PDOException) {
-            return $this->response($path, 500);
-        }
-    }
+    //         return $this->response($path, $statusCode);
+    //     } elseif ($exception instanceof ModelNotFoundException) {
+    //         return $this->response($path, 404);
+    //     } elseif ($exception instanceof PDOException) {
+    //         return $this->response($path, 500);
+    //     }
+    // }
 
-    private function response($path, $statusCode)
-    {
-        if (request()->expectsJson()) {
-            return response()->json([
-                'message' => isset($this->jsonErrorMessages[$statusCode])
-                           ? $this->jsonErrorMessages[$statusCode]
-                           : 'Something went wrong, please try again later.'
-            ], $statusCode);
-        }
+    // private function response($path, $statusCode)
+    // {
+    //     if (request()->expectsJson()) {
+    //         return response()->json([
+    //             'message' => isset($this->jsonErrorMessages[$statusCode])
+    //                        ? $this->jsonErrorMessages[$statusCode]
+    //                        : 'Something went wrong, please try again later.'
+    //         ], $statusCode);
+    //     }
 
-        return response()->view("{$path}::errors.{$statusCode}", [], $statusCode);
-    }
+    //     return response()->view("{$path}::errors.{$statusCode}", [], $statusCode);
+    // }
 }

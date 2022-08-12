@@ -135,7 +135,7 @@ class ProductController extends Controller
             'query' => 'required',
         ]);
 
-        $results = $this->productRepository->findWhere([
+        $results = $this->productRepository->search([
             ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);
         return $this->ReturnJsonSuccessMsg($results);

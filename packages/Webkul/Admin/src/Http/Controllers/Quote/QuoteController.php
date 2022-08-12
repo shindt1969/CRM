@@ -156,7 +156,7 @@ class QuoteController extends Controller
      */
     public function search()
     {
-        $results = $this->quoteRepository->findWhere([
+        $results = $this->quoteRepository->search([
             ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);
 

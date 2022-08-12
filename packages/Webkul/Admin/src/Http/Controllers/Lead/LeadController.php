@@ -289,7 +289,7 @@ class LeadController extends Controller
      */
     public function search()
     {
-        $results = $this->leadRepository->findWhere([
+        $results = $this->leadRepository->search([
             ['title', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);
 

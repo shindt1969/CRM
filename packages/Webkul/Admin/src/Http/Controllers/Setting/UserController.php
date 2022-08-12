@@ -55,14 +55,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        // if (request()->ajax()) {
-        //     return app(\Webkul\Admin\DataGrids\Setting\UserDataGrid::class)->toJson();
-        // }
-            // return $this->ReturnJsonSuccessMsg('reback ok');
-        // return(app(\Webkul\Admin\DataGrids\Setting\UserDataGrid::class)->toJson());
-        // return view('admin::settings.users.index');
         return $this->ReturnJsonSuccessMsg($this->userRepository->all());
-
     }
 
     public function indexById($id)
