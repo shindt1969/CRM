@@ -269,7 +269,7 @@ class LeadController extends Controller
                 'message' => trans('admin::app.leads.update-success'),
             ]);
         } else {
-            session()->flash('success', trans('admin::app.leads.update-success'));
+            // session()->flash('success', trans('admin::app.leads.update-success'));
 
             if (request()->has('closed_at')) {
                 // return redirect()->back();
