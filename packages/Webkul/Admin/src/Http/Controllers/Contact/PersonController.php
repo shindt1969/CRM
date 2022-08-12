@@ -98,7 +98,6 @@ class PersonController extends Controller
      */
     public function update(AttributeForm $request, $id)
     {
-        Log::info($request);
         Event::dispatch('contacts.person.update.before', $id);
 
         $person = $this->personRepository->update($this->sanitizeRequestedPersonData(), $id);

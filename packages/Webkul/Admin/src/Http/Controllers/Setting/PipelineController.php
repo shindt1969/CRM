@@ -67,7 +67,6 @@ class PipelineController extends Controller
     {
 
         $data = request()->all();
-        Log::info(json_encode($data));
 
         $request->validated();
 
@@ -111,10 +110,6 @@ class PipelineController extends Controller
      */
     public function update(PipelineForm $request, $id)
     {
-        $data = request()->all();
-        Log::info(json_encode($data));
-
-
         $request->validated();
 
         $request->merge([

@@ -128,8 +128,6 @@ class DashboardController extends Controller
     {
 
         $data = request()->all();
-        Log::info(json_encode($data));
-        Log::info("123");
 
         $requestData = request()->all();
         $cards = $this->dashboardHelper->getCards();

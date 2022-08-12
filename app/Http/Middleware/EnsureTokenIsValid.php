@@ -22,7 +22,7 @@ class EnsureTokenIsValid
     public function handle(Request $request, Closure $next)
     {
         try{
-            auth()->invalidate();
+            auth()->user();
         }
         catch(TokenInvalidException $ie){
             // invalid token

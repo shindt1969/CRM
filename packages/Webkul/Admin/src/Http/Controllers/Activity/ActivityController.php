@@ -137,8 +137,6 @@ class ActivityController extends Controller
             request('id')
         );
         
-        Log::info("test checkIfOverlapping" );
-
         return response()->json([
             'overlapping' => $isOverlapping,
         ]);
@@ -165,8 +163,6 @@ class ActivityController extends Controller
             'is_done' => request('type') == 'note' ? 1 : 0,
             'user_id' => auth()->guard('user')->user()->id,
         ]));
-
-        Log::info(json_encode($activity));
 
         if (request('participants')) {
             if (is_array(request('participants.users'))) {
@@ -196,8 +192,6 @@ class ActivityController extends Controller
 
         session()->flash('success', trans('admin::app.activities.create-success', ['type' => trans('admin::app.activities.' . $activity->type)]));
         
-        Log::info("okcheck" );
-
         return redirect()->back();
     }
 
@@ -225,8 +219,6 @@ class ActivityController extends Controller
         Event::dispatch('activity.update.before', $id);
 
         $activity = $this->activityRepository->update(request()->all(), $id);
-
-        Log::info(json_encode($activity));
 
         if (request('participants')) {
             $activity->participants()->delete();
@@ -277,11 +269,7 @@ class ActivityController extends Controller
     public function massUpdate()
     {
         $count = 0;
-
         
-
-        $data = request()->all();
-        Log::info(json_encode( $data));
         foreach (request('rows') as $activityId) {
             Event::dispatch('activity.update.before', $activityId);
 
@@ -294,7 +282,6 @@ class ActivityController extends Controller
             $count++;
         }
 
-        Log::info(json_encode($activity));
 
         if (! $count) {
             return response()->json([
@@ -342,9 +329,6 @@ class ActivityController extends Controller
         Event::dispatch('activities.file.create.before');
 
         $file = $this->fileRepository->upload(request()->all());
-
-
-        Log::info($file);
 
         if ($file) {
             if ($leadId = request('lead_id')) {
@@ -413,7 +397,6 @@ class ActivityController extends Controller
     public function massDestroy()
     {
 
-        Log::info(json_encode(request('rows')));
         foreach (request('rows') as $activityId) {
             Event::dispatch('activity.delete.before', $activityId);
 
@@ -421,9 +404,6 @@ class ActivityController extends Controller
 
             Event::dispatch('activity.delete.after', $activityId);
         }
-        Log::info(response()->json([
-            'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.activities.title')])
-        ]));
         return response()->json([
             'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.activities.title')])
         ]);

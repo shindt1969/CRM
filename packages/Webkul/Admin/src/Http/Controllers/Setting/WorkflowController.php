@@ -58,7 +58,6 @@ class WorkflowController extends Controller
      */
     public function store()
     {
-        Log::info(request());
         $this->validate(request(), [
             'name' => 'required',
         ]);
@@ -97,7 +96,6 @@ class WorkflowController extends Controller
      */
     public function update($id)
     {
-        Log::info(request());
         $this->validate(request(), [
             'name' => 'required',
         ]);
@@ -123,9 +121,6 @@ class WorkflowController extends Controller
      */
     public function destroy($id)
     {
-        Log::info(request());
-        $workflow = $this->workflowRepository->findOrFail($id);
-
         try {
             Event::dispatch('settings.workflow.delete.before', $id);
 

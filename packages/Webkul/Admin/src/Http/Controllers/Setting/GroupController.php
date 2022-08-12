@@ -66,10 +66,6 @@ class GroupController extends Controller
      */
     public function store()
     {
-
-        $data = request()->all();
-        Log::info(json_encode( $data));
-
         $this->validate(request(), [
             'name' => 'required|unique:groups,name',
         ]);
@@ -109,7 +105,6 @@ class GroupController extends Controller
     {
 
         $data = request()->all();
-        Log::info(json_encode( $data));
         $this->validate(request(), [
             'name' => 'required|unique:groups,name,' . $id,
         ]);
@@ -134,10 +129,6 @@ class GroupController extends Controller
      */
     public function destroy($id)
     {
-        $group = $this->groupRepository->findOrFail($id);
-
-        $data = request()->all();
-        Log::info(json_encode( $data));
 
         try {
             Event::dispatch('settings.group.delete.before', $id);

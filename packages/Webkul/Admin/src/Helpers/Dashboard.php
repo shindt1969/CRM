@@ -709,9 +709,6 @@ class Dashboard
     {
         $cardId = $data['card-id'];
 
-        Log::info("check");
-        Log::info($cardId );
-
         $dateRange = $data['date-range'] ?? Carbon::now()->subMonth()->addDays(1)->format('Y-m-d') . "," . Carbon::now()->format('Y-m-d');
         $dateRange = explode(",", $dateRange);
 

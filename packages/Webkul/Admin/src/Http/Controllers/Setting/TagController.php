@@ -49,14 +49,6 @@ class TagController extends Controller
      */
     public function store()
     {
-        $data = request()->all();
-        Log::info(json_encode($data));
-
-
-        Log::info($this->validate(request(), [
-            'name' => 'required|unique:tags,name',
-        ]));
-
         if (request()->ajax()) {
             $this->validate(request(), [
                 'name' => 'required|unique:tags,name',
@@ -78,8 +70,6 @@ class TagController extends Controller
         $tag = $this->tagRepository->create(array_merge([
             'user_id' => auth()->guard('user')->user()->id,
         ], request()->all()));
-
-        Log::info(json_encode($tag));
 
         Event::dispatch('settings.tag.create.after', $tag);
 
@@ -123,9 +113,6 @@ class TagController extends Controller
         $validator = Validator::make(request()->all(), [
             'name' => 'required|unique:tags,name,' . $id,
         ]);
-
-        $data = request()->all();
-        Log::info(json_encode($data));
 
         if ($validator->fails()) {
             // session()->flash('error', $validator->errors()->first('name'));
@@ -198,9 +185,6 @@ class TagController extends Controller
      */
     public function massDestroy()
     {
-        $data = request()->all();
-        Log::info(json_encode($data));
-
         foreach (request('rows') as $tagId) {
             Event::dispatch('settings.tag.delete.before', $tagId);
 

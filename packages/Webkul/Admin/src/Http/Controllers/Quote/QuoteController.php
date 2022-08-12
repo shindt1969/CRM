@@ -200,8 +200,6 @@ class QuoteController extends Controller
      */
     public function massDestroy()
     {
-        Log::info(request());
-        // Log::info(request('rows'));
         foreach (request('rows') as $quoteId) {
             Event::dispatch('quote.delete.before', $quoteId);
 

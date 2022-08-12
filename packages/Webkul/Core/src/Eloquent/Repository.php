@@ -74,7 +74,12 @@ abstract class Repository extends BaseRepository implements CacheableInterface {
     {
         $this->applyCriteria();
         $this->applyScope();
-        $model = $this->model->findOrFail($id, $columns);
+        try{
+            $model = $this->model->findOrFail($id, $columns);
+        }catch(ModelNotFoundException $e){
+            throw new HttpResponseException(Controller::ReturnJsonFailMsg(config('app.error_code.can_not_find_this_record')));
+        }
+
         $this->resetModel();
 
         return $this->parserResult($model);
@@ -146,9 +151,7 @@ abstract class Repository extends BaseRepository implements CacheableInterface {
         try{
             $role = parent::update($attributes, $id);
         }catch(ModelNotFoundException $e){
-            Log::info("id: ".$id);
             throw new HttpResponseException(Controller::ReturnJsonFailMsg(config('app.error_code.can_not_find_this_record')));
-            // throw new HttpResponseException(Controller::ReturnJsonFailMsg("haha"));
         }
     }
 

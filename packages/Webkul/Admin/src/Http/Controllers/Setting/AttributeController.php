@@ -71,7 +71,6 @@ class AttributeController extends Controller
     public function store()
     {
         $data = request()->all();
-        Log::info(json_encode($data));
 
         $this->validate(request(), [
             'code' => ['required', 'unique:attributes,code,NULL,NULL,entity_type,' . request('entity_type'), new Code],
@@ -114,8 +113,6 @@ class AttributeController extends Controller
     public function update($id)
     {
         $data = request()->all();
-        Log::info(json_encode($data));
-
 
         $this->validate(request(), [
             'code' => ['required', 'unique:attributes,code,NULL,NULL,entity_type,' . $id, new Code],
@@ -184,9 +181,6 @@ class AttributeController extends Controller
         $results = $this->attributeRepository->getLookUpOptions($lookup, request()->input('query'));
 
         // return response()->json($results);
-        Log::info("------------------------------------");
-
-        Log::info($results);
         return $this->ReturnJsonSuccessMsg($results);
     }
 
@@ -197,10 +191,6 @@ class AttributeController extends Controller
      */
     public function massDestroy()
     {
-
-        $data = request()->all();
-        Log::info(json_encode($data));
-
         $count = 0;
         
         foreach (request('rows') as $attributeId) {

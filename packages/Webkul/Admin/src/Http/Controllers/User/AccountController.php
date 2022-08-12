@@ -28,11 +28,6 @@ class AccountController extends Controller
      */
     public function update()
     {
-
-        $data = request()->all();
-        Log::info(json_encode($data));
-
-
         $isPasswordChanged = false;
 
         $user = auth()->guard('user')->user();

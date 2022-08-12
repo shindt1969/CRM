@@ -8,7 +8,7 @@
         Route::get('/', 'Webkul\Admin\Http\Controllers\Controller@redirectToLogin');
 
         // Login Routes
-        // Route::get('login', 'Webkul\Admin\Http\Controllers\User\SessionController@create')->name('admin.session.create');
+        Route::get('login', 'Webkul\Admin\Http\Controllers\User\SessionController@create')->name('admin.session.create');
 
         //login post route to admin auth controller
         Route::post('login', 'Webkul\Admin\Http\Controllers\User\SessionController@store')->name('admin.session.store');
@@ -24,19 +24,12 @@
         Route::post('reset-password', 'Webkul\Admin\Http\Controllers\User\ResetPasswordController@store')->name('admin.reset_password.store');
 
         Route::get('mail/inbound-parse', 'Webkul\Admin\Http\Controllers\Mail\EmailController@inboundParse')->name('admin.mail.inbound_parse');
-        
-        Route::group([
-            // 'prefix'    => 'leadstest',
-            'namespace' => 'Webkul\Admin\Http\Controllers\Lead',
-        ], function () {
-            Route::post('createtest', 'LeadController@store');
-        });
-       
+
         // Admin Routes
-        Route::group(['middleware' => ['api','verifiedtoken']], function () {
+        Route::group(['middleware' => ['api']], function () {
             Route::get('logout', 'Webkul\Admin\Http\Controllers\User\SessionController@destroy')->name('admin.session.destroy');
 
-            // Dashboard Route index or template
+            // Dashboard Route
             Route::get('dashboard', 'Webkul\Admin\Http\Controllers\Admin\DashboardController@index')->name('admin.dashboard.index');
 
             Route::get('template', 'Webkul\Admin\Http\Controllers\Admin\DashboardController@template')->name('admin.dashboard.template');
@@ -64,7 +57,6 @@
                 Route::get('', 'AccountController@edit')->name('admin.user.account.edit');
 
                 Route::put('update', 'AccountController@update')->name('admin.user.account.update');
-                
             });
 
             // Leads Routes
@@ -72,11 +64,6 @@
                 'prefix'    => 'leads',
                 'namespace' => 'Webkul\Admin\Http\Controllers\Lead',
             ], function () {
-
-                Route::get('', 'LeadController@index')->name('admin.leads.index');
-
-                Route::get('{id?}', 'LeadController@indexById')->name('admin.leads.indexById');
-
                 Route::get('create', 'LeadController@create')->name('admin.leads.create');
 
                 Route::post('create', 'LeadController@store')->name('admin.leads.store');
@@ -99,6 +86,8 @@
 
                 Route::get('get/{pipeline_id?}', 'LeadController@get')->name('admin.leads.get');
 
+                Route::get('{pipeline_id?}', 'LeadController@index')->name('admin.leads.index');
+
                 Route::group([
                     'prefix'    => 'quotes',
                 ], function () {
@@ -112,8 +101,6 @@
                 'namespace' => 'Webkul\Admin\Http\Controllers\Quote',
             ], function () {
                 Route::get('', 'QuoteController@index')->name('admin.quotes.index');
-
-                Route::get('{id}', 'QuoteController@indexById')->name('admin.quotes.indexById');
 
                 Route::get('create/{id?}', 'QuoteController@create')->name('admin.quotes.create');
 
@@ -136,9 +123,7 @@
             ], function () {
                 Route::get('', 'ActivityController@index')->name('admin.activities.index');
 
-                Route::get('{id?}', 'ActivityController@indexById')->name('admin.activities.indexById');
-
-                // Route::get('get', 'ActivityController@get')->name('admin.activities.get');
+                Route::get('get', 'ActivityController@get')->name('admin.activities.get');
 
                 Route::post('is-overlapping', 'ActivityController@checkIfOverlapping')->name('admin.activities.check_overlapping');
 
@@ -172,8 +157,6 @@
                 Route::get('attachment-download/{id?}', 'EmailController@download')->name('admin.mail.attachment_download');
 
                 Route::get('{route?}', 'EmailController@index')->name('admin.mail.index');
-
-                Route::get('{id?}', 'EmailController@indexById')->name('admin.mail.indexById');
 
                 Route::get('{route?}/{id?}', 'EmailController@view')->name('admin.mail.view');
 
@@ -261,8 +244,6 @@
                 // Groups Routes
                 Route::prefix('groups')->group(function () {
                     Route::get('', 'GroupController@index')->name('admin.settings.groups.index');
-                    
-                    Route::get('{id?}', 'GroupController@indexById')->name('admin.settings.groups.indexById');
 
                     Route::get('create', 'GroupController@create')->name('admin.settings.groups.create');
 
@@ -279,8 +260,6 @@
                 Route::prefix('roles')->group(function () {
                     Route::get('', 'RoleController@index')->name('admin.settings.roles.index');
 
-                    Route::get('{id?}', 'RoleController@indexById')->name('admin.settings.roles.indexById');
-
                     Route::get('create', 'RoleController@create')->name('admin.settings.roles.create');
 
                     Route::post('create', 'RoleController@store')->name('admin.settings.roles.store');
@@ -296,8 +275,6 @@
                 Route::prefix('users')->group(function () {
                     Route::get('', 'UserController@index')->name('admin.settings.users.index');
 
-                    Route::get('{id?}', 'UserController@indexById')->name('admin.settings.users.indexById');
-
                     Route::get('create', 'UserController@create')->name('admin.settings.users.create');
 
                     Route::post('create', 'UserController@store')->name('admin.settings.users.store');
@@ -311,16 +288,11 @@
                     Route::put('mass-update', 'UserController@massUpdate')->name('admin.settings.users.mass_update');
 
                     Route::put('mass-destroy', 'UserController@massDestroy')->name('admin.settings.users.mass_delete');
-
-
-
                 });
 
                 // Attributes Routes
                 Route::prefix('attributes')->group(function () {
                     Route::get('', 'AttributeController@index')->name('admin.settings.attributes.index');
-
-                    Route::get('{id?}', 'AttributeController@indexById')->name('admin.settings.attributes.indexById');
 
                     Route::get('create', 'AttributeController@create')->name('admin.settings.attributes.create');
 
@@ -341,11 +313,10 @@
                     Route::get('download', 'AttributeController@download')->name('admin.settings.attributes.download');
                 });
 
+
                 // Lead Pipelines Routes
                 Route::prefix('pipelines')->group(function () {
                     Route::get('', 'PipelineController@index')->name('admin.settings.pipelines.index');
-
-                    Route::get('{id?}', 'PipelineController@indexById')->name('admin.settings.pipelines.indexById');
 
                     Route::get('create', 'PipelineController@create')->name('admin.settings.pipelines.create');
 
@@ -377,9 +348,6 @@
                 Route::prefix('types')->group(function () {
                     Route::get('', 'TypeController@index')->name('admin.settings.types.index');
 
-                    Route::get('{id?}', 'TypeController@indexById')->name('admin.settings.types.indexById');
-
-
                     Route::post('create', 'TypeController@store')->name('admin.settings.types.store');
 
                     Route::get('edit/{id?}', 'TypeController@edit')->name('admin.settings.types.edit');
@@ -403,7 +371,8 @@
                     Route::put('edit/{id}', 'EmailTemplateController@update')->name('admin.settings.email_templates.update');
 
                     Route::delete('{id}', 'EmailTemplateController@destroy')->name('admin.settings.email_templates.delete');
-                }); 
+                });
+
 
                 // Workflows Routes
                 Route::prefix('workflows')->group(function () {
@@ -424,8 +393,6 @@
                 // Tags Routes
                 Route::prefix('tags')->group(function () {
                     Route::get('', 'TagController@index')->name('admin.settings.tags.index');
-
-                    Route::get('{id?}', 'TagController@indexById')->name('admin.settings.tags.indexById');
 
                     Route::post('create', 'TagController@store')->name('admin.settings.tags.store');
 

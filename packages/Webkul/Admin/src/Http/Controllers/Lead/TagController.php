@@ -36,17 +36,14 @@ class TagController extends Controller
      */
     public function store($id)
     {
-        Log::info(json_encode(request()));
         Event::dispatch('leads.tag.create.before', $id);
 
         $lead = $this->leadRepository->find($id);
-        // $data = request()->all();
-        // Log::info(json_encode($data));
+
         if (! $lead->tags->contains(request('id'))) {
             $lead->tags()->attach(request('id'));
         }
         Event::dispatch('leads.tag.create.after', $lead);
-        // Log::info(json_encode(trans('admin::app.leads.tag-create-success')));
         // return response()->json([
         //     'status'  => true,
         //     'message' => trans('admin::app.leads.tag-create-success'),
@@ -65,7 +62,6 @@ class TagController extends Controller
     {
 
         $data = request()->all();
-        Log::info(json_encode($data));
 
         Event::dispatch('leads.tag.delete.before', $leadId);
         $lead = $this->leadRepository->find($leadId);

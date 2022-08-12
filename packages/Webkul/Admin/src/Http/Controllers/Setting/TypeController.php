@@ -57,7 +57,6 @@ class TypeController extends Controller
      */
     public function store()
     {
-        Log::info(request());
         $validator = Validator::make(request()->all(), [
             'name' => 'required|unique:lead_types,name'
         ]);
@@ -102,7 +101,6 @@ class TypeController extends Controller
      */
     public function update($id)
     {
-        Log::info(request());
         $this->validate(request(), [
             'name' => 'required|unique:lead_types,name,' . $id,
         ]);
@@ -128,9 +126,6 @@ class TypeController extends Controller
      */
     public function destroy($id)
     {
-        Log::info(request());
-        $type = $this->typeRepository->findOrFail($id);
-
         try {
             Event::dispatch('settings.type.delete.before', $id);
 

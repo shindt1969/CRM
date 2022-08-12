@@ -104,18 +104,15 @@ class LeadController extends Controller
                     : Carbon::now()->format('Y-m-d 23:59');
             } else {
                 $createdAt = null;
-                // Log::info($createdAt);
             }
 
             if (request('pipeline_id')) {
                 $pipeline = $this->pipelineRepository->find(request('pipeline_id'));
-                // Log::info($pipeline);
             } else {
                 $pipeline = $this->pipelineRepository->getDefaultPipeline();
             }
 
             $leads = $this->leadRepository->getLeads($pipeline->id, request('search') ?? '', $createdAt)->toArray();
-            // Log::info($leads);
             $totalCount = [];
 
             foreach ($leads as $key => $lead) {
@@ -172,29 +169,20 @@ class LeadController extends Controller
      */
     public function store(LeadForm $request)
     {
-        Log::info("try");
         Event::dispatch('lead.create.before');
 
         $data = request()->all();
 
-        Log::info(json_encode($data));
-        Log::info('$data' );
         $data['status'] = 1;
         if ($data['lead_pipeline_stage_id']) {
 
             $stage = $this->stageRepository->findOrFail($data['lead_pipeline_stage_id']);
-
-            Log::info($stage );
-            Log::info('$stage' );
 
             $data['lead_pipeline_id'] = $stage->lead_pipeline_id;
         } else {
             $pipeline = $this->pipelineRepository->getDefaultPipeline();
 
             $stage = $pipeline->stages()->first();
-
-            Log::info($pipeline );
-            Log::info('$pipeline' );
 
             $data['lead_pipeline_id'] = $pipeline->id;
 
@@ -212,7 +200,6 @@ class LeadController extends Controller
         Event::dispatch('lead.create.after', $lead);
 
         session()->flash('success', trans('admin::app.leads.create-success'));
-        Log::info("flat1" );
         // return redirect()->route('admin.leads.index', $data['lead_pipeline_id']);
         return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.roles.create-success') );
 
@@ -258,7 +245,6 @@ class LeadController extends Controller
     {
         Event::dispatch('lead.update.before', $id);
         $data = request()->all();
-        Log::info(json_encode($data));
 
         if ($data['lead_pipeline_stage_id']) {
             $stage = $this->stageRepository->findOrFail($data['lead_pipeline_stage_id']);
@@ -351,7 +337,6 @@ class LeadController extends Controller
     public function massUpdate()
     {
         $data = request()->all();
-        Log::info(json_encode($data));
 
         foreach ($data['rows'] as $leadId) {
             $lead = $this->leadRepository->find($leadId);
@@ -362,8 +347,6 @@ class LeadController extends Controller
 
             Event::dispatch('lead.update.before', $leadId);
         }
-        Log::info("here");
-
 
         return $this->ReturnJsonSuccessMsg([
             'message' => trans('admin::app.response.update-success', ['name' => trans('admin::app.leads.title')])

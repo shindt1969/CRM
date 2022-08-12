@@ -74,7 +74,6 @@ class EmailTemplateController extends Controller
      */
     public function store()
     {
-        Log::info(request());
         $this->validate(request(), [
             'name'    => 'required',
             'subject' => 'required',
@@ -116,7 +115,6 @@ class EmailTemplateController extends Controller
      */
     public function update($id)
     {
-        Log::info(request());
         $this->validate(request(), [
             'name'    => 'required',
             'subject' => 'required',
@@ -143,7 +141,6 @@ class EmailTemplateController extends Controller
      */
     public function destroy($id)
     {
-        Log::info(request());
         $emailTemplate = $this->emailTemplateRepository->findOrFail($id);
 
         try {

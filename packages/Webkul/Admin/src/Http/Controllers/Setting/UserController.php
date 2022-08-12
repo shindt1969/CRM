@@ -55,7 +55,6 @@ class UserController extends Controller
      */
     public function index()
     {
-        // Log::info($this->userRepository->all());
         // if (request()->ajax()) {
         //     return app(\Webkul\Admin\DataGrids\Setting\UserDataGrid::class)->toJson();
         // }
@@ -147,9 +146,6 @@ class UserController extends Controller
 
         $groups = $this->groupRepository->all();
 
-        // Log::info(json_encode($admin));
-        Log::info(json_encode($this->userRepository->all()));
-
         return view('admin::settings.users.edit', compact('admin', 'groups', 'roles'));
     }
 
@@ -168,10 +164,6 @@ class UserController extends Controller
             'confirm_password' => 'nullable|required_with:password|same:password',
             'role_id'          => 'required',
         ]);
-
-        $data = request()->all();
-
-        Log::info(json_encode($data));
 
         if (! $data['password']) {
             unset($data['password'], $data['confirm_password']);
@@ -209,13 +201,11 @@ class UserController extends Controller
     public function destroy($id)
     {
         if (auth()->guard('user')->user()->id == $id) {
-            Log::info(json_encode("1"));
 
             return response()->json([
                 'message' => trans('admin::app.settings.users.delete-failed'),
             ], 400);
         } else if ($this->userRepository->count() == 1) {
-            Log::info(json_encode("2"));
             return response()->json([
                 'message' => trans('admin::app.settings.users.last-delete-error'),
             ], 400);
@@ -245,8 +235,6 @@ class UserController extends Controller
     public function massUpdate()
     {
         $count = 0;
-        $data = request()->all();
-        Log::info(json_encode($data));
 
         foreach (request('rows') as $userId) {
             if (auth()->guard('user')->user()->id == $userId) {
@@ -277,9 +265,6 @@ class UserController extends Controller
     public function massDestroy()
     {
         $count = 0;
-
-        $data = request()->all();
-        Log::info(json_encode($data));
 
         foreach (request('rows') as $userId) {
             if (auth()->guard('user')->user()->id == $userId) {

@@ -41,7 +41,6 @@ class SessionController extends Controller
     // public function store(Request $request)
     public function store()
     {
-        Log::info(request());
         $this->validate(request(), [
             'email'    => 'required|email',
             'password' => 'required',

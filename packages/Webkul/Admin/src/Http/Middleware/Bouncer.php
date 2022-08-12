@@ -2,6 +2,7 @@
 
 namespace Webkul\Admin\Http\Middleware;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 class Bouncer
@@ -14,31 +15,34 @@ class Bouncer
      * @param  string|null  $guard
      * @return mixed
      */
-    public function handle($request, \Closure $next, $guard = 'user')
+    public function handle($request, \Closure $next, $guard = 'api')
     {
-        if (! auth()->guard($guard)->check()) {
-            return redirect()->route('admin.session.create');
-        }
+        // if (! auth()->guard($guard)->check()) {
+        //     // return redirect()->route('admin.session.create');
+        //     return response()->json("okk1k");
+        // }
 
-        /**
-         * If user status is changed by admin. Then session should be
-         * logged out.
-         */
-        if (! (bool) auth()->guard($guard)->user()->status) {
-            auth()->guard($guard)->logout();
+        // /**
+        //  * If user status is changed by admin. Then session should be
+        //  * logged out.
+        //  */
+        // if (! (bool) auth()->guard($guard)->user()->status) {
+        //     auth()->guard($guard)->logout();
 
-            return redirect()->route('admin.session.create');
-        }
+        //     // return redirect()->route('admin.session.create');
+        //     return response()->json("okk2k");
+        // }
 
-        /**
-         * If somehow the user deleted all permissions, then it should be
-         * auto logged out and need to contact the administrator again.
-         */
-        if ($this->isPermissionsEmpty()) {
-            auth()->guard($guard)->logout();
+        // /**
+        //  * If somehow the user deleted all permissions, then it should be
+        //  * auto logged out and need to contact the administrator again.
+        //  */
+        // if ($this->isPermissionsEmpty()) {
+        //     auth()->guard($guard)->logout();
 
-            return redirect()->route('admin.session.create');
-        }
+        //     // return redirect()->route('admin.session.create');
+        //     return response()->json("okk3k");
+        // }
 
         return $next($request);
     }

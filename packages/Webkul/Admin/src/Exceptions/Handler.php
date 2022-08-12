@@ -9,6 +9,7 @@ use Doctrine\DBAL\Driver\PDOException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Exceptions\Handler as AppExceptionHandler;
+use Illuminate\Support\Facades\Log;
 
 class Handler extends AppExceptionHandler
 {
@@ -31,7 +32,6 @@ class Handler extends AppExceptionHandler
         if (! config('app.debug')) {
             return $this->renderCustomResponse($request, $exception);
         }
-
         return parent::render($request, $exception);
     }
 
@@ -68,7 +68,7 @@ class Handler extends AppExceptionHandler
         $path = $this->isAdminUri() ? 'admin' : 'front';
 
         if ($path == "front") {
-            return redirect()->route('admin.session.create');
+            // return redirect()->route('admin.session.create');
         }
 
         if ($exception instanceof HttpException) {

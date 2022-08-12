@@ -100,7 +100,6 @@ class OrganizationController extends Controller
     public function update(AttributeForm $request, $id)
     {
 
-        Log::info(request());
         Event::dispatch('contacts.organization.update.before', $id);
 
         $organization = $this->organizationRepository->update(request()->all(), $id);
@@ -121,7 +120,6 @@ class OrganizationController extends Controller
      */
     public function destroy($id)
     {
-        Log::info(request());
         $this->organizationRepository->findOrFail($id);
 
         try {
@@ -150,7 +148,6 @@ class OrganizationController extends Controller
      */
     public function massDestroy()
     {
-        Log::info(request());
         foreach (request('rows') as $organizationId) {
             Event::dispatch('contact.organization.delete.before', $organizationId);
 

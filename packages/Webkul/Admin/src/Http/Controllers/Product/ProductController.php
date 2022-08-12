@@ -50,14 +50,10 @@ class ProductController extends Controller
 
     public function indexById($id)
     {
+        $aa = $this->productRepository->findOrFail($id);
         return $this->ReturnJsonSuccessMsg($this->productRepository->findOrFail($id));
 
     }
-
-
-
-
-
 
     /**
      * Show the form for creating a new resource.
@@ -191,8 +187,6 @@ class ProductController extends Controller
      */
     public function massDestroy()
     {
-        Log::info(request());
-        Log::info(request('rows'));
         foreach (request('rows') as $productId) {
             Event::dispatch('product.delete.before', $productId);
             $this->productRepository->delete($productId);
