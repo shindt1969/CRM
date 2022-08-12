@@ -122,7 +122,9 @@ class UserController extends Controller
         }
         Event::dispatch('settings.user.create.after', $admin);
         // session()->flash('success', trans('admin::app.settings.users.create-success'));
-        return redirect()->route('admin.settings.users.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.users.create-success'));
+        // return redirect()->route('admin.settings.users.index');
+
     }
 
     /**
@@ -139,7 +141,7 @@ class UserController extends Controller
 
         $groups = $this->groupRepository->all();
 
-        return view('admin::settings.users.edit', compact('admin', 'groups', 'roles'));
+        // return view('admin::settings.users.edit', compact('admin', 'groups', 'roles'));
     }
 
     /**
@@ -182,7 +184,8 @@ class UserController extends Controller
 
         // session()->flash('success', trans('admin::app.settings.users.update-success'));
 
-        return redirect()->route('admin.settings.users.index');
+        // return redirect()->route('admin.settings.users.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.users.update-success'));
     }
 
     /**
@@ -194,14 +197,9 @@ class UserController extends Controller
     public function destroy($id)
     {
         if (auth()->guard('user')->user()->id == $id) {
-
-            return response()->json([
-                'message' => trans('admin::app.settings.users.delete-failed'),
-            ], 400);
+            return $this->ReturnJsonFailMsg(trans('admin::app.settings.users.delete-failed'));
         } else if ($this->userRepository->count() == 1) {
-            return response()->json([
-                'message' => trans('admin::app.settings.users.last-delete-error'),
-            ], 400);
+            return $this->ReturnJsonFailMsg(trans('admin::app.settings.users.last-delete-error'));
         } else {
             Event::dispatch('settings.user.delete.before', $id);
             try {
@@ -209,13 +207,10 @@ class UserController extends Controller
 
                 Event::dispatch('settings.user.delete.after', $id);
 
-                return response()->json([
-                    'message' => trans('admin::app.settings.users.delete-success'),
-                ]);
+                return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.users.delete-success'));
             } catch (\Exception $exception) {
-                return response()->json([
-                    'message' => $exception->getMessage(),
-                ], 400);
+                return $this->ReturnJsonFailMsg($exception->getMessage());
+
             }
         }
     }
@@ -241,13 +236,12 @@ class UserController extends Controller
             $count++;
         }
         if (! $count) {
-            return response()->json([
-                'message' => trans('admin::app.settings.users.mass-update-failed'),
-            ], 400);
+            return $this->ReturnJsonFailMsg(trans('admin::app.settings.users.mass-update-failed'));
         }
-        return response()->json([
-            'message' => trans('admin::app.settings.users.mass-update-success'),
-        ]);
+
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.users.mass-update-success'));
+
+
     }
 
     /**
@@ -274,13 +268,10 @@ class UserController extends Controller
         }
 
         if (! $count) {
-            return response()->json([
-                'message' => trans('admin::app.settings.users.mass-delete-failed'),
-            ], 400);
+            return $this->ReturnJsonFailMsg(trans('admin::app.settings.users.mass-delete-failed'));
         }
 
-        return response()->json([
-            'message' => trans('admin::app.settings.users.mass-delete-success'),
-        ]);
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.users.mass-delete-success'));
+
     }
 }
