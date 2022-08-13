@@ -64,7 +64,6 @@ class UserController extends Controller
             
     }
 
-
     /**
      * Show the form for creating a new resource.
      *
@@ -152,6 +151,8 @@ class UserController extends Controller
      */
     public function update($id)
     {
+        $this->userRepository->findOrFail($id);
+
         $this->validate(request(), [
             'email'            => 'required|email|unique:users,email,' . $id,
             'name'             => 'required',
@@ -160,13 +161,15 @@ class UserController extends Controller
             'role_id'          => 'required',
         ]);
 
+        $data = request()->all();
+
         if (! $data['password']) {
             unset($data['password'], $data['confirm_password']);
         } else {
             $data['password'] = bcrypt($data['password']);
         }
 
-        if (auth()->guard('user')->user()->id != $id) {
+        if (auth()->user()->id != $id) {
             $data['status'] = isset($data['status']) ? 1 : 0;
         }
 

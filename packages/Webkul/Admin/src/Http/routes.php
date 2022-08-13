@@ -275,9 +275,9 @@
                 Route::prefix('users')->group(function () {
                     Route::get('', 'UserController@index')->name('admin.settings.users.index');
 
-                    Route::get('{id}', 'UserController@index')->name('admin.settings.users.index')->where('id', '[0-9]+');
+                    Route::get('{id}', 'UserController@indexById')->name('admin.settings.users.indexById')->where('id', '[0-9]+');
 
-                    Route::get('create', 'UserController@create')->name('admin.settings.users.create');
+                    // Route::get('create', 'UserController@create')->name('admin.settings.users.create');
 
                     Route::post('create', 'UserController@store')->name('admin.settings.users.store');
 

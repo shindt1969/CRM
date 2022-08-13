@@ -151,7 +151,7 @@ abstract class Repository extends BaseRepository implements CacheableInterface {
     public function update(array $attributes, $id)
     {
         try{
-            $role = parent::update($attributes, $id);
+            return parent::update($attributes, $id);
         }catch(ModelNotFoundException $e){
             throw new HttpResponseException(Controller::ReturnJsonFailMsg(config('app.error_code.can_not_find_this_record')));
         }
