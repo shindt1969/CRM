@@ -80,9 +80,9 @@
 
                 Route::put('mass-destroy', 'LeadController@massDestroy')->name('admin.leads.mass_delete');
 
-                Route::post('tags/{id}', 'TagController@store')->name('admin.leads.tags.store');
+                Route::post('tags/{id}', 'TagController@store')->name('admin.leads.tags.store')->where('id', '[0-9]+');
 
-                Route::delete('{lead_id}/{tag_id?}', 'TagController@delete')->name('admin.leads.tags.delete');
+                Route::delete('{lead_id}/{tag_id?}', 'TagController@delete')->name('admin.leads.tags.delete')->where(['lead_id'=> '[0-9]+', 'tag_id'=> '[0-9]+']);
 
                 Route::get('get/{pipeline_id?}', 'LeadController@get')->name('admin.leads.get');
 
@@ -249,9 +249,9 @@
 
                     Route::post('create', 'GroupController@store')->name('admin.settings.groups.store');
 
-                    Route::get('edit/{id}', 'GroupController@edit')->name('admin.settings.groups.edit');
+                    Route::get('edit/{id}', 'GroupController@edit')->name('admin.settings.groups.edit')->where('id', '[0-9]+');
 
-                    Route::put('edit/{id}', 'GroupController@update')->name('admin.settings.groups.update');
+                    Route::put('edit/{id}', 'GroupController@update')->name('admin.settings.groups.update')->where('id', '[0-9]+');
 
                     Route::delete('{id}', 'GroupController@destroy')->name('admin.settings.groups.delete');
                 });
@@ -259,6 +259,8 @@
                 // Roles Routes
                 Route::prefix('roles')->group(function () {
                     Route::get('', 'RoleController@index')->name('admin.settings.roles.index');
+
+                    Route::get('{id}', 'RoleController@indexById')->name('admin.settings.roles.indexById')->where('id', '[0-9]+');
 
                     Route::get('create', 'RoleController@create')->name('admin.settings.roles.create');
 
@@ -399,13 +401,13 @@
 
                     Route::post('create', 'TagController@store')->name('admin.settings.tags.store');
 
-                    Route::get('edit/{id?}', 'TagController@edit')->name('admin.settings.tags.edit');
+                    Route::get('edit/{id?}', 'TagController@edit')->name('admin.settings.tags.edit')->where('id', '[0-9]+');
 
-                    Route::put('edit/{id}', 'TagController@update')->name('admin.settings.tags.update');
+                    Route::put('edit/{id}', 'TagController@update')->name('admin.settings.tags.update')->where('id', '[0-9]+');
 
                     Route::get('search', 'TagController@search')->name('admin.settings.tags.search');
 
-                    Route::delete('{id}', 'TagController@destroy')->name('admin.settings.tags.delete');
+                    Route::delete('{id}', 'TagController@destroy')->name('admin.settings.tags.delete')->where('id', '[0-9]+');
 
                     Route::put('mass-destroy', 'TagController@massDestroy')->name('admin.settings.tags.mass_delete');
                 });

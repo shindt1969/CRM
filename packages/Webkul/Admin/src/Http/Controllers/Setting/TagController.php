@@ -55,41 +55,26 @@ class TagController extends Controller
      */
     public function store()
     {
-        if (request()->ajax()) {
-            $this->validate(request(), [
-                'name' => 'required|unique:tags,name',
-            ]);
-        } else {
-            $validator = Validator::make(request()->all(), [
-                'name' => 'required|unique:tags,name',
-            ]);
+        $this->validate(request(), [
+            'name' => 'required|unique:tags,name',
+        ]);
 
-            if ($validator->fails()) {
-                // session()->flash('error', $validator->errors()->first('name'));
-
-                return redirect()->back();
-            }
-        }
         Event::dispatch('settings.tag.create.before');
 
-
         $tag = $this->tagRepository->create(array_merge([
-            'user_id' => auth()->guard('user')->user()->id,
+            'user_id' => auth()->user()->id,
         ], request()->all()));
 
         Event::dispatch('settings.tag.create.after', $tag);
 
-        if (request()->ajax()) {
-            return response()->json([
-                'tag'     => $tag,
-                'status'  => true,
-                'message' => trans('admin::app.settings.tags.create-success'),
-            ]);
-        } else {
-            // session()->flash('success', trans('admin::app.settings.tags.create-success'));
+        // return response()->json([
+        //     'tag'     => $tag,
+        //     'status'  => true,
+        //     'message' => trans('admin::app.settings.tags.create-success'),
+        // ]);
 
-            return redirect()->route('admin.settings.tags.index');
-        }
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.tags.create-success'));
+
     }
 
     /**

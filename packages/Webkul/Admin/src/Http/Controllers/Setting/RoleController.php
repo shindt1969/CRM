@@ -147,35 +147,33 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        $response = [
-            'responseCode' => 400,
-        ];
+        $response = [];
 
         $role = $this->roleRepository->findOrFail($id);
 
         if ($role->admins && $role->admins->count() >= 1) {
             $response['message'] = trans('admin::app.settings.roles.being-used');
+            return $this->ReturnJsonFailMsg($response);
 
-            // session()->flash('error', $response['message']);
         } else if ($this->roleRepository->count() == 1) {
             $response['message'] = trans('admin::app.settings.roles.last-delete-error');
-
-            // session()->flash('error', $response['message']);
+            return $this->ReturnJsonFailMsg($response);
         } else {
             try {
                 Event::dispatch('settings.role.delete.before', $id);
 
-                if (auth()->guard('user')->user()->role_id == $id) {
+                if (auth()->guard()->user()->role_id == $id) {
                     $response['message'] = trans('admin::app.settings.roles.current-role-delete-error');
+                    return $this->ReturnJsonFailMsg($response);
+
                 } else {
                     $this->roleRepository->delete($id);
 
                     Event::dispatch('settings.role.delete.after', $id);
 
-                    $message = trans('admin::app.settings.roles.delete-success');
+                    $message = trans('admin::app.settings.roles.delete-success') . ' id: ' . $id;
 
                     $response = [
-                        'responseCode' => 200,
                         'message'      => $message,
                     ];
 
@@ -186,7 +184,6 @@ class RoleController extends Controller
 
                 $response['message'] = $message;
 
-                // session()->flash('error', $message);
             }
         }
 

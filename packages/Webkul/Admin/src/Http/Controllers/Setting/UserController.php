@@ -199,7 +199,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        if (auth()->guard('user')->user()->id == $id) {
+        if (auth()->user()->id == $id) {
             return $this->ReturnJsonFailMsg(trans('admin::app.settings.users.delete-failed'));
         } else if ($this->userRepository->count() == 1) {
             return $this->ReturnJsonFailMsg(trans('admin::app.settings.users.last-delete-error'));
@@ -225,10 +225,15 @@ class UserController extends Controller
      */
     public function massUpdate()
     {
+        $this->validate(request(), [
+            'rows'=> 'required', // array of users' id
+            'value'=> 'in:0,1', // 0=inactive, 1= active
+        ]);
+
         $count = 0;
 
         foreach (request('rows') as $userId) {
-            if (auth()->guard('user')->user()->id == $userId) {
+            if (auth()->user()->id == $userId) {
                 continue;
             }
             Event::dispatch('settings.user.update.before', $userId);
@@ -257,7 +262,7 @@ class UserController extends Controller
         $count = 0;
 
         foreach (request('rows') as $userId) {
-            if (auth()->guard('user')->user()->id == $userId) {
+            if (auth()->user()->id == $userId) {
                 continue;
             }
             

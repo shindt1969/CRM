@@ -46,6 +46,7 @@ class Controller extends BaseController
     {
         $validator = Validator::make($request->all(), $rule);
         if ($validator->fails()) {
+            Log::info("validate error, request: $request->all()");
             throw new HttpResponseException(Controller::ReturnJsonFailMsg(config('app.error_code.field_error')));
         }
 

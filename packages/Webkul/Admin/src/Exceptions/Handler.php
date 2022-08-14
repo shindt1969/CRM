@@ -3,13 +3,15 @@
 namespace Webkul\Admin\Exceptions;
 
 use Throwable;
+use Illuminate\Support\Facades\Log;
+use Doctrine\DBAL\Driver\PDOException;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Auth\AuthenticationException;
-use Doctrine\DBAL\Driver\PDOException;
+use Webkul\Admin\Http\Controllers\Controller;
+use App\Exceptions\Handler as AppExceptionHandler;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use App\Exceptions\Handler as AppExceptionHandler;
-use Illuminate\Support\Facades\Log;
 
 class Handler extends AppExceptionHandler
 {
@@ -33,6 +35,8 @@ class Handler extends AppExceptionHandler
         //     return $this->renderCustomResponse($request, $exception);
         // }
         return parent::render($request, $exception);
+        // return Controller::ReturnJsonFailMsg(config('app.error_code.field_error'));
+
     }
 
     /**

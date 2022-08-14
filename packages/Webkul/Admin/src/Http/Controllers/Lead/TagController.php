@@ -36,6 +36,8 @@ class TagController extends Controller
      */
     public function store($id)
     {
+        $this->leadRepository->findOrFail($id);
+
         Event::dispatch('leads.tag.create.before', $id);
 
         $lead = $this->leadRepository->find($id);
@@ -44,10 +46,6 @@ class TagController extends Controller
             $lead->tags()->attach(request('id'));
         }
         Event::dispatch('leads.tag.create.after', $lead);
-        // return response()->json([
-        //     'status'  => true,
-        //     'message' => trans('admin::app.leads.tag-create-success'),
-        // ], 200);
         return $this->ReturnJsonSuccessMsg(trans('admin::app.leads.tag-create-success'));
     }
 

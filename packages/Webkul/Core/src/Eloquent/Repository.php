@@ -78,7 +78,8 @@ abstract class Repository extends BaseRepository implements CacheableInterface {
         try{
             $model = $this->model->findOrFail($id, $columns);
         }catch(ModelNotFoundException $e){
-            Log::info("\package\webkul\core\src\Eloquent\repository->findOrFail: try to get invalid id=> ".$id);
+            Log::info($this->model);
+            Log::info("\\package\\webkul\\core\\src\\Eloquent\\repository->findOrFail: try to get invalid id=> ".$id);
             throw new HttpResponseException(Controller::ReturnJsonFailMsg(config('app.error_code.can_not_find_this_record')));
         }
 
@@ -162,7 +163,7 @@ abstract class Repository extends BaseRepository implements CacheableInterface {
         $model = parent::findWhere($where, $columns);
 
         if (is_null($model->first())){
-            Log::info("\package\webkul\core\src\Eloquent\repository->search: record not found");
+            Log::info("\\package\\webkul\\core\\src\\Eloquent\\repository->search: record not found");
             throw new HttpResponseException(Controller::ReturnJsonFailMsg(config('app.error_code.can_not_find_this_record')));
         };
 
