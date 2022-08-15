@@ -101,15 +101,9 @@ class TagController extends Controller
      */
     public function update($id)
     {
-        $validator = Validator::make(request()->all(), [
+        $this->validate(request(), [
             'name' => 'required|unique:tags,name,' . $id,
         ]);
-
-        if ($validator->fails()) {
-            // session()->flash('error', $validator->errors()->first('name'));
-
-            return redirect()->back();
-        }
 
         Event::dispatch('settings.tag.update.before', $id);
 
@@ -117,9 +111,7 @@ class TagController extends Controller
 
         Event::dispatch('settings.tag.update.after', $tag);
 
-        // session()->flash('success', trans('admin::app.settings.tags.update-success'));
-
-        return redirect()->route('admin.settings.tags.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.tags.update-success'));
     }
 
     /**
@@ -138,21 +130,19 @@ class TagController extends Controller
             $this->tagRepository->delete($id);
 
             Event::dispatch('settings.tag.delete.after', $id);
+
             return $this->ReturnJsonSuccessMsg([
                 'message' => trans('admin::app.settings.tags.delete-success'),
-            ], 200);
-            // return response()->json([
-            //     'message' => trans('admin::app.settings.tags.delete-success'),
-            // ], 200);
+            ]);
         } catch (\Exception $exception) {
-            return response()->json([
+            return $this->ReturnJsonFailMsg([
                 'message' => trans('admin::app.settings.tags.delete-failed'),
-            ], 400);
+            ]);
         }
 
-        return response()->json([
+        return $this->ReturnJsonFailMsg([
             'message' => trans('admin::app.settings.tags.delete-failed'),
-        ], 400);
+        ]);
     }
 
     /**
@@ -181,6 +171,10 @@ class TagController extends Controller
      */
     public function massDestroy()
     {
+        $this->validate(request(), [
+            'rows.*' => 'required|exists:tags,id',
+        ]);
+
         foreach (request('rows') as $tagId) {
             Event::dispatch('settings.tag.delete.before', $tagId);
 
@@ -189,8 +183,10 @@ class TagController extends Controller
             Event::dispatch('settings.tag.delete.after', $tagId);
         }
 
-        return response()->json([
-            'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.settings.tags.title')]),
-        ]);
+        // return response()->json([
+        //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.settings.tags.title')]),
+        // ]);
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.response.destroy-success', ['name' => trans('admin::app.settings.tags.title')]));
+
     }
 }

@@ -82,11 +82,11 @@
 
                 Route::post('tags/{id}', 'TagController@store')->name('admin.leads.tags.store')->where('id', '[0-9]+');
 
-                Route::delete('{lead_id}/{tag_id?}', 'TagController@delete')->name('admin.leads.tags.delete')->where(['lead_id'=> '[0-9]+', 'tag_id'=> '[0-9]+']);
+                Route::delete('{lead_id}/{tag_id}', 'TagController@delete')->name('admin.leads.tags.delete')->where(['lead_id'=> '[0-9]+', 'tag_id'=> '[0-9]+']);
 
-                Route::get('get/{pipeline_id?}', 'LeadController@get')->name('admin.leads.get');
+                Route::get('get/{pipeline_id}', 'LeadController@get')->name('admin.leads.get')->where(['pipeline_id'=> '[0-9]+']);
 
-                Route::get('{pipeline_id?}', 'LeadController@index')->name('admin.leads.index');
+                Route::get('{pipeline_id}', 'LeadController@index')->name('admin.leads.index')->where(['pipeline_id'=> '[0-9]+']);
 
                 Route::group([
                     'prefix'    => 'quotes',
@@ -401,7 +401,7 @@
 
                     Route::post('create', 'TagController@store')->name('admin.settings.tags.store');
 
-                    Route::get('edit/{id?}', 'TagController@edit')->name('admin.settings.tags.edit')->where('id', '[0-9]+');
+                    // Route::get('edit/{id?}', 'TagController@edit')->name('admin.settings.tags.edit')->where('id', '[0-9]+');
 
                     Route::put('edit/{id}', 'TagController@update')->name('admin.settings.tags.update')->where('id', '[0-9]+');
 

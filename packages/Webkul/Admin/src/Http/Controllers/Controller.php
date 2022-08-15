@@ -46,15 +46,18 @@ class Controller extends BaseController
     {
         $error_message = [
             'required' => 'The :attribute field is required.',
-            'unique' => 'The :attribute field must be unique.'
+            'unique' => 'The :attribute field must be unique.',
+            'exists' => 'The :attribute doesn\'t exist.' 
         ];
 
         $validator = Validator::make($request->all(), $rule, $error_message);
         if ($validator->fails()) {
             $errors = $validator->errors();
-            $$requests = $request->all();
-            Log::info("validate error, request: $requests");
-            Log::info("error: $errors");
+            $requests = $request->all();
+            Log::info("validate error, request: ");
+            Log::info($requests);
+            Log::info("error: ");
+            Log::info($errors);
             throw new HttpResponseException(Controller::ReturnJsonFailMsg(config('app.error_code.field_error')));
         }
 
