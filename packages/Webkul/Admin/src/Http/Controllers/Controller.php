@@ -44,9 +44,17 @@ class Controller extends BaseController
 
     public function validate($request, $rule)
     {
-        $validator = Validator::make($request->all(), $rule);
+        $error_message = [
+            'required' => 'The :attribute field is required.',
+            'unique' => 'The :attribute field must be unique.'
+        ];
+
+        $validator = Validator::make($request->all(), $rule, $error_message);
         if ($validator->fails()) {
-            Log::info("validate error, request: $request->all()");
+            $errors = $validator->errors();
+            $$requests = $request->all();
+            Log::info("validate error, request:$requests");
+            Log::info("error: $errors");
             throw new HttpResponseException(Controller::ReturnJsonFailMsg(config('app.error_code.field_error')));
         }
 
