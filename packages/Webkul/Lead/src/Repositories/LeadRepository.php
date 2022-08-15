@@ -128,9 +128,10 @@ class LeadRepository extends Repository
     public function create(array $data)
     {
         if (isset($data['person']['id'])) {
-            $person = $this->personRepository->update(array_merge($data['person'], [
-                'entity_type' => 'persons',
-            ]), $data['person']['id']);
+            // $person = $this->personRepository->update(array_merge($data['person'], [
+            //     'entity_type' => 'persons',
+            // ]), $data['person']['id']);
+            $person = $this->personRepository->findOrFail($data['person']['id']);
         } else {
             $person = $this->personRepository->create(array_merge($data['person'], [
                 'entity_type' => 'persons',

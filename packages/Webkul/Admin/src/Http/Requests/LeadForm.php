@@ -2,9 +2,12 @@
 
 namespace Webkul\Admin\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Foundation\Http\FormRequest;
+use Webkul\Admin\Http\Controllers\Controller;
+use Illuminate\Contracts\Validation\Validator;
 use Webkul\Core\Contracts\Validations\Decimal;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Attribute\Repositories\AttributeValueRepository;
 
@@ -23,6 +26,8 @@ class LeadForm extends FormRequest
      * @var \Webkul\Attribute\Repositories\AttributeValueRepository
      */
     protected $attributeValueRepository;
+
+    protected $stopOnFirstFailure = false;
 
     /**
      * @var array
@@ -83,7 +88,6 @@ class LeadForm extends FormRequest
                 if ($entityType == 'persons') {
                     $attribute->code = 'person.' . $attribute->code;
                 }
-
 
                 $validations = [];
 
@@ -151,5 +155,13 @@ class LeadForm extends FormRequest
         }
 
         return $this->rules;
+    }
+    // get error message
+    protected function failedValidation(Validator $validator) {
+        $errors = $validator->errors();
+        $$requests = request()->all();
+        Log::info("validate error, request: $requests");
+        Log::info("error: $errors");
+        throw new HttpResponseException(Controller::ReturnJsonFailMsg(config('app.error_code.field_error')));
     }
 }

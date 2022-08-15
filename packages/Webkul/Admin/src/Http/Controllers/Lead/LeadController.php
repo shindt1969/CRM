@@ -169,6 +169,11 @@ class LeadController extends Controller
      */
     public function store(LeadForm $request)
     {
+
+        // $validated = $request->validated();
+        // if ($validated->fails()){
+        //     return $this->ReturnJsonFailMsg("fail!!");
+        // }
         Event::dispatch('lead.create.before');
 
         $data = request()->all();
@@ -199,9 +204,7 @@ class LeadController extends Controller
 
         Event::dispatch('lead.create.after', $lead);
 
-        session()->flash('success', trans('admin::app.leads.create-success'));
-        // return redirect()->route('admin.leads.index', $data['lead_pipeline_id']);
-        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.roles.create-success') );
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.leads.create-success'));
 
     }
 

@@ -53,7 +53,7 @@ class Controller extends BaseController
         if ($validator->fails()) {
             $errors = $validator->errors();
             $$requests = $request->all();
-            Log::info("validate error, request:$requests");
+            Log::info("validate error, request: $requests");
             Log::info("error: $errors");
             throw new HttpResponseException(Controller::ReturnJsonFailMsg(config('app.error_code.field_error')));
         }
