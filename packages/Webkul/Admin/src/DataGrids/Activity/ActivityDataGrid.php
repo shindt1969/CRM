@@ -54,7 +54,7 @@ class ActivityDataGrid extends DataGrid
             ->leftJoin('users', 'activities.user_id', '=', 'users.id')
             ->whereIn('type', ['call', 'meeting', 'lunch']);
 
-        $currentUser = auth()->guard('user')->user();
+        $currentUser = auth()->user();
 
         if ($currentUser->view_permission != 'global') {
             if ($currentUser->view_permission == 'group') {

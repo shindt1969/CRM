@@ -226,7 +226,7 @@ class UserController extends Controller
     public function massUpdate()
     {
         $this->validate(request(), [
-            'rows'=> 'required|exists:users,id', // array of users' id
+            'rows.*'=> 'required|exists:users,id', // array of users' id
             'value'=> 'in:0,1', // 0=inactive, 1= active
         ]);
 

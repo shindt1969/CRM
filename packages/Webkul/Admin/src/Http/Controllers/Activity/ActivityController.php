@@ -102,25 +102,18 @@ class ActivityController extends Controller
      */
     public function get()
     {
-        if (request('view_type')) {
-            $startDate = request()->get('startDate')
-                        ? Carbon::createFromTimeString(request()->get('startDate') . " 00:00:01")
-                        : Carbon::now()->startOfWeek()->format('Y-m-d H:i:s');
+        $startDate = request()->get('startDate')
+                    ? Carbon::createFromTimeString(request()->get('startDate') . " 00:00:01")
+                    : Carbon::now()->startOfWeek()->format('Y-m-d H:i:s');
 
-            $endDate = request()->get('endDate')
-                    ? Carbon::createFromTimeString(request()->get('endDate') . " 23:59:59")
-                    : Carbon::now()->endOfWeek()->format('Y-m-d H:i:s');
+        $endDate = request()->get('endDate')
+                ? Carbon::createFromTimeString(request()->get('endDate') . " 23:59:59")
+                : Carbon::now()->endOfWeek()->format('Y-m-d H:i:s');
 
-            $activities = $this->activityRepository->getActivities([$startDate, $endDate])->toArray();
+        $activities = $this->activityRepository->getActivities([$startDate, $endDate])->toArray();
 
-            return response()->json([
-                'activities' => $activities,
-            ]);
-            // return $this->ReturnJsonSuccessMsg('ok1' );
-        } else {
-            return app(\Webkul\Admin\DataGrids\Activity\ActivityDataGrid::class)->toJson();
-            // return $this->ReturnJsonSuccessMsg('ok2' );
-        }
+        return $this->ReturnJsonSuccessMsg([$activities]);
+
     }
 
     /**
@@ -136,10 +129,12 @@ class ActivityController extends Controller
             request('participants'),
             request('id')
         );
-        
-        return response()->json([
-            'overlapping' => $isOverlapping,
-        ]);
+
+        if ($isOverlapping){
+            return $this->ReturnJsonSuccessMsg($isOverlapping);
+        }else{
+            return $this->ReturnJsonFailMsg($isOverlapping);
+        }
 
     }
 
@@ -150,6 +145,7 @@ class ActivityController extends Controller
      */
     public function store()
     {
+
         $this->validate(request(), [
             'type'          => 'required',
             'comment'       => 'required_if:type,note',
@@ -161,7 +157,7 @@ class ActivityController extends Controller
 
         $activity = $this->activityRepository->create(array_merge(request()->all(), [
             'is_done' => request('type') == 'note' ? 1 : 0,
-            'user_id' => auth()->guard('user')->user()->id,
+            'user_id' => auth()->user()->id,
         ]));
 
         if (request('participants')) {
@@ -190,9 +186,11 @@ class ActivityController extends Controller
 
         Event::dispatch('activity.create.after', $activity);
 
-        session()->flash('success', trans('admin::app.activities.create-success', ['type' => trans('admin::app.activities.' . $activity->type)]));
+        // session()->flash('success', trans('admin::app.activities.create-success', ['type' => trans('admin::app.activities.' . $activity->type)]));
+
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.activities.create-success', ['type' => trans('admin::app.activities.' . $activity->type)]));
         
-        return redirect()->back();
+        // return redirect()->back();
     }
 
     /**
@@ -249,16 +247,18 @@ class ActivityController extends Controller
         }
 
         Event::dispatch('activity.update.after', $activity);
+        
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.activities.update-success', ['type' => trans('admin::app.activities.' . $activity->type)]));
 
-        if (request()->ajax()) {
-            return response()->json([
-                'message' => trans('admin::app.activities.update-success', ['type' => trans('admin::app.activities.' . $activity->type)]),
-            ]);
-        } else {
-            session()->flash('success', trans('admin::app.activities.update-success', ['type' => trans('admin::app.activities.' . $activity->type)]));
+        // if (request()->ajax()) {
+        //     return response()->json([
+        //         'message' => trans('admin::app.activities.update-success', ['type' => trans('admin::app.activities.' . $activity->type)]),
+        //     ]);
+        // } else {
+        //     session()->flash('success', trans('admin::app.activities.update-success', ['type' => trans('admin::app.activities.' . $activity->type)]));
 
-            return redirect()->route('admin.activities.index');
-        }
+        //     return redirect()->route('admin.activities.index');
+        // }
     }
 
     /**
@@ -268,6 +268,11 @@ class ActivityController extends Controller
      */
     public function massUpdate()
     {
+        $this->validate(request(), [
+            'rows.*'=> 'required|exists:activities,id', // array of users' id
+            'value'=> 'required|in:0,1', // 0=inactive, 1= active
+        ]);
+
         $count = 0;
         
         foreach (request('rows') as $activityId) {
@@ -284,14 +289,17 @@ class ActivityController extends Controller
 
 
         if (! $count) {
-            return response()->json([
-                'message' => trans('admin::app.activities.mass-update-failed'),
-            ], 400);
+            // return response()->json([
+            //     'message' => trans('admin::app.activities.mass-update-failed'),
+            // ], 400);
+            return $this->ReturnJsonFailMsg(trans('admin::app.activities.mass-update-failed'));
         }
 
-        return response()->json([
-            'message' => trans('admin::app.activities.mass-update-success'),
-        ]);
+        // return response()->json([
+        //     'message' => trans('admin::app.activities.mass-update-success'),
+        // ]);
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.activities.mass-update-success'));
+
     }
 
     /**
@@ -338,12 +346,12 @@ class ActivityController extends Controller
             }
 
             Event::dispatch('activities.file.create.after', $file);
-            return $this->ReturnJsonSuccessMsg('ok' );
-            session()->flash('success', trans('admin::app.activities.file-upload-success'));
+            return $this->ReturnJsonSuccessMsg(trans('admin::app.activities.file-upload-success'));
+            // session()->flash('success', trans('admin::app.activities.file-upload-success'));
         } else {
 
-            return $this->ReturnJsonFailMsg("not ok");
-            session()->flash('error', trans('admin::app.activities.file-upload-error'));
+            return $this->ReturnJsonFailMsg(trans('admin::app.activities.file-upload-error'));
+            // session()->flash('error', trans('admin::app.activities.file-upload-error'));
         }
 
         return redirect()->back();

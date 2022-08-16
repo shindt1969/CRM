@@ -123,6 +123,8 @@
             ], function () {
                 Route::get('', 'ActivityController@index')->name('admin.activities.index');
 
+                Route::get('{id}', 'ActivityController@indexById')->name('admin.activities.indexById')->where('id', '[0-9]+');
+
                 Route::get('get', 'ActivityController@get')->name('admin.activities.get');
 
                 Route::post('is-overlapping', 'ActivityController@checkIfOverlapping')->name('admin.activities.check_overlapping');
@@ -144,6 +146,10 @@
                 Route::put('mass-update', 'ActivityController@massUpdate')->name('admin.activities.mass_update');
 
                 Route::put('mass-destroy', 'ActivityController@massDestroy')->name('admin.activities.mass_delete');
+
+                Route::get('test', 'ActivityController@index', function () {
+                    return "ok";});
+
             });
 
             Route::group([
