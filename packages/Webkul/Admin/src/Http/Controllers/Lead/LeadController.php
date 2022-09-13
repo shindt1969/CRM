@@ -292,12 +292,15 @@ class LeadController extends Controller
      */
     public function search()
     {
+
+        $this->validate(request(), [
+            'query' => 'required',
+        ]);
+
         $results = $this->leadRepository->search([
             ['title', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);
 
-        // return   $this->ReturnJsonSuccessMsg('search ok' );
-        // return response()->json($results);
         return $this->ReturnJsonSuccessMsg($results);
     }
 

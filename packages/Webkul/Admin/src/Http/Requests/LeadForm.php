@@ -160,8 +160,8 @@ class LeadForm extends FormRequest
     protected function failedValidation(Validator $validator) {
         $errors = $validator->errors();
         $$requests = request()->all();
-        Log::info("validate error, request: $requests");
-        Log::info("error: $errors");
+        Log::error("validate error, request: $requests");
+        Log::error("error: $errors");
         throw new HttpResponseException(Controller::ReturnJsonFailMsg(config('app.error_code.field_error')));
     }
 }

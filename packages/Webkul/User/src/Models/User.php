@@ -9,10 +9,13 @@ use Illuminate\Support\Facades\Storage;
 use Webkul\User\Contracts\User as UserContract;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Auth\Passwords\CanResetPassword; // trait
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract; // implement
 
-class User extends Authenticatable implements JWTSubject, UserContract
+
+class User extends Authenticatable implements JWTSubject, UserContract, CanResetPasswordContract
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens, CanResetPassword;
 
     public function getJWTIdentifier()
     {

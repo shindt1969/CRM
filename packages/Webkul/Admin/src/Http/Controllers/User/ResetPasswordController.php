@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Webkul\Admin\Http\Controllers\Controller;
 
@@ -23,10 +24,6 @@ class ResetPasswordController extends Controller
      */
     public function create($token = null)
     {
-        // return view('admin::sessions.reset-password')->with([
-        //     'token' => $token,
-        //     'email' => request('email'),
-        // ]);
         return response()->json([
             'status' => "OK",
             'token' => $token
@@ -35,6 +32,7 @@ class ResetPasswordController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * reset()的原型在 Illuminate\Auth\Passwords\PasswordBroker;
      * $this->broker()->reset() 檢查 password 跟 token 之後 call resetPassword
      * broker 的原型在 vendor\laravel\framework\src\Illuminate\Auth\Passwords\PasswordBroker.php
      *
@@ -43,47 +41,39 @@ class ResetPasswordController extends Controller
     
     public function store()
     {
-        try {
+        // try {
             $this->validate(request(), [
-                'token'    => 'required',
+                // 'token'    => 'required',
                 'email'    => 'required|email',
                 'password' => 'required|confirmed|min:6',
+                'password_confirmation' => 'required_with:password|same:password'
             ]);
 
+            $token = auth()->user()->token;
+            Log::info('token'.$token);
+
+            $data = array_merge(
+                request(['email', 'password', 'password_confirmation']),
+                ['token' => $token]
+            );
+            Log::info($data);
+
             $response = $this->broker()->reset(
-                request(['email', 'password', 'password_confirmation', 'token']), function ($admin, $password) {
+                $data, function ($admin, $password) {
                     $this->resetPassword($admin, $password);
                 }
             );
 
             if ($response == Password::PASSWORD_RESET) {
-                // return redirect()->route('admin.dashboard.index');
-                return response()->json([
-                    'status' => "OK",
-                ]);
+                return $this->ReturnJsonSuccessMsg("ok");
             }
 
-            // return back()
-            //     ->withInput(request(['email']))
-            //     ->withErrors([
-            //         'email' => trans($response),
-            //     ]);
-            return response()->json([
-                'status' => "Failed",
-                'email' => trans($response)
-            ]);
+            return $this->ReturnJsonFailMsg(trans($response));
 
-
-        } catch(\Exception $exception) {
-            session()->flash('error', trans($exception->getMessage()));
-
-            return response()->json([
-                'status' => "Failed",
-                'error' => trans($exception->getMessage())
-            ]);
-
-            // return redirect()->back();
-        }
+        // } catch(\Exception $exception) {
+        //     // session()->flash('error', trans($exception->getMessage()));
+        //     return $this->ReturnJsonSuccessMsg($exception->getMessage());
+        // }
     }
 
     /**
@@ -103,7 +93,7 @@ class ResetPasswordController extends Controller
 
         event(new PasswordReset($admin));
 
-        auth()->guard('user')->login($admin);
+        auth()->login($admin);
     }
 
     /**

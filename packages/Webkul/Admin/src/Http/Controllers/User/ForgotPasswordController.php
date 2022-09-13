@@ -3,6 +3,7 @@
 namespace Webkul\Admin\Http\Controllers\User;
 
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Admin\Notifications\User\UserResetPassword;
@@ -19,7 +20,7 @@ class ForgotPasswordController extends Controller
      */
     public function create()
     {
-        if (auth()->guard('user')->check()) {
+        if (auth()->check()) {
             return redirect()->route('admin.dashboard.index');
         } else {
             if (strpos(url()->previous(), 'user') !== false) {
@@ -43,43 +44,22 @@ class ForgotPasswordController extends Controller
      */
     public function store()
     {
-        try {
+        // try {
             $this->validate(request(), [
                 'email' => 'required|email',
             ]);
 
+            // send email
             $response = $this->broker()->sendResetLink(request(['email']), function ($user, $token) {
                 $user->notify(new UserResetPassword($token));
             });
 
             if ($response == Password::RESET_LINK_SENT) {
-                session()->flash('success', trans('admin::app.sessions.forgot-password.reset-link-sent'));
-
-                // return back();
-                return response()->json([
-                    'status' => "OK",
-                ]);
+                return $this->ReturnJsonSuccessMsg(trans('admin::app.sessions.forgot-password.reset-link-sent'));
             }
 
-            // return back()
-            //     ->withInput(request(['email']))
-            //     ->withErrors([
-            //         'email' => trans('admin::app.sessions.forgot-password.email-not-exist'),
-            //     ]);
-            return response()->json([
-                'status' => "Failed",
-                'error' => 'email not exist'
-            ]);
+            return $this->ReturnJsonFailMsg('email not exist');
 
-        } catch (\Exception $exception) {
-            session()->flash('error', trans($exception->getMessage()));
-
-            // return redirect()->back();
-            return response()->json([
-                'status' => 'Failed',
-                'error' => $exception->getMessage()
-            ]);
-        }
     }
 
     /**

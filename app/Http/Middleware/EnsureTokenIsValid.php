@@ -28,24 +28,6 @@ class EnsureTokenIsValid
         if (is_null(auth()->user())){
             return Controller::ReturnJsonFailMsg(config("app.error_code.invalid_token"));
         }
-        // try{
-            // auth()->user();
-        // }
-        // catch(TokenInvalidException $ie){
-        //     // invalid token
-        //     Log::info(request()->header());
-        //     return Controller::ReturnJsonFailMsg(config("app.error_code.invalid_token"));
-        // }
-        // catch(TokenExpiredException $ee){
-        //     // Token expired
-        //     Log::info(request()->header());
-        //     return Controller::ReturnJsonFailMsg(config("app.error_code.token_expired"));
-        // }
-        // catch(JWTException $je){
-        //     // Token expired
-        //     Log::info(request()->header());
-        //     return Controller::ReturnJsonFailMsg(config("app.error_code.token_expired"));
-        // }
         return $next($request);
     }
 }
