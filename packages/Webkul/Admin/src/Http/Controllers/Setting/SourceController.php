@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Validator;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Lead\Repositories\SourceRepository;
+use Illuminate\Support\Facades\Log;
 
 class SourceController extends Controller
 {
@@ -34,11 +35,8 @@ class SourceController extends Controller
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Setting\SourceDataGrid::class)->toJson();
-        }
+        return $this->ReturnJsonSuccessMsg($this->sourceRepository->all());
 
-        return view('admin::settings.sources.index');
     }
 
     /**
@@ -48,15 +46,10 @@ class SourceController extends Controller
      */
     public function store()
     {
-        $validator = Validator::make(request()->all(), [
+
+        $this->validate(request(), [
             'name' => 'required|unique:lead_sources,name'
         ]);
-        
-        if ($validator->fails()) {
-            session()->flash('error', trans('admin::app.settings.sources.name-exists'));
-
-            return redirect()->back();
-        }
 
         Event::dispatch('settings.source.create.before');
 
@@ -64,9 +57,10 @@ class SourceController extends Controller
 
         Event::dispatch('settings.source.create.after', $source);
 
-        session()->flash('success', trans('admin::app.settings.sources.create-success'));
+        // session()->flash('success', trans('admin::app.settings.sources.create-success'));
 
-        return redirect()->route('admin.settings.sources.index');
+        // return redirect()->route('admin.settings.sources.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.sources.create-success'));
     }
 
     /**
@@ -102,7 +96,8 @@ class SourceController extends Controller
 
         session()->flash('success', trans('admin::app.settings.sources.update-success'));
 
-        return redirect()->route('admin.settings.sources.index');
+        // return redirect()->route('admin.settings.sources.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.sources.update-success'));
     }
 
     /**
@@ -113,8 +108,6 @@ class SourceController extends Controller
      */
     public function destroy($id)
     {
-        $source = $this->sourceRepository->findOrFail($id);
-
         try {
             Event::dispatch('settings.source.delete.before', $id);
 
@@ -122,17 +115,22 @@ class SourceController extends Controller
 
             Event::dispatch('settings.source.delete.after', $id);
 
-            return response()->json([
-                'message' => trans('admin::app.settings.sources.delete-success'),
-            ], 200);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.sources.delete-success'),
+            // ], 200);
+            return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.sources.delete-success'));
+
         } catch(\Exception $exception) {
-            return response()->json([
-                'message' => trans('admin::app.settings.sources.delete-failed'),
-            ], 400);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.sources.delete-failed'),
+            // ], 400);
+            return $this->ReturnJsonFailMsg(trans('admin::app.settings.sources.delete-failed'));
         }
 
-        return response()->json([
-            'message' => trans('admin::app.settings.sources.delete-failed'),
-        ], 400);
+        // return response()->json([
+        //     'message' => trans('admin::app.settings.sources.delete-failed'),
+        // ], 400);
+
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.sources.delete-failed'));
     }
 }

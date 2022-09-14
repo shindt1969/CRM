@@ -3,13 +3,28 @@
 namespace Webkul\User\Models;
 
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Storage;
 use Webkul\User\Contracts\User as UserContract;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Auth\Passwords\CanResetPassword; // trait
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract; // implement
 
-class User extends Authenticatable implements UserContract
+
+class User extends Authenticatable implements JWTSubject, UserContract, CanResetPasswordContract
 {
-    use Notifiable;
+    use HasFactory, Notifiable, HasApiTokens, CanResetPassword;
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+    public function getJWTCustomClaims()
+    {
+        return[];
+    }
 
     /**
      * The attributes that are mass assignable.

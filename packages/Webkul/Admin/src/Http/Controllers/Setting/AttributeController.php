@@ -3,6 +3,7 @@
 namespace Webkul\Admin\Http\Controllers\Setting;
 
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Admin\Http\Controllers\Controller;
@@ -30,21 +31,31 @@ class AttributeController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
+     ************************** 不用 *************************
      * @return \Illuminate\View\View
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Setting\AttributeDataGrid::class)->toJson();
-        }
+        // if (request()->ajax()) {
+        //     return app(\Webkul\Admin\DataGrids\Setting\AttributeDataGrid::class)->toJson();
+        // }
 
-        return view('admin::settings.attributes.index');
+        // return view('admin::settings.attributes.index');
+
+        return $this->ReturnJsonSuccessMsg($this->attributeRepository->all());
+
+    }
+
+
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->attributeRepository->findOrFail($id));
+
     }
 
     /**
      * Show the form for creating a new resource.
-     *
+     ************************** 不用 *************************
      * @return \Illuminate\View\View
      */
     public function create()
@@ -59,12 +70,13 @@ class AttributeController extends Controller
      */
     public function store()
     {
+        $data = request()->all();
+
         $this->validate(request(), [
             'code' => ['required', 'unique:attributes,code,NULL,NULL,entity_type,' . request('entity_type'), new Code],
             'name' => 'required',
             'type' => 'required',
         ]);
-
         Event::dispatch('settings.attribute.create.before');
 
         request()->request->add(['quick_add' => 1]);
@@ -75,12 +87,13 @@ class AttributeController extends Controller
 
         session()->flash('success', trans('admin::app.settings.attributes.create-success'));
 
-        return redirect()->route('admin.settings.attributes.index');
+        // return redirect()->route('admin.settings.attributes.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.attributes.create-success'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
+     ************************** 不用 *************************
      * @param  int  $id
      * @return \Illuminate\View\View
      */
@@ -99,6 +112,8 @@ class AttributeController extends Controller
      */
     public function update($id)
     {
+        $data = request()->all();
+
         $this->validate(request(), [
             'code' => ['required', 'unique:attributes,code,NULL,NULL,entity_type,' . $id, new Code],
             'name' => 'required',
@@ -113,7 +128,8 @@ class AttributeController extends Controller
 
         session()->flash('success', trans('admin::app.settings.attributes.update-success'));
 
-        return redirect()->route('admin.settings.attributes.index');
+        // return redirect()->route('admin.settings.attributes.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.attributes.update-success'));
     }
 
     /**
@@ -127,9 +143,11 @@ class AttributeController extends Controller
         $attribute = $this->attributeRepository->findOrFail($id);
 
         if (! $attribute->is_user_defined) {
-            return response()->json([
-                'message' => trans('admin::app.settings.attributes.user-define-error'),
-            ], 400);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.attributes.user-define-error'),
+            // ], 400);
+            
+            return $this->ReturnJsonFailMsg(trans('admin::app.settings.attributes.update-success'));
         }
 
         try {
@@ -139,14 +157,16 @@ class AttributeController extends Controller
 
             Event::dispatch('settings.attribute.delete.after', $id);
 
-            return response()->json([
-                'status'  => true,
-                'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.settings.attributes.attribute')]),
-            ], 200);
+            // return response()->json([
+            //     'status'  => true,
+            //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.settings.attributes.attribute')]),
+            // ], 200);
+            return $this->ReturnJsonSuccessMsg(trans('admin::app.response.destroy-success', ['name' => trans('admin::app.settings.attributes.attribute')]));
         } catch(\Exception $exception) {
-            return response()->json([
-                'message' => trans('admin::app.settings.attributes.delete-failed'),
-            ], 400);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.attributes.delete-failed'),
+            // ], 400);
+            return $this->ReturnJsonFailMsg(trans('admin::app.settings.attributes.delete-failed'));
         }
     }
 
@@ -156,11 +176,12 @@ class AttributeController extends Controller
      * @param  string  $lookup
      * @return \Illuminate\Http\Response
      */
-    public function lookup($lookup)
+    public function lookup($lookup=null)
     {
         $results = $this->attributeRepository->getLookUpOptions($lookup, request()->input('query'));
 
-        return response()->json($results);
+        // return response()->json($results);
+        return $this->ReturnJsonSuccessMsg($results);
     }
 
     /**
@@ -171,7 +192,7 @@ class AttributeController extends Controller
     public function massDestroy()
     {
         $count = 0;
-
+        
         foreach (request('rows') as $attributeId) {
             $attribute = $this->attributeRepository->find($attributeId);
 
@@ -189,19 +210,21 @@ class AttributeController extends Controller
         }
 
         if (! $count) {
-            return response()->json([
-                'message' => trans('admin::app.settings.attributes.mass-delete-failed'),
-            ], 400);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.attributes.mass-delete-failed'),
+            // ], 400);
+            return $this->ReturnJsonFailMsg(trans('admin::app.settings.attributes.mass-delete-failed'));
         }
 
-        return response()->json([
-            'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.settings.attributes.title')]),
-        ]);
+        // return response()->json([
+        //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.settings.attributes.title')]),
+        // ]);
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.response.destroy-success', ['name' => trans('admin::app.settings.attributes.title')]));
     }
 
     /**
      * Download image or file
-     *
+     ************************** 不用 *************************
      * @return \Illuminate\Http\Response
      */
     public function download()

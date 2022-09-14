@@ -2,6 +2,7 @@
 
 namespace Webkul\Admin\Http\Controllers\Configuration;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use Webkul\Core\Contracts\Validations\Code;
@@ -77,7 +78,8 @@ class ConfigurationController extends Controller
 
         session()->flash('success', trans('admin::app.configuration.save-message'));
 
-        return redirect()->back();
+        // return redirect()->back();
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.configuration.save-message')); 
     }
 
     /**

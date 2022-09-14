@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Event;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Admin\Http\Requests\PipelineForm;
 use Webkul\Lead\Repositories\PipelineRepository;
+use Illuminate\Support\Facades\Log;
 
 class PipelineController extends Controller
 {
@@ -29,21 +30,27 @@ class PipelineController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
+     ************************* 不用 *************************
      * @return \Illuminate\View\View
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Setting\PipelineDataGrid::class)->toJson();
-        }
+        return $this->ReturnJsonSuccessMsg($this->pipelineRepository->all());
+        // if (request()->ajax()) {
+        //     return app(\Webkul\Admin\DataGrids\Setting\PipelineDataGrid::class)->toJson();
+        // }
+        // return view('admin::settings.pipelines.index');
+    }
 
-        return view('admin::settings.pipelines.index');
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->pipelineRepository->findOrFail($id));
+
     }
 
     /**
      * Show the form for creating a new resource.
-     *
+     ************************* 不用 *************************
      * @return \Illuminate\View\View
      */
     public function create()
@@ -58,6 +65,9 @@ class PipelineController extends Controller
      */
     public function store(PipelineForm $request)
     {
+
+        $data = request()->all();
+
         $request->validated();
 
         $request->merge([
@@ -70,19 +80,23 @@ class PipelineController extends Controller
 
         Event::dispatch('settings.pipeline.create.after', $pipeline);
 
-        session()->flash('success', trans('admin::app.settings.pipelines.create-success'));
+        // session()->flash('success', trans('admin::app.settings.pipelines.create-success'));
 
-        return redirect()->route('admin.settings.pipelines.index');
+        // return redirect()->route('admin.settings.pipelines.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.pipelines.create-success'));
+
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
+     ************************* 不用 *************************
      * @param  int  $id
      * @return \Illuminate\View\View
      */
     public function edit($id)
+    
     {
+
         $pipeline = $this->pipelineRepository->findOrFail($id);
 
         return view('admin::settings.pipelines.edit', compact('pipeline'));
@@ -90,7 +104,7 @@ class PipelineController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
+     ************************* 不用 *************************
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -108,9 +122,10 @@ class PipelineController extends Controller
 
         Event::dispatch('settings.pipeline.update.after', $pipeline);
 
-        session()->flash('success', trans('admin::app.settings.pipelines.update-success'));
+        // session()->flash('success', trans('admin::app.settings.pipelines.update-success'));
 
-        return redirect()->route('admin.settings.pipelines.index');
+        // return redirect()->route('admin.settings.pipelines.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.pipelines.update-success'));
     }
 
     /**
@@ -124,9 +139,10 @@ class PipelineController extends Controller
         $pipeline = $this->pipelineRepository->findOrFail($id);
 
         if ($pipeline->is_default) {
-            return response()->json([
-                'message' => trans('admin::app.settings.pipelines.default-delete-error'),
-            ], 400);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.pipelines.default-delete-error'),
+            // ], 400);
+            return $this->ReturnJsonFailMsg(trans('admin::app.settings.pipelines.default-delete-error'));
         } else {
             $defaultPipeline = $this->pipelineRepository->getDefaultPipeline();
 
@@ -135,7 +151,6 @@ class PipelineController extends Controller
                 'lead_pipeline_stage_id' => $defaultPipeline->stages()->first()->id,
             ]);
         }
-
         try {
             Event::dispatch('settings.pipeline.delete.before', $id);
 
@@ -143,17 +158,19 @@ class PipelineController extends Controller
 
             Event::dispatch('settings.pipeline.delete.after', $id);
 
-            return response()->json([
-                'message' => trans('admin::app.settings.pipelines.delete-success'),
-            ], 200);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.pipelines.delete-success'),
+            // ], 200);
+            return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.pipelines.delete-success'));
         } catch(\Exception $exception) {
-            return response()->json([
-                'message' => trans('admin::app.settings.pipelines.delete-failed'),
-            ], 400);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.pipelines.delete-failed'),
+            // ], 400);
+            return $this->ReturnJsonFailMsg(trans('admin::app.settings.pipelines.delete-failed'));
         }
-
-        return response()->json([
-            'message' => trans('admin::app.settings.pipelines.delete-failed'),
-        ], 400);
+        // return response()->json([
+        //     'message' => trans('admin::app.settings.pipelines.delete-failed'),
+        // ], 400);
+        return $this->ReturnJsonFailMsg(trans('admin::app.settings.pipelines.delete-failed'));
     }
 }

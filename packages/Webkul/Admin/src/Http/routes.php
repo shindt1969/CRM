@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['middleware' => ['web']], function () {
+// Route::group(['middleware' => ['web']], function () {
     Route::get('/', 'Webkul\Admin\Http\Controllers\Controller@redirectToLogin')->name('krayin.home');
 
     Route::prefix(config('app.admin_path'))->group(function () {
@@ -21,18 +21,20 @@ Route::group(['middleware' => ['web']], function () {
         // Reset Password Routes
         Route::get('reset-password/{token}', 'Webkul\Admin\Http\Controllers\User\ResetPasswordController@create')->name('admin.reset_password.create');
 
-        Route::post('reset-password', 'Webkul\Admin\Http\Controllers\User\ResetPasswordController@store')->name('admin.reset_password.store');
 
         Route::get('mail/inbound-parse', 'Webkul\Admin\Http\Controllers\Mail\EmailController@inboundParse')->name('admin.mail.inbound_parse');
 
         // Admin Routes
-        Route::group(['middleware' => ['user']], function () {
+        Route::group(['middleware' => ['api']], function () {
             Route::get('logout', 'Webkul\Admin\Http\Controllers\User\SessionController@destroy')->name('admin.session.destroy');
 
             // Dashboard Route
             Route::get('dashboard', 'Webkul\Admin\Http\Controllers\Admin\DashboardController@index')->name('admin.dashboard.index');
 
             Route::get('template', 'Webkul\Admin\Http\Controllers\Admin\DashboardController@template')->name('admin.dashboard.template');
+
+            Route::post('reset-password', 'Webkul\Admin\Http\Controllers\User\ResetPasswordController@store')->name('admin.reset_password.store');
+
 
             // API routes
             Route::group([
@@ -80,13 +82,13 @@ Route::group(['middleware' => ['web']], function () {
 
                 Route::put('mass-destroy', 'LeadController@massDestroy')->name('admin.leads.mass_delete');
 
-                Route::post('tags/{id}', 'TagController@store')->name('admin.leads.tags.store');
+                Route::post('tags/{id}', 'TagController@store')->name('admin.leads.tags.store')->where('id', '[0-9]+');
 
-                Route::delete('{lead_id}/{tag_id?}', 'TagController@delete')->name('admin.leads.tags.delete');
+                Route::delete('{lead_id}/{tag_id}', 'TagController@delete')->name('admin.leads.tags.delete')->where(['lead_id'=> '[0-9]+', 'tag_id'=> '[0-9]+']);
 
-                Route::get('get/{pipeline_id?}', 'LeadController@get')->name('admin.leads.get');
+                Route::get('get/{pipeline_id}', 'LeadController@get')->name('admin.leads.get')->where(['pipeline_id'=> '[0-9]+']);
 
-                Route::get('{pipeline_id?}', 'LeadController@index')->name('admin.leads.index');
+                Route::get('{pipeline_id}', 'LeadController@index')->name('admin.leads.index')->where(['pipeline_id'=> '[0-9]+']);
 
                 Route::group([
                     'prefix'    => 'quotes',
@@ -123,6 +125,8 @@ Route::group(['middleware' => ['web']], function () {
             ], function () {
                 Route::get('', 'ActivityController@index')->name('admin.activities.index');
 
+                Route::get('{id}', 'ActivityController@indexById')->name('admin.activities.indexById')->where('id', '[0-9]+');
+
                 Route::get('get', 'ActivityController@get')->name('admin.activities.get');
 
                 Route::post('is-overlapping', 'ActivityController@checkIfOverlapping')->name('admin.activities.check_overlapping');
@@ -144,6 +148,10 @@ Route::group(['middleware' => ['web']], function () {
                 Route::put('mass-update', 'ActivityController@massUpdate')->name('admin.activities.mass_update');
 
                 Route::put('mass-destroy', 'ActivityController@massDestroy')->name('admin.activities.mass_delete');
+
+                Route::get('test', 'ActivityController@index', function () {
+                    return "ok";});
+
             });
 
             Route::group([
@@ -216,6 +224,8 @@ Route::group(['middleware' => ['web']], function () {
             ], function () {
                 Route::get('', 'ProductController@index')->name('admin.products.index');
 
+                Route::get('{id}', 'ProductController@indexById')->name('admin.products.indexById')->where('id', '[0-9]+');
+
                 Route::get('create', 'ProductController@create')->name('admin.products.create');
 
                 Route::post('create', 'ProductController@store')->name('admin.products.store');
@@ -247,9 +257,9 @@ Route::group(['middleware' => ['web']], function () {
 
                     Route::post('create', 'GroupController@store')->name('admin.settings.groups.store');
 
-                    Route::get('edit/{id}', 'GroupController@edit')->name('admin.settings.groups.edit');
+                    Route::get('edit/{id}', 'GroupController@edit')->name('admin.settings.groups.edit')->where('id', '[0-9]+');
 
-                    Route::put('edit/{id}', 'GroupController@update')->name('admin.settings.groups.update');
+                    Route::put('edit/{id}', 'GroupController@update')->name('admin.settings.groups.update')->where('id', '[0-9]+');
 
                     Route::delete('{id}', 'GroupController@destroy')->name('admin.settings.groups.delete');
                 });
@@ -257,6 +267,8 @@ Route::group(['middleware' => ['web']], function () {
                 // Roles Routes
                 Route::prefix('roles')->group(function () {
                     Route::get('', 'RoleController@index')->name('admin.settings.roles.index');
+
+                    Route::get('{id}', 'RoleController@indexById')->name('admin.settings.roles.indexById')->where('id', '[0-9]+');
 
                     Route::get('create', 'RoleController@create')->name('admin.settings.roles.create');
 
@@ -273,7 +285,9 @@ Route::group(['middleware' => ['web']], function () {
                 Route::prefix('users')->group(function () {
                     Route::get('', 'UserController@index')->name('admin.settings.users.index');
 
-                    Route::get('create', 'UserController@create')->name('admin.settings.users.create');
+                    Route::get('{id}', 'UserController@indexById')->name('admin.settings.users.indexById')->where('id', '[0-9]+');
+
+                    // Route::get('create', 'UserController@create')->name('admin.settings.users.create');
 
                     Route::post('create', 'UserController@store')->name('admin.settings.users.store');
 
@@ -346,6 +360,8 @@ Route::group(['middleware' => ['web']], function () {
                 Route::prefix('types')->group(function () {
                     Route::get('', 'TypeController@index')->name('admin.settings.types.index');
 
+                    Route::get('{id?}', 'TypeController@indexById')->name('admin.settings.types.indexById');
+
                     Route::post('create', 'TypeController@store')->name('admin.settings.types.store');
 
                     Route::get('edit/{id?}', 'TypeController@edit')->name('admin.settings.types.edit');
@@ -354,7 +370,6 @@ Route::group(['middleware' => ['web']], function () {
 
                     Route::delete('{id}', 'TypeController@destroy')->name('admin.settings.types.delete');
                 });
-
 
                 // Email Templates Routes
                 Route::prefix('email-templates')->group(function () {
@@ -394,13 +409,13 @@ Route::group(['middleware' => ['web']], function () {
 
                     Route::post('create', 'TagController@store')->name('admin.settings.tags.store');
 
-                    Route::get('edit/{id?}', 'TagController@edit')->name('admin.settings.tags.edit');
+                    // Route::get('edit/{id?}', 'TagController@edit')->name('admin.settings.tags.edit')->where('id', '[0-9]+');
 
-                    Route::put('edit/{id}', 'TagController@update')->name('admin.settings.tags.update');
+                    Route::put('edit/{id}', 'TagController@update')->name('admin.settings.tags.update')->where('id', '[0-9]+');
 
                     Route::get('search', 'TagController@search')->name('admin.settings.tags.search');
 
-                    Route::delete('{id}', 'TagController@destroy')->name('admin.settings.tags.delete');
+                    Route::delete('{id}', 'TagController@destroy')->name('admin.settings.tags.delete')->where('id', '[0-9]+');
 
                     Route::put('mass-destroy', 'TagController@massDestroy')->name('admin.settings.tags.mass_delete');
                 });
@@ -417,4 +432,4 @@ Route::group(['middleware' => ['web']], function () {
             });
         });
     });
-});
+// });

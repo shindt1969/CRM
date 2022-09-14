@@ -2,6 +2,7 @@
 
 namespace Webkul\Admin\Http\Controllers\Setting;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Validator;
 use Webkul\Tag\Repositories\TagRepository;
@@ -34,11 +35,17 @@ class TagController extends Controller
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Setting\TagDataGrid::class)->toJson();
-        }
+        // if (request()->ajax()) {
+        //     return app(\Webkul\Admin\DataGrids\Setting\TagDataGrid::class)->toJson();
+        // }
+        return $this->ReturnJsonSuccessMsg($this->tagRepository->all());
+        // return view('admin::settings.tags.index');
+    }
 
-        return view('admin::settings.tags.index');
+
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->tagRepository->findOrFail($id));
     }
 
     /**
@@ -48,41 +55,26 @@ class TagController extends Controller
      */
     public function store()
     {
-        if (request()->ajax()) {
-            $this->validate(request(), [
-                'name' => 'required|unique:tags,name',
-            ]);
-        } else {
-            $validator = Validator::make(request()->all(), [
-                'name' => 'required|unique:tags,name',
-            ]);
-
-            if ($validator->fails()) {
-                session()->flash('error', $validator->errors()->first('name'));
-
-                return redirect()->back();
-            }
-        }
+        $this->validate(request(), [
+            'name' => 'required|unique:tags,name',
+        ]);
 
         Event::dispatch('settings.tag.create.before');
 
         $tag = $this->tagRepository->create(array_merge([
-            'user_id' => auth()->guard('user')->user()->id,
+            'user_id' => auth()->user()->id,
         ], request()->all()));
 
         Event::dispatch('settings.tag.create.after', $tag);
 
-        if (request()->ajax()) {
-            return response()->json([
-                'tag'     => $tag,
-                'status'  => true,
-                'message' => trans('admin::app.settings.tags.create-success'),
-            ]);
-        } else {
-            session()->flash('success', trans('admin::app.settings.tags.create-success'));
+        // return response()->json([
+        //     'tag'     => $tag,
+        //     'status'  => true,
+        //     'message' => trans('admin::app.settings.tags.create-success'),
+        // ]);
 
-            return redirect()->route('admin.settings.tags.index');
-        }
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.tags.create-success'));
+
     }
 
     /**
@@ -95,6 +87,9 @@ class TagController extends Controller
     {
         $tag = $this->tagRepository->findOrFail($id);
 
+
+        // return $this->ReturnJsonSuccessMsg('OK');
+
         return view('admin::settings.tags.edit', compact('tag'));
     }
 
@@ -106,25 +101,17 @@ class TagController extends Controller
      */
     public function update($id)
     {
-        $validator = Validator::make(request()->all(), [
+        $this->validate(request(), [
             'name' => 'required|unique:tags,name,' . $id,
         ]);
 
-        if ($validator->fails()) {
-            session()->flash('error', $validator->errors()->first('name'));
-
-            return redirect()->back();
-        }
-        
         Event::dispatch('settings.tag.update.before', $id);
 
         $tag = $this->tagRepository->update(request()->all(), $id);
 
         Event::dispatch('settings.tag.update.after', $tag);
 
-        session()->flash('success', trans('admin::app.settings.tags.update-success'));
-
-        return redirect()->route('admin.settings.tags.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.tags.update-success'));
     }
 
     /**
@@ -144,18 +131,18 @@ class TagController extends Controller
 
             Event::dispatch('settings.tag.delete.after', $id);
 
-            return response()->json([
+            return $this->ReturnJsonSuccessMsg([
                 'message' => trans('admin::app.settings.tags.delete-success'),
-            ], 200);
-        } catch(\Exception $exception) {
-            return response()->json([
+            ]);
+        } catch (\Exception $exception) {
+            return $this->ReturnJsonFailMsg([
                 'message' => trans('admin::app.settings.tags.delete-failed'),
-            ], 400);
+            ]);
         }
 
-        return response()->json([
+        return $this->ReturnJsonFailMsg([
             'message' => trans('admin::app.settings.tags.delete-failed'),
-        ], 400);
+        ]);
     }
 
     /**
@@ -165,7 +152,12 @@ class TagController extends Controller
      */
     public function search()
     {
-        $results = $this->tagRepository->findWhere([
+
+        $this->validate(request(), [
+            'query' => 'required',
+        ]);
+
+        $results = $this->tagRepository->search([
             ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);
 
@@ -179,6 +171,10 @@ class TagController extends Controller
      */
     public function massDestroy()
     {
+        $this->validate(request(), [
+            'rows.*' => 'required|exists:tags,id',
+        ]);
+
         foreach (request('rows') as $tagId) {
             Event::dispatch('settings.tag.delete.before', $tagId);
 
@@ -187,8 +183,10 @@ class TagController extends Controller
             Event::dispatch('settings.tag.delete.after', $tagId);
         }
 
-        return response()->json([
-            'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.settings.tags.title')]),
-        ]);
+        // return response()->json([
+        //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.settings.tags.title')]),
+        // ]);
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.response.destroy-success', ['name' => trans('admin::app.settings.tags.title')]));
+
     }
 }

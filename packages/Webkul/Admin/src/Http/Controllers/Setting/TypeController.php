@@ -2,10 +2,11 @@
 
 namespace Webkul\Admin\Http\Controllers\Setting;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Validator;
-use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Lead\Repositories\TypeRepository;
+use Webkul\Admin\Http\Controllers\Controller;
 
 class TypeController extends Controller
 {
@@ -29,16 +30,24 @@ class TypeController extends Controller
 
     /**
      * Display a listing of the type.
-     *
+     **************************** 不用 *************************
      * @return \Illuminate\View\View
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Setting\TypeDataGrid::class)->toJson();
-        }
+        return $this->ReturnJsonSuccessMsg($this->typeRepository->all());
 
-        return view('admin::settings.types.index');
+        // if (request()->ajax()) {
+        //     return app(\Webkul\Admin\DataGrids\Setting\TypeDataGrid::class)->toJson();
+        // }
+        // return view('admin::settings.types.index');
+    }
+
+
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->typeRepository->findOrFail($id));
+
     }
 
     /**
@@ -55,7 +64,8 @@ class TypeController extends Controller
         if ($validator->fails()) {
             session()->flash('error', trans('admin::app.settings.types.name-exists'));
 
-            return redirect()->back();
+            // return redirect()->back();
+            return $this->ReturnJsonFailMsg(trans('admin::app.settings.types.name-exists'));
         }
 
         Event::dispatch('settings.type.create.before');
@@ -66,12 +76,13 @@ class TypeController extends Controller
 
         session()->flash('success', trans('admin::app.settings.types.create-success'));
 
-        return redirect()->route('admin.settings.types.index');
+        // return redirect()->route('admin.settings.types.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.types.create-success'));
     }
 
     /**
      * Show the form for editing the specified type.
-     *
+     **************************** 不用 *************************
      * @param  int  $id
      * @return \Illuminate\View\View
      */
@@ -102,7 +113,9 @@ class TypeController extends Controller
 
         session()->flash('success', trans('admin::app.settings.types.update-success'));
 
-        return redirect()->route('admin.settings.types.index');
+        // return redirect()->route('admin.settings.types.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.types.update-success'));
+
     }
 
     /**
@@ -113,8 +126,6 @@ class TypeController extends Controller
      */
     public function destroy($id)
     {
-        $type = $this->typeRepository->findOrFail($id);
-
         try {
             Event::dispatch('settings.type.delete.before', $id);
 
@@ -122,17 +133,20 @@ class TypeController extends Controller
 
             Event::dispatch('settings.type.delete.after', $id);
 
-            return response()->json([
-                'message' => trans('admin::app.settings.types.delete-success'),
-            ], 200);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.types.delete-success'),
+            // ], 200);
+            return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.types.delete-success'));
         } catch(\Exception $exception) {
-            return response()->json([
-                'message' => trans('admin::app.settings.types.delete-failed'),
-            ], 400);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.types.delete-failed'),
+            // ], 400);
+            return $this->ReturnJsonFailMsg(trans('admin::app.settings.types.delete-failed'));
         }
 
-        return response()->json([
-            'message' => trans('admin::app.settings.types.delete-failed'),
-        ], 400);
+        // return response()->json([
+        //     'message' => trans('admin::app.settings.types.delete-failed'),
+        // ], 400);
+        return $this->ReturnJsonFailMsg(trans('admin::app.settings.types.delete-failed'));
     }
 }

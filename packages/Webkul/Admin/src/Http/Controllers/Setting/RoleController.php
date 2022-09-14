@@ -2,9 +2,13 @@
 
 namespace Webkul\Admin\Http\Controllers\Setting;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Event;
-use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\User\Repositories\RoleRepository;
+use Webkul\Admin\Http\Controllers\Controller;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 
 class RoleController extends Controller
 {
@@ -28,21 +32,25 @@ class RoleController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
+     ************************** 不用 *************************
      * @return \Illuminate\View\View
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Setting\RoleDataGrid::class)->toJson();
-        }
+        
+        // return response()->json(auth()->user());
+        return $this->ReturnJsonSuccessMsg($this->roleRepository->all());
 
-        return view('admin::settings.roles.index');
+    }
+
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->roleRepository->findOrFail($id));
     }
 
     /**
      * Show the form for creating a new resource.
-     *
+     ************************** 不用 *************************
      * @return \Illuminate\View\View
      */
     public function create()
@@ -78,14 +86,15 @@ class RoleController extends Controller
 
         Event::dispatch('settings.role.create.after', $role);
 
-        session()->flash('success', trans('admin::app.settings.roles.create-success'));
+        // session()->flash('success', trans('admin::app.settings.roles.create-success'));
 
-        return redirect()->route('admin.settings.roles.index');
+        // return redirect()->route('admin.settings.roles.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.roles.create-success'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
+     ************************** 不用 *************************
      * @param  int  $id
      * @return \Illuminate\View\View
      */
@@ -111,6 +120,7 @@ class RoleController extends Controller
             'permission_type' => 'required',
         ]);
 
+
         Event::dispatch('settings.role.update.before', $id);
 
         $roleData = request()->all();
@@ -120,14 +130,13 @@ class RoleController extends Controller
                 $roleData['permissions'] = [];
             }
         }
-
         $role = $this->roleRepository->update($roleData, $id);
-
         Event::dispatch('settings.role.update.after', $role);
 
-        session()->flash('success', trans('admin::app.settings.roles.update-success'));
+        // session()->flash('success', trans('admin::app.settings.roles.update-success'));
 
-        return redirect()->route('admin.settings.roles.index');
+        // return redirect()->route('admin.settings.roles.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.roles.update-success'));
     }
 
     /**
@@ -138,49 +147,47 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        $response = [
-            'responseCode' => 400,
-        ];
+        $response = [];
 
         $role = $this->roleRepository->findOrFail($id);
 
         if ($role->admins && $role->admins->count() >= 1) {
             $response['message'] = trans('admin::app.settings.roles.being-used');
+            return $this->ReturnJsonFailMsg($response);
 
-            session()->flash('error', $response['message']);
         } else if ($this->roleRepository->count() == 1) {
             $response['message'] = trans('admin::app.settings.roles.last-delete-error');
-
-            session()->flash('error', $response['message']);
+            return $this->ReturnJsonFailMsg($response);
         } else {
             try {
                 Event::dispatch('settings.role.delete.before', $id);
 
-                if (auth()->guard('user')->user()->role_id == $id) {
+                if (auth()->guard()->user()->role_id == $id) {
                     $response['message'] = trans('admin::app.settings.roles.current-role-delete-error');
+                    return $this->ReturnJsonFailMsg($response);
+
                 } else {
                     $this->roleRepository->delete($id);
 
                     Event::dispatch('settings.role.delete.after', $id);
 
-                    $message = trans('admin::app.settings.roles.delete-success');
+                    $message = trans('admin::app.settings.roles.delete-success') . ' id: ' . $id;
 
                     $response = [
-                        'responseCode' => 200,
                         'message'      => $message,
                     ];
 
-                    session()->flash('success', $message);
+                    // session()->flash('success', $message);
                 }
             } catch (\Exception $exception) {
                 $message = $exception->getMessage();
 
                 $response['message'] = $message;
 
-                session()->flash('error', $message);
             }
         }
 
-        return response()->json($response, $response['responseCode']);
+        // return response()->json($response, $response['responseCode']);
+        return $this->ReturnJsonSuccessMsg($response);
     }
 }

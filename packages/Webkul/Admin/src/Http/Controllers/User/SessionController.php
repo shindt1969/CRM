@@ -2,6 +2,8 @@
 
 namespace Webkul\Admin\Http\Controllers\User;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Admin\Http\Controllers\Controller;
 
@@ -9,6 +11,7 @@ class SessionController extends Controller
 {
     /**
      * Show the form for creating a new resource.
+     ****************************** 不用 *********************************
      *
      * @return \Illuminate\View\View
      */
@@ -22,18 +25,20 @@ class SessionController extends Controller
             } else {
                 $intendedUrl = route('admin.dashboard.index');
             }
-
             session()->put('url.intended', $intendedUrl);
-
             return view('admin::sessions.login');
         }
     }
 
     /**
      * Store a newly created resource in storage.
+     * 驗證 email 格式，password required
+     * 
      *
      * @return \Illuminate\Http\Response
      */
+    //post login
+    // public function store(Request $request)
     public function store()
     {
         $this->validate(request(), [
@@ -41,21 +46,12 @@ class SessionController extends Controller
             'password' => 'required',
         ]);
 
-        if (! auth()->guard('user')->attempt(request(['email', 'password']), request('remember'))) {
-            session()->flash('error', trans('admin::app.sessions.login.login-error'));
+        $credentials = request(['email', 'password']);
 
-            return redirect()->back();
+        if (! $token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
-
-        if (auth()->guard('user')->user()->status == 0) {
-            session()->flash('warning', trans('admin::app.sessions.login.activate-warning'));
-
-            auth()->guard('user')->logout();
-
-            return redirect()->route('admin.session.create');
-        }
-
-        return redirect()->intended(route('admin.dashboard.index'));
+        return $this->ReturnJsonSuccessMsg(["_token"=>$token]);
     }
 
     /**
@@ -65,8 +61,9 @@ class SessionController extends Controller
      */
     public function destroy()
     {
-        auth()->guard('user')->logout();
+        auth()->guard('api')->logout();
 
-        return redirect()->route('admin.session.create');
+        return $this->ReturnJsonSuccessMsg('OK');
+        // return redirect()->route('admin.session.create');
     }
 }

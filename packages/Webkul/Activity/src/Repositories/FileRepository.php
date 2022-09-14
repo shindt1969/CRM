@@ -54,12 +54,12 @@ class FileRepository extends Repository
             'is_done' => 1,
             'type'    => 'file',
             'comment' => $data['comment'],
-            'user_id' => auth()->guard('user')->user()->id,
+            'user_id' => auth()->user()->id,
         ]);
 
         return parent::create([
             'name'        => $data['name'] ?? request()->file('file')->getClientOriginalName(),
-            'path'        => request()->file('file')->store('activities/' . $leadActivity->id),
+            'path'        => request()->file('file')->store('activities/' . $leadActivity->id), // ./storage/app/public/activities
             'activity_id' => $leadActivity->id,
         ]);
     }

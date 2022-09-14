@@ -2,6 +2,7 @@
 
 namespace Webkul\Admin\Http\Controllers\Lead;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Event;
 use Webkul\Lead\Repositories\LeadRepository;
 use Webkul\Admin\Http\Controllers\Controller;
@@ -35,6 +36,8 @@ class TagController extends Controller
      */
     public function store($id)
     {
+        $this->leadRepository->findOrFail($id);
+
         Event::dispatch('leads.tag.create.before', $id);
 
         $lead = $this->leadRepository->find($id);
@@ -42,13 +45,8 @@ class TagController extends Controller
         if (! $lead->tags->contains(request('id'))) {
             $lead->tags()->attach(request('id'));
         }
-
         Event::dispatch('leads.tag.create.after', $lead);
-        
-        return response()->json([
-            'status'  => true,
-            'message' => trans('admin::app.leads.tag-create-success'),
-        ], 200);
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.leads.tag-create-success'));
     }
 
     /**
@@ -60,17 +58,17 @@ class TagController extends Controller
      */
     public function delete($leadId)
     {
+
+        $data = request()->all();
+
         Event::dispatch('leads.tag.delete.before', $leadId);
-
         $lead = $this->leadRepository->find($leadId);
-
         $lead->tags()->detach(request('tag_id'));
-
         Event::dispatch('leads.tag.delete.after', $lead);
-        
-        return response()->json([
-            'status'  => true,
-            'message' => trans('admin::app.leads.tag-destroy-success'),
-        ], 200);
+        // return response()->json([
+        //     'status'  => true,
+        //     'message' => trans('admin::app.leads.tag-destroy-success'),
+        // ], 200);
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.leads.tag-destroy-success'));
     }
 }

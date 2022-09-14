@@ -621,16 +621,15 @@
                     this.$http.get("{{ route('admin.products.search') }}", {params: {query: this.product['name']}})
                         .then (function(response) {
                             self.$parent.products.forEach(function(addedProduct) {
-
-                                response.data.forEach(function(product, index) {
+                                response.data.message.forEach(function(product, index) {
                                     if (product.id == addedProduct.product_id) {
-                                        response.data.splice(index, 1);
+                                        response.data.message.splice(index, 1);
                                     }
                                 });
 
                             });
 
-                            self.products = response.data;
+                            self.products = response.data.message;
 
                             self.is_searching = false;
                         })

@@ -1,5 +1,6 @@
 <?php
 
+
 namespace Webkul\Admin\Http\Controllers\Mail;
 
 use Illuminate\Support\Facades\Event;
@@ -63,25 +64,33 @@ class EmailController extends Controller
      */
     public function index()
     {
-        if (! request('route')) {
-            return redirect()->route('admin.mail.index', ['route' => 'inbox']);
-        }
+        // if (! request('route')) {
+        //     return redirect()->route('admin.mail.index', ['route' => 'inbox']);
+        // }
 
-        if (! bouncer()->hasPermission('mail.' . request('route'))) {
-            abort(401, 'This action is unauthorized');
-        }
+        // if (! bouncer()->hasPermission('mail.' . request('route'))) {
+        //     abort(401, 'This action is unauthorized');
+        // }
 
-        switch (request('route')) {
-            case 'compose':
-                return view('admin::mail.compose');
+        // switch (request('route')) {
+        //     case 'compose':
+        //         return view('admin::mail.compose');
 
-            default:
-                if (request()->ajax()) {
-                    return app(\Webkul\Admin\DataGrids\Mail\EmailDataGrid::class)->toJson();
-                }
+        //     default:
+        //         if (request()->ajax()) {
+        //             return app(\Webkul\Admin\DataGrids\Mail\EmailDataGrid::class)->toJson();
+        //         }
 
-                return view('admin::mail.index');
-        }
+        //         return view('admin::mail.index');
+        // }
+        return $this->ReturnJsonSuccessMsg($this->emailRepository->all());
+    }
+
+
+    public function indexById($id)
+    {
+        return $this->ReturnJsonSuccessMsg($this->emailRepository->findOrFail($id));
+
     }
 
     /**

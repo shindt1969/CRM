@@ -13,6 +13,7 @@ use Webkul\Lead\Repositories\ProductRepository as LeadProductRepository;
 use Webkul\Product\Repositories\ProductRepository;
 use Webkul\Quote\Repositories\QuoteRepository;
 use Webkul\User\Repositories\UserRepository;
+use Illuminate\Support\Facades\Log;
 
 class Dashboard
 {
@@ -133,6 +134,9 @@ class Dashboard
     /**
      * This will set all available cards data to be displayed on dashboard.
      *
+     * dashboard_cards 定義dashboard當中卡片的內容，總共11張
+     * $card 的內是dashboard_cards當中的label
+     * 
      * @return void
      */
     public function setCards()
@@ -141,7 +145,6 @@ class Dashboard
             if (isset($card['label'])) {
                 $card['label'] = trans($card['label']);
             }
-
             return $card;
         }, config('dashboard_cards'));
     }
@@ -149,6 +152,8 @@ class Dashboard
     /**
      * This will set all available cards data to be displayed on dashboard.
      *
+     * 在DashboardController.php當中先利用建構式做setCards()
+     * 
      * @return array
      */
     public function getCards(): array
@@ -789,7 +794,7 @@ class Dashboard
 
         if (! $relevantFunction) {
             $relevantFunction = "get" . str_replace(" ", "", ucwords(str_replace("_", " ", $cardId)));
-        }
+        } // function(method) name = gettopproducts
 
         if (! method_exists($class ?? $this, $relevantFunction)) {
             $relevantFunction = false;

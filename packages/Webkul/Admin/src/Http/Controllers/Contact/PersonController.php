@@ -3,6 +3,7 @@
 namespace Webkul\Admin\Http\Controllers\Contact;
 
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Attribute\Http\Requests\AttributeForm;
 use Webkul\Contact\Repositories\PersonRepository;
@@ -46,7 +47,8 @@ class PersonController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
+     ************************** 不用 *************************
+
      * @return \Illuminate\View\View
      */
     public function create()
@@ -62,6 +64,7 @@ class PersonController extends Controller
      */
     public function store(AttributeForm $request)
     {
+
         Event::dispatch('contacts.person.create.before');
 
         $person = $this->personRepository->create($this->sanitizeRequestedPersonData());
@@ -70,19 +73,19 @@ class PersonController extends Controller
 
         session()->flash('success', trans('admin::app.contacts.persons.create-success'));
 
-        return redirect()->route('admin.contacts.persons.index');
+        // return redirect()->route('admin.contacts.persons.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.contacts.persons.create-success'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
+     *************************** 不用 *************************
      * @param  int  $id
      * @return \Illuminate\View\View
      */
     public function edit($id)
     {
         $person = $this->personRepository->findOrFail($id);
-
         return view('admin::contacts.persons.edit', compact('person'));
     }
 
@@ -103,7 +106,8 @@ class PersonController extends Controller
 
         session()->flash('success', trans('admin::app.contacts.persons.update-success'));
 
-        return redirect()->route('admin.contacts.persons.index');
+        // return redirect()->route('admin.contacts.persons.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.contacts.persons.update-success'));
     }
 
     /**
@@ -113,11 +117,12 @@ class PersonController extends Controller
      */
     public function search()
     {
-        $results = $this->personRepository->findWhere([
+        $results = $this->personRepository->search([
             ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
         ]);
 
         return response()->json($results);
+        // return $this->ReturnJsonSuccessMsg($results);
     }
 
     /**
@@ -137,13 +142,15 @@ class PersonController extends Controller
 
             Event::dispatch('contacts.person.delete.after', $id);
 
-            return response()->json([
-                'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.contacts.persons.person')]),
-            ], 200);
+            // return response()->json([
+            //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.contacts.persons.person')]),
+            // ], 200);
+            return $this->ReturnJsonSuccessMsg(trans('admin::app.response.destroy-success', ['name' => trans('admin::app.contacts.persons.person')]));
         } catch (\Exception $exception) {
-            return response()->json([
-                'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.contacts.persons.person')]),
-            ], 400);
+            // return response()->json([
+            //     'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.contacts.persons.person')]),
+            // ], 400);
+            return $this->ReturnJsonFailMsg(trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.contacts.persons.person')]));
         }
     }
 
@@ -162,9 +169,10 @@ class PersonController extends Controller
             Event::dispatch('contact.person.delete.after', $personId);
         }
 
-        return response()->json([
-            'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.contacts.persons.title')])
-        ]);
+        // return response()->json([
+        //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.contacts.persons.title')])
+        // ]);
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.response.destroy-success', ['name' => trans('admin::app.contacts.persons.title')]));
     }
 
     /**
@@ -177,7 +185,7 @@ class PersonController extends Controller
         $data = request()->all();
 
         $data['contact_numbers'] = collect($data['contact_numbers'])->filter(function ($number) {
-            return ! is_null($number['value']);
+            return !is_null($number['value']);
         })->toArray();
 
         return $data;

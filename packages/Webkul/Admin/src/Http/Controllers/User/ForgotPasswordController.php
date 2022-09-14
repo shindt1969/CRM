@@ -3,6 +3,7 @@
 namespace Webkul\Admin\Http\Controllers\User;
 
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Admin\Notifications\User\UserResetPassword;
@@ -13,12 +14,13 @@ class ForgotPasswordController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
+     * 簡單的 check user token 之後傳回 views/session/forgot-password
+     ******************************* 不用 ************************************
      * @return \Illuminate\View\View
      */
     public function create()
-    {        
-        if (auth()->guard('user')->check()) {
+    {
+        if (auth()->check()) {
             return redirect()->route('admin.dashboard.index');
         } else {
             if (strpos(url()->previous(), 'user') !== false) {
@@ -35,40 +37,35 @@ class ForgotPasswordController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * 驗證 email
+     * 送出包含有 reset password link 的 email，然後回到上一頁
      *
      * @return \Illuminate\Http\Response
      */
     public function store()
     {
-        try {
+        // try {
             $this->validate(request(), [
                 'email' => 'required|email',
             ]);
 
-            $response = $this->broker()->sendResetLink(request(['email']), function($user, $token) {
+            // send email
+            $response = $this->broker()->sendResetLink(request(['email']), function ($user, $token) {
                 $user->notify(new UserResetPassword($token));
             });
 
             if ($response == Password::RESET_LINK_SENT) {
-                session()->flash('success', trans('admin::app.sessions.forgot-password.reset-link-sent'));
-
-                return back();
+                return $this->ReturnJsonSuccessMsg(trans('admin::app.sessions.forgot-password.reset-link-sent'));
             }
 
-            return back()
-                ->withInput(request(['email']))
-                ->withErrors([
-                    'email' => trans('admin::app.sessions.forgot-password.email-not-exist'),
-                ]);
-        } catch(\Exception $exception) {
-            session()->flash('error', trans($exception->getMessage()));
+            return $this->ReturnJsonFailMsg('email not exist');
 
-            return redirect()->back();
-        }
     }
 
     /**
      * Get the broker to be used during password reset.
+     * broker 參數會去尋找 config/auth.php 的 password.users
+     * 原始碼在 framework/src/Illuminate/Auth/Passwords/PasswordBrokerManager.php 
      *
      * @return \Illuminate\Contracts\Auth\PasswordBroker
      */

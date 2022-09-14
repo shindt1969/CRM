@@ -2,6 +2,7 @@
 
 namespace Webkul\Admin\Http\Controllers\Setting;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Event;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Workflow\Repositories\WorkflowRepository;
@@ -28,7 +29,7 @@ class WorkflowController extends Controller
 
     /**
      * Display a listing of the workflow.
-     *
+     **************************** 不用 *************************
      * @return \Illuminate\View\View
      */
     public function index()
@@ -42,7 +43,7 @@ class WorkflowController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
+     **************************** 不用 *************************
      * @return \Illuminate\View\View
      */
     public function create()
@@ -69,12 +70,14 @@ class WorkflowController extends Controller
 
         session()->flash('success', trans('admin::app.settings.workflows.create-success'));
 
-        return redirect()->route('admin.settings.workflows.index');
+        // return redirect()->route('admin.settings.workflows.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.workflows.create-success')); 
+
     }
 
     /**
      * Show the form for editing the specified workflow.
-     *
+     **************************** 不用 *************************
      * @param  int  $id
      * @return \Illuminate\View\View
      */
@@ -105,7 +108,9 @@ class WorkflowController extends Controller
 
         session()->flash('success', trans('admin::app.settings.workflows.update-success'));
 
-        return redirect()->route('admin.settings.workflows.index');
+        // return redirect()->route('admin.settings.workflows.index');
+        return $this->ReturnJsonSuccessMsg(trans('admin.settings.workflows.index')); 
+
     }
 
     /**
@@ -116,8 +121,6 @@ class WorkflowController extends Controller
      */
     public function destroy($id)
     {
-        $workflow = $this->workflowRepository->findOrFail($id);
-
         try {
             Event::dispatch('settings.workflow.delete.before', $id);
 
@@ -125,17 +128,23 @@ class WorkflowController extends Controller
 
             Event::dispatch('settings.workflow.delete.after', $id);
 
-            return response()->json([
-                'message' => trans('admin::app.settings.workflows.delete-success'),
-            ], 200);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.workflows.delete-success'),
+            // ], 200);
+            return $this->ReturnJsonSuccessMsg(trans('admin::app.settings.workflows.delete-success')); 
+
         } catch(\Exception $exception) {
-            return response()->json([
-                'message' => trans('admin::app.settings.workflows.delete-failed'),
-            ], 400);
+            // return response()->json([
+            //     'message' => trans('admin::app.settings.workflows.delete-failed'),
+            // ], 400);
+            return $this->ReturnJsonFailMsg(trans('admin::app.settings.workflows.delete-failed')); 
+
         }
 
-        return response()->json([
-            'message' => trans('admin::app.settings.workflows.delete-failed'),
-        ], 400);
+        // return response()->json([
+        //     'message' => trans('admin::app.settings.workflows.delete-failed'),
+        // ], 400);
+        return $this->ReturnJsonFailMsg(trans('admin::app.settings.workflows.delete-failed')); 
+
     }
 }

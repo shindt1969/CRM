@@ -2,6 +2,7 @@
 
 namespace Webkul\Admin\Http\Controllers\Product;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Event;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Attribute\Http\Requests\AttributeForm;
@@ -23,10 +24,11 @@ class ProductController extends Controller
      *
      * @return void
      */
+
     public function __construct(ProductRepository $productRepository)
     {
         $this->productRepository = $productRepository;
-
+        // $this->ResponseJsonController = $ResponseJsonController;
         request()->request->add(['entity_type' => 'products']);
     }
 
@@ -37,16 +39,26 @@ class ProductController extends Controller
      */
     public function index()
     {
-        if (request()->ajax()) {
-            return app(\Webkul\Admin\DataGrids\Product\ProductDataGrid::class)->toJson();
-        }
+        return $this->ReturnJsonSuccessMsg($this->productRepository->all());
 
-        return view('admin::products.index');
+        // if (request()->ajax()) {
+        //     return app(\Webkul\Admin\DataGrids\Product\ProductDataGrid::class)->toJson();
+        // }
+
+        // return view('admin::products.index');
+    }
+
+    public function indexById($id)
+    {
+        $aa = $this->productRepository->findOrFail($id);
+        return $this->ReturnJsonSuccessMsg($this->productRepository->findOrFail($id));
+
     }
 
     /**
      * Show the form for creating a new resource.
      *
+     *************************** 不用 **********************************
      * @return \Illuminate\View\View
      */
     public function create()
@@ -70,12 +82,16 @@ class ProductController extends Controller
 
         session()->flash('success', trans('admin::app.products.create-success'));
 
-        return redirect()->route('admin.products.index');
+        // return redirect()->route('admin.products.index');
+        return response()->json([
+            'status' => "OK",
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
+     * *************************** 不用 **********************************
      * @param  int  $id
      * @return \Illuminate\View\View
      */
@@ -103,7 +119,8 @@ class ProductController extends Controller
 
         session()->flash('success', trans('admin::app.products.update-success'));
 
-        return redirect()->route('admin.products.index');
+        // return redirect()->route('admin.products.index');
+        return $this->ReturnJsonSuccessMsg('OK');
     }
 
     /**
@@ -113,11 +130,15 @@ class ProductController extends Controller
      */
     public function search()
     {
-        $results = $this->productRepository->findWhere([
-            ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
+
+        $this->validate(request(), [
+            'query' => 'required',
         ]);
 
-        return response()->json($results);
+        $results = $this->productRepository->search([
+            ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
+        ]);
+        return $this->ReturnJsonSuccessMsg($results);
     }
 
     /**
@@ -137,33 +158,45 @@ class ProductController extends Controller
 
             Event::dispatch('settings.products.delete.after', $id);
 
-            return response()->json([
+            return $this->ReturnJsonSuccessMsg([
                 'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.product')]),
             ], 200);
+
+            // return response()->json([
+            //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.product')]),
+            // ], 200);
         } catch(\Exception $exception) {
-            return response()->json([
+
+            return $this->ReturnJsonFailMsg([
                 'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.products.product')]),
             ], 400);
+
+            // return response()->json([
+            //     'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.products.product')]),
+            // ], 400);
         }
     }
 
     /**
      * Mass Delete the specified resources.
      *
+     * 
+     * 在postman當中 傳 'rows':["2","3"]，表示能夠集體刪除
+     * 
      * @return \Illuminate\Http\Response
      */
     public function massDestroy()
     {
         foreach (request('rows') as $productId) {
             Event::dispatch('product.delete.before', $productId);
-
             $this->productRepository->delete($productId);
-
             Event::dispatch('product.delete.after', $productId);
         }
-
-        return response()->json([
+        return $this->ReturnJsonSuccessMsg([
             'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.title')]),
         ]);
+        // return response()->json([
+        //     'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.title')]),
+        // ]);
     }
 }
