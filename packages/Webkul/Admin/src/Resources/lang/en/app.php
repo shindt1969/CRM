@@ -372,6 +372,13 @@
             'delete-failed'  => 'Product can not be deleted.',
         ],
 
+        'NoteContents' => [
+            'create-success' => 'NoteContents created successfully.',
+            'update-success' => 'NoteContents updated successfully.',
+            'delete-success' => 'NoteContents deleted successfully.',
+            'delete-failed'  => 'NoteContents can not be deleted.',
+        ],
+
         'sessions' => [
             'login' => [
                 'title'             => 'Login',

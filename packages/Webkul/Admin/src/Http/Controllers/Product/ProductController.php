@@ -72,7 +72,7 @@ class ProductController extends Controller
      * @param \Webkul\Attribute\Http\Requests\AttributeForm $request
      * @return \Illuminate\Http\Response
      */
-    public function store(AttributeForm $request)
+    public function store()
     {
         Event::dispatch('product.create.before');
 
@@ -83,9 +83,7 @@ class ProductController extends Controller
         session()->flash('success', trans('admin::app.products.create-success'));
 
         // return redirect()->route('admin.products.index');
-        return response()->json([
-            'status' => "OK",
-        ]);
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.products.create-success'));
     }
 
     /**
@@ -120,7 +118,7 @@ class ProductController extends Controller
         session()->flash('success', trans('admin::app.products.update-success'));
 
         // return redirect()->route('admin.products.index');
-        return $this->ReturnJsonSuccessMsg('OK');
+        return $this->ReturnJsonSuccessMsg(trans('admin::app.products.update-success'));
     }
 
     /**
