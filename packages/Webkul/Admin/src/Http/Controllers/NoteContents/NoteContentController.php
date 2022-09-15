@@ -2,13 +2,14 @@
 
 namespace Webkul\Admin\Http\Controllers\NoteContents;
 
-use Webkul\Admin\Http\Controllers\Controller;
 use App\Models\Content;
 use App\Models\Content_type;
 use Illuminate\Http\Request;
 use Webkul\User\Models\User;
+use Webkul\Contact\Models\Person;
 use Illuminate\Support\Facades\DB;
 use Webkul\Contact\Models\Organization;
+use Webkul\Admin\Http\Controllers\Controller;
 
 
 class NoteContentController extends Controller
@@ -27,22 +28,27 @@ class NoteContentController extends Controller
     public function index($start=1, $limit=1)
     {
         $return_data = [];
-        $data = DB::select(
-            "SELECT con.text, con.owner_id, con.type_id, con.create_by_id, con.created_at from contents con order by created_at limit {$start}, {$limit};", [1]
-        );
+        // $data = DB::select(
+        //     "SELECT con.text, con.owner_id, con.type_id, con.create_by_id, con.created_at from contents con order by created_at limit {$start}, {$limit};", [1]
+        // );
         
-        // 客戶記事
+        $data = Content::select('text', 'owner_id', 'type_id', 'create_by_id', 'created_at')
+                    ->offset($start)
+                    ->limit($limit)->orderBy('created_at')->get(); 
+
         foreach ($data as $record){
             $user = User::where('id', $record->create_by_id )->first();
 
+            // 客戶記事
             if($record->type_id=="1"){
                 $table = "persons";
-                $name = DB::select("SELECT name from {$table} WHERE id={$record->owner_id};")[0]->name;
+                $name = Person::where('id', $record->create_by_id )->first()->name;
             }
             // 公司記事
             if($record->type_id=="2"){
                 $table = "organizations";
-                $name = DB::select("SELECT name from {$table} WHERE id={$record->owner_id};")[0]->name;
+                $name = Organization::where('id', $record->create_by_id )->first()->name;
+
             }
             // 個人記事
             if($record->type_id=="3"){
@@ -50,9 +56,8 @@ class NoteContentController extends Controller
                 $name = $user->name;
             }
 
-
             $return_data[] = array(
-                'type' => $table,
+                'content_type' => $table,
                 'name' => $name,
                 'text' => $record->text,
                 'create_by' => $user->name,
@@ -83,7 +88,16 @@ class NoteContentController extends Controller
      */
     public function store()
     {
-        $product = $this->productRepository->create(request()->all());
+        $income_data = request();
+
+        $flight = Content::create([
+            'type' => $income_data['type'],
+            'name' => $income_data['name'],
+            'text' => $income_data['text'],
+            'create_by' => $income_data['create_by'],
+        ]);
+
+        $flight->save();
 
         return $this->ReturnJsonSuccessMsg(trans('admin::app.NoteContents.create-success'));
     }
@@ -152,9 +166,6 @@ class NoteContentController extends Controller
     /**
      * Mass Delete the specified resources.
      *
-     * 
-     * 在postman當中 傳 'rows':["2","3"]，表示能夠集體刪除
-     * 
      * @return \Illuminate\Http\Response
      */
     public function massDestroy()
