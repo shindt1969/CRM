@@ -38,3 +38,4 @@ class ContentsSeeder extends Seeder
         }
     }
 }
+ 
