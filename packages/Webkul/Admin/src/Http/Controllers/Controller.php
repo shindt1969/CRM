@@ -29,12 +29,12 @@ class Controller extends BaseController
 
     public static function ReturnJsonSuccessMsg($data)
     {
-        if (is_array($data)) {
-            $ok = array("status" => true);
-            return response()->json(array_merge($ok, $data));
-        } else {
+        if (is_string($data)) {
             return response()->json(array("status" => true, "message" => $data));
+        }else {
+            return response()->json(array("status" => true, "body" => $data));
         }
+
     }
 
     public static function ReturnJsonFailMsg($data)

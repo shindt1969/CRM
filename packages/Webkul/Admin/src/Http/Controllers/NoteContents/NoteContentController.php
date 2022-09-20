@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Webkul\User\Models\User;
 use Webkul\Contact\Models\Person;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Webkul\Contact\Models\Organization;
 use Webkul\Admin\Http\Controllers\Controller;
 
@@ -25,33 +26,37 @@ class NoteContentController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index($start=1, $limit=1)
+    public function index($page = 0)
     {
         $return_data = [];
-        // $data = DB::select(
-        //     "SELECT con.text, con.owner_id, con.type_id, con.create_by_id, con.created_at from contents con order by created_at limit {$start}, {$limit};", [1]
-        // );
-        
-        $data = Content::select('text', 'owner_id', 'type_id', 'create_by_id', 'created_at')
-                    ->offset($start)
-                    ->limit($limit)->orderBy('created_at')->get(); 
+        $show_recoreds_number = 10;
 
-        foreach ($data as $record){
-            $user = User::where('id', $record->create_by_id )->first();
+        if ($page == 0) {
+            $data = Content::select('text', 'owner_id', 'type_id', 'create_by_id', 'created_at')
+                ->orderBy('created_at')->get();
+        } else {
+            $data = Content::select('text', 'owner_id', 'type_id', 'create_by_id', 'created_at')
+                ->offset(($page - 1) * $show_recoreds_number)
+                ->limit($show_recoreds_number)->orderBy('created_at')->get();
+        }
+
+        foreach ($data as $record) {
+            $user = User::find($record->create_by_id);
+            Log::info($user);
 
             // 客戶記事
-            if($record->type_id=="1"){
+            if ($record->type_id == "1") {
                 $table = "persons";
-                $name = Person::where('id', $record->create_by_id )->first()->name;
+                $name = Person::find($record->create_by_id)->first()->name;
             }
             // 公司記事
-            if($record->type_id=="2"){
+            if ($record->type_id == "2") {
                 $table = "organizations";
-                $name = Organization::where('id', $record->create_by_id )->first()->name;
-
+                $name = Organization::find($record->create_by_id)->first()->name;
             }
+
             // 個人記事
-            if($record->type_id=="3"){
+            if ($record->type_id == "3") {
                 $table = "users";
                 $name = $user->name;
             }
@@ -60,24 +65,18 @@ class NoteContentController extends Controller
                 'content_type' => $table,
                 'name' => $name,
                 'text' => $record->text,
-                'create_by' => $user->name,
+                'create_by_id' => $user->name,
                 'created_at' => $record->created_at
             );
         }
-
-
-        // $data = DB::select(
-        //     "SELECT * from contents;", [1]
-        // );
 
         return $this->ReturnJsonSuccessMsg($return_data);
     }
 
     public function indexById($id)
     {
-        $aa = $this->productRepository->findOrFail($id);
-        return $this->ReturnJsonSuccessMsg($this->productRepository->findOrFail($id));
-
+        $record = Content::find($id);
+        return $this->ReturnJsonSuccessMsg($record);
     }
 
     /**
@@ -88,18 +87,25 @@ class NoteContentController extends Controller
      */
     public function store()
     {
-        $income_data = request();
 
-        $flight = Content::create([
-            'type' => $income_data['type'],
-            'name' => $income_data['name'],
-            'text' => $income_data['text'],
-            'create_by' => $income_data['create_by'],
+        $this->validate(request(), [
+            'text'           => 'required',
+            'owner_id'       => 'required',
+            'type_id'        => 'required',
+            'create_by_id'   => 'required',
         ]);
 
-        $flight->save();
+        $income_data = request();
 
-        return $this->ReturnJsonSuccessMsg(trans('admin::app.NoteContents.create-success'));
+        $content = Content::create([
+            'text' => $income_data['text'],
+            'owner_id' => $income_data['owner_id'],
+            'type_id' => $income_data['type_id'],
+            'create_by_id' => $income_data['create_by_id'],
+        ]);
+
+        $content->save();
+        return $this->ReturnJsonSuccessMsg($content->id);
     }
 
     /**
@@ -154,8 +160,7 @@ class NoteContentController extends Controller
             return $this->ReturnJsonSuccessMsg([
                 'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.product')]),
             ], 200);
-
-        } catch(\Exception $exception) {
+        } catch (\Exception $exception) {
 
             return $this->ReturnJsonFailMsg([
                 'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.products.product')]),

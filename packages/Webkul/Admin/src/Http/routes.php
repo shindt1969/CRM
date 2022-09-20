@@ -3,7 +3,7 @@
 // Route::group(['middleware' => ['web']], function () {
     Route::get('/', 'Webkul\Admin\Http\Controllers\Controller@redirectToLogin')->name('krayin.home');
 
-    Route::prefix(config('app.admin_path'))->group(function () {
+    Route::prefix("api/".config('app.admin_path'))->group(function () {
 
         Route::get('/', 'Webkul\Admin\Http\Controllers\Controller@redirectToLogin');
 
@@ -246,15 +246,13 @@
                 'prefix'    => 'contents',
                 'namespace' => 'Webkul\Admin\Http\Controllers\NoteContents'
             ], function () {
-                Route::get('{start?}/{limit?}', 'NoteContentController@index')->name('admin.contents.index')->where(['start'=> '[0-9]+', 'limit'=> '[0-9]+']);
+                Route::get('{page?}', 'NoteContentController@index')->name('admin.contents.index')->where(['page'=> '[0-9]+']);
 
                 Route::post('create', 'NoteContentController@store')->name('admin.contents.store');
 
-                Route::get('edit/{id?}', 'NoteContentController@edit')->name('admin.contents.edit');
-
                 Route::put('edit/{id}', 'NoteContentController@update')->name('admin.contents.update');
 
-                Route::delete('{id}', 'NoteContentController@destroy')->name('admin.contents.delete');
+                Route::delete('{id}', 'NoteContentController@destroy')->name('admin.contents.delete')->where(['id'=> '[0-9]+']);
 
                 Route::put('mass-destroy', 'NoteContentController@massDestroy')->name('admin.contents.mass_delete');
             });
