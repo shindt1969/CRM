@@ -8,7 +8,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class ContentsSeeder extends Seeder
+class NoteContentsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -27,7 +27,7 @@ class ContentsSeeder extends Seeder
             
             Log::info(gettype($rand_keys));
 
-            DB::table('contents')->insert([
+            DB::table('noteContents')->insert([
                 'text' => Str::random(100),
                 'owner_id' => random_int(1, 3), 
                 'type_id' => random_int(1, 3),

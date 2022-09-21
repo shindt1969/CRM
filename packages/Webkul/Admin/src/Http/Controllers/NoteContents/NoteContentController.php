@@ -2,7 +2,7 @@
 
 namespace Webkul\Admin\Http\Controllers\NoteContents;
 
-use App\Models\Content;
+use App\Models\NoteContent;
 use App\Models\Content_type;
 use Illuminate\Http\Request;
 use Webkul\User\Models\User;
@@ -32,10 +32,10 @@ class NoteContentController extends Controller
         $show_recoreds_number = 10;
 
         if ($page == 0) {
-            $data = Content::select('text', 'owner_id', 'type_id', 'create_by_id', 'created_at')
+            $data = NoteContent::select('text', 'owner_id', 'type_id', 'create_by_id', 'created_at')
                 ->orderBy('created_at')->get();
         } else {
-            $data = Content::select('text', 'owner_id', 'type_id', 'create_by_id', 'created_at')
+            $data = NoteContent::select('text', 'owner_id', 'type_id', 'create_by_id', 'created_at')
                 ->offset(($page - 1) * $show_recoreds_number)
                 ->limit($show_recoreds_number)->orderBy('created_at')->get();
         }
@@ -75,7 +75,7 @@ class NoteContentController extends Controller
 
     public function indexById($id)
     {
-        $record = Content::find($id);
+        $record = NoteContent::find($id);
         return $this->ReturnJsonSuccessMsg($record);
     }
 
@@ -97,7 +97,7 @@ class NoteContentController extends Controller
 
         $income_data = request();
 
-        $content = Content::create([
+        $content = NoteContent::create([
             'text' => $income_data['text'],
             'owner_id' => $income_data['owner_id'],
             'type_id' => $income_data['type_id'],
@@ -126,7 +126,7 @@ class NoteContentController extends Controller
 
         $income_data = request();
 
-        Content::where('id', $id)
+        NoteContent::where('id', $id)
         ->update([
             'text' => $income_data['text'],
             'owner_id' => $income_data['owner_id'],
@@ -146,7 +146,7 @@ class NoteContentController extends Controller
      */
     public function destroy($id)
     {
-        $deleted = Content::where('id', $id)->delete();
+        $deleted = NoteContent::where('id', $id)->delete();
 
         if ($deleted){
             return $this->ReturnJsonSuccessMsg($id);
