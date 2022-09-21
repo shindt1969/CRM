@@ -17,11 +17,8 @@ class CreateNoteCategoriesTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('color')->nullable();
-
             $table->integer('note_id')->unsigned();
-            $table->foreign('note_id')->references('id')->on('contents')->onDelete('cascade');
 
-            $table->timestamps();
             $table->timestamps();
         });
     }

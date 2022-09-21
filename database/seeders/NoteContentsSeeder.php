@@ -28,7 +28,7 @@ class NoteContentsSeeder extends Seeder
             Log::info(gettype($rand_keys));
 
             DB::table('noteContents')->insert([
-                'text' => Str::random(100),
+                'text' => $this->getRandText(),
                 'owner_id' => random_int(1, 3), 
                 'type_id' => random_int(1, 3),
                 'created_at' => Carbon::now(),
@@ -36,6 +36,16 @@ class NoteContentsSeeder extends Seeder
                 'create_by_id' => $data[$rand_keys]->id
             ]);
         }
+    }
+
+    public function getRandText(){
+        $retstr = "";
+        for ($x = 0; $x <= 10; $x++) {
+            $retstr .= Str::random(10)." ";
+            // $retstr .= ""." ";
+          }
+
+        return $retstr;
     }
 }
  

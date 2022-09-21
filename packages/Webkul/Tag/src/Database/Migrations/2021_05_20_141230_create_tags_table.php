@@ -19,7 +19,7 @@ class CreateTagsTable extends Migration
             $table->string('color')->nullable();
 
             $table->integer('person_id')->unsigned();
-            $table->foreign('person_id')->references('id')->on('person')->onDelete('cascade');
+            $table->foreign('person_id')->references('id')->on('persons')->onDelete('cascade');
 
             $table->timestamps();
         });
