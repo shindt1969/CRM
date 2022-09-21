@@ -90,9 +90,9 @@ class NoteContentController extends Controller
 
         $this->validate(request(), [
             'text'           => 'required',
-            'owner_id'       => 'required',
-            'type_id'        => 'required',
-            'create_by_id'   => 'required',
+            'owner_id'       => 'required|integer',
+            'type_id'        => 'required|integer|exists:content_types,id',
+            'create_by_id'   => 'required|integer|exists:users,id',
         ]);
 
         $income_data = request();
@@ -117,27 +117,25 @@ class NoteContentController extends Controller
      */
     public function update($id)
     {
-        $product = $this->productRepository->update(request()->all(), $id);
-
-        return $this->ReturnJsonSuccessMsg(trans('admin::app.NoteContents.update-success'));
-    }
-
-    /**
-     * Search product results
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function search()
-    {
-
         $this->validate(request(), [
-            'query' => 'required',
+            'text'           => 'required',
+            'owner_id'       => 'required|integer',
+            'type_id'        => 'required|integer|exists:content_types,id',
+            'create_by_id'   => 'required|integer|exists:users,id',
         ]);
 
-        $results = $this->productRepository->search([
-            ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
+        $income_data = request();
+
+        Content::where('id', $id)
+        ->update([
+            'text' => $income_data['text'],
+            'owner_id' => $income_data['owner_id'],
+            'type_id' => $income_data['type_id'],
+            'create_by_id' => $income_data['create_by_id'],
+
         ]);
-        return $this->ReturnJsonSuccessMsg($results);
+
+        return $this->ReturnJsonSuccessMsg($id);
     }
 
     /**
@@ -148,24 +146,30 @@ class NoteContentController extends Controller
      */
     public function destroy($id)
     {
-        $this->productRepository->findOrFail($id);
+        $deleted = Content::where('id', $id)->delete();
 
-        try {
-            Event::dispatch('settings.products.delete.before', $id);
-
-            $this->productRepository->delete($id);
-
-            Event::dispatch('settings.products.delete.after', $id);
-
-            return $this->ReturnJsonSuccessMsg([
-                'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.product')]),
-            ], 200);
-        } catch (\Exception $exception) {
-
-            return $this->ReturnJsonFailMsg([
-                'message' => trans('admin::app.response.destroy-failed', ['name' => trans('admin::app.products.product')]),
-            ], 400);
+        if ($deleted){
+            return $this->ReturnJsonSuccessMsg($id);
+        }else{
+            return $this->ReturnJsonFailMsg($id);
         }
+    }
+
+    /**
+     * Search product results
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function search()
+    {
+        $this->validate(request(), [
+            'query' => 'required',
+        ]);
+
+        $results = $this->productRepository->search([
+            ['name', 'like', '%' . urldecode(request()->input('query')) . '%']
+        ]);
+        return $this->ReturnJsonSuccessMsg($results);
     }
 
     /**

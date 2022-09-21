@@ -241,7 +241,7 @@
                 Route::put('mass-destroy', 'ProductController@massDestroy')->name('admin.products.mass_delete');
             });
 
-            // contents Routes
+            // Contents Routes
             Route::group([
                 'prefix'    => 'contents',
                 'namespace' => 'Webkul\Admin\Http\Controllers\NoteContents'
