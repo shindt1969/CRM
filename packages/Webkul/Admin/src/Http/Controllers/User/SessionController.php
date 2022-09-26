@@ -28,7 +28,7 @@ class SessionController extends Controller
         $credentials = request(['email', 'password']);
 
         if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return $this->ReturnJsonFailMsg(config("app.error_code.invalid_password_or_email"));
         }
         $user = auth()->user();
 

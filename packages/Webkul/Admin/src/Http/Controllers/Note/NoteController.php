@@ -6,6 +6,7 @@ use App\Models\Note;
 use App\Models\Content_type;
 use Illuminate\Http\Request;
 use Webkul\User\Models\User;
+use Illuminate\Support\Carbon;
 use Webkul\Contact\Models\Person;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -61,12 +62,15 @@ class NoteController extends Controller
                 $table = "users";
                 $name = $user->name;
             }
+
+            $created_at = (new Carbon($record->created_at))->format('Y/m/d h:m');
+
             $return_data[] = array(
                 'content_type' => $table,
                 'target_name' => $name,
                 'text' => $record->text,
                 'create_by_name' => $user->name,
-                'created_at' => $record->created_at
+                'created_at' => $created_at
             );
         }
 

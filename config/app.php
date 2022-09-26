@@ -297,7 +297,8 @@ return [
         'no_token' => '1',
         'token_expired' => '2',
         'can_not_find_this_record' => '3', // 找不到該筆資料
-        'field_error' => '4' // 欄位錯誤
+        'field_error' => '4', // 欄位錯誤
+        'invalid_password_or_email' => '5', // 帳號密碼錯誤
     ]
 
 ];

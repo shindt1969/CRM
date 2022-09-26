@@ -23,6 +23,8 @@ class EnsureTokenIsValid
     {
 
         if (! $request->hasHeader('Authorization')) {
+            Log::info('no_token and request headers: ');
+            Log::info($request->headers);
             return Controller::ReturnJsonFailMsg(config("app.error_code.no_token"));
         }
         if (is_null(auth()->user())){
