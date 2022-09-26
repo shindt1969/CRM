@@ -1,8 +1,8 @@
 <?php
 
-namespace Webkul\Admin\Http\Controllers\NoteContents;
+namespace Webkul\Admin\Http\Controllers\Note;
 
-use App\Models\NoteContent;
+use App\Models\Note;
 use App\Models\Content_type;
 use Illuminate\Http\Request;
 use Webkul\User\Models\User;
@@ -13,7 +13,7 @@ use Webkul\Contact\Models\Organization;
 use Webkul\Admin\Http\Controllers\Controller;
 
 
-class NoteContentController extends Controller
+class NoteController extends Controller
 {
 
     public function __construct()
@@ -31,13 +31,15 @@ class NoteContentController extends Controller
         $return_data = [];
         $show_recoreds_number = 10;
 
+        $columns = Note::select('text', 'target_id', 'target_type_id', 'create_by_id', 'created_at');
+
         if ($page == 0) {
-            $data = NoteContent::select('text', 'owner_id', 'type_id', 'create_by_id', 'created_at')
-                ->orderBy('created_at')->get();
+            $data = $columns->orderBy('created_at')->get();
         } else {
-            $data = NoteContent::select('text', 'owner_id', 'type_id', 'create_by_id', 'created_at')
+            $data = $columns
                 ->offset(($page - 1) * $show_recoreds_number)
-                ->limit($show_recoreds_number)->orderBy('created_at')->get();
+                ->limit($show_recoreds_number)
+                ->orderBy('created_at')->get();
         }
 
         foreach ($data as $record) {
@@ -45,27 +47,25 @@ class NoteContentController extends Controller
             Log::info($user);
 
             // 客戶記事
-            if ($record->type_id == "1") {
+            if ($record->target_type_id == "1") {
                 $table = "persons";
-                $name = Person::find($record->create_by_id)->first()->name;
+                $name = Person::find($record->target_id)->first()->name;
             }
             // 公司記事
-            if ($record->type_id == "2") {
+            if ($record->target_type_id == "2") {
                 $table = "organizations";
-                $name = Organization::find($record->create_by_id)->first()->name;
+                $name = Organization::find($record->target_id)->first()->name;
             }
-
             // 個人記事
-            if ($record->type_id == "3") {
+            if ($record->target_type_id == "3") {
                 $table = "users";
                 $name = $user->name;
             }
-
             $return_data[] = array(
                 'content_type' => $table,
-                'name' => $name,
+                'target_name' => $name,
                 'text' => $record->text,
-                'create_by_id' => $user->name,
+                'create_by_name' => $user->name,
                 'created_at' => $record->created_at
             );
         }
@@ -75,7 +75,7 @@ class NoteContentController extends Controller
 
     public function indexById($id)
     {
-        $record = NoteContent::find($id);
+        $record = Note::find($id);
         return $this->ReturnJsonSuccessMsg($record);
     }
 
@@ -87,20 +87,19 @@ class NoteContentController extends Controller
      */
     public function store()
     {
-
         $this->validate(request(), [
-            'text'           => 'required',
-            'owner_id'       => 'required|integer',
-            'type_id'        => 'required|integer|exists:content_types,id',
-            'create_by_id'   => 'required|integer|exists:users,id',
+            'text'            => 'required',
+            'target_id'       => 'required|integer',
+            'target_type_id'  => 'required|integer|in:1,2,3',
+            'create_by_id'    => 'required|integer|exists:users,id',
         ]);
 
         $income_data = request();
 
-        $content = NoteContent::create([
+        $content = Note::create([
             'text' => $income_data['text'],
-            'owner_id' => $income_data['owner_id'],
-            'type_id' => $income_data['type_id'],
+            'target_id' => $income_data['target_id'],
+            'target_type_id' => $income_data['target_type_id'],
             'create_by_id' => $income_data['create_by_id'],
         ]);
 
@@ -118,22 +117,21 @@ class NoteContentController extends Controller
     public function update($id)
     {
         $this->validate(request(), [
-            'text'           => 'required',
-            'owner_id'       => 'required|integer',
-            'type_id'        => 'required|integer|exists:content_types,id',
-            'create_by_id'   => 'required|integer|exists:users,id',
+            'text'            => 'required',
+            'target_id'       => 'required|integer',
+            'target_type_id'  => 'required|integer|in:1,2,3',
+            'create_by_id'    => 'required|integer|exists:users,id',
         ]);
 
         $income_data = request();
 
-        NoteContent::where('id', $id)
-        ->update([
-            'text' => $income_data['text'],
-            'owner_id' => $income_data['owner_id'],
-            'type_id' => $income_data['type_id'],
-            'create_by_id' => $income_data['create_by_id'],
-
-        ]);
+        Note::where('id', $id)
+            ->update([
+                'text' => $income_data['text'],
+                'target_id' => $income_data['owner_id'],
+                'target_type_id' => $income_data['type_id'],
+                'create_by_id' => $income_data['create_by_id'],
+            ]);
 
         return $this->ReturnJsonSuccessMsg($id);
     }
@@ -146,11 +144,12 @@ class NoteContentController extends Controller
      */
     public function destroy($id)
     {
-        $deleted = NoteContent::where('id', $id)->delete();
+        // 刪除，用一個 flag 
+        $deleted = Note::where('id', $id)->delete();
 
-        if ($deleted){
+        if ($deleted) {
             return $this->ReturnJsonSuccessMsg($id);
-        }else{
+        } else {
             return $this->ReturnJsonFailMsg($id);
         }
     }

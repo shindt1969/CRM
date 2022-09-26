@@ -10,27 +10,6 @@ use Webkul\Admin\Http\Controllers\Controller;
 class SessionController extends Controller
 {
     /**
-     * Show the form for creating a new resource.
-     ****************************** 不用 *********************************
-     *
-     * @return \Illuminate\View\View
-     */
-    public function create()
-    {
-        if (auth()->guard('user')->check()) {
-            return redirect()->route('admin.dashboard.index');
-        } else {
-            if (strpos(url()->previous(), 'admin') !== false) {
-                $intendedUrl = url()->previous();
-            } else {
-                $intendedUrl = route('admin.dashboard.index');
-            }
-            session()->put('url.intended', $intendedUrl);
-            return view('admin::sessions.login');
-        }
-    }
-
-    /**
      * Store a newly created resource in storage.
      * 驗證 email 格式，password required
      * 
@@ -51,7 +30,13 @@ class SessionController extends Controller
         if (! $token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        return $this->ReturnJsonSuccessMsg(["_token"=>$token]);
+        $user = auth()->user();
+
+        return $this->ReturnJsonSuccessMsg([
+            "_token" => $token,
+            "id" => $user->id,
+            "account" => $user->name
+        ]);
     }
 
     /**
@@ -66,4 +51,9 @@ class SessionController extends Controller
         return $this->ReturnJsonSuccessMsg('OK');
         // return redirect()->route('admin.session.create');
     }
+
+    public function TokenVerify(){
+        
+    }
+
 }

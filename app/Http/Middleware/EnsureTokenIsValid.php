@@ -22,12 +22,12 @@ class EnsureTokenIsValid
     public function handle(Request $request, Closure $next)
     {
 
-        // if (! $request->hasHeader('Authorization')) {
-        //     return Controller::ReturnJsonFailMsg(config("app.error_code.no_token"));
-        // }
-        // if (is_null(auth()->user())){
-        //     return Controller::ReturnJsonFailMsg(config("app.error_code.invalid_token"));
-        // }
+        if (! $request->hasHeader('Authorization')) {
+            return Controller::ReturnJsonFailMsg(config("app.error_code.no_token"));
+        }
+        if (is_null(auth()->user())){
+            return Controller::ReturnJsonFailMsg(config("app.error_code.invalid_token"));
+        }
         return $next($request);
     }
 }

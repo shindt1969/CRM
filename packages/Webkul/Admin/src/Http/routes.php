@@ -244,17 +244,17 @@
             // Contents Routes
             Route::group([
                 'prefix'    => 'contents',
-                'namespace' => 'Webkul\Admin\Http\Controllers\NoteContents'
+                'namespace' => 'Webkul\Admin\Http\Controllers\Note'
             ], function () {
-                Route::get('{page?}', 'NoteContentController@index')->name('admin.contents.index')->where(['page'=> '[0-9]+']);
+                Route::get('{page?}', 'NoteController@index')->name('admin.contents.index')->where(['page'=> '[0-9]+']);
 
-                Route::post('create', 'NoteContentController@store')->name('admin.contents.store');
+                Route::post('create', 'NoteController@store')->name('admin.contents.store');
 
-                Route::put('edit/{id}', 'NoteContentController@update')->name('admin.contents.update');
+                Route::put('edit/{id}', 'NoteController@update')->name('admin.contents.update');
 
-                Route::delete('{id}', 'NoteContentController@destroy')->name('admin.contents.delete')->where(['id'=> '[0-9]+']);
+                Route::delete('{id}', 'NoteController@destroy')->name('admin.contents.delete')->where(['id'=> '[0-9]+']);
 
-                Route::put('mass-destroy', 'NoteContentController@massDestroy')->name('admin.contents.mass_delete');
+                Route::put('mass-destroy', 'NoteController@massDestroy')->name('admin.contents.mass_delete');
             });
 
             // Contacts Routes

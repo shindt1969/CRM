@@ -17,6 +17,11 @@ class NoteContentsSeeder extends Seeder
      */
     public function run()
     {
+
+        $this->insertUserData();
+        $this->insertPersonData();
+        $this->insertOrganizationData();
+
         $data =  DB::select(
             "SELECT id from users;", [1]
         );
@@ -27,12 +32,12 @@ class NoteContentsSeeder extends Seeder
             
             Log::info(gettype($rand_keys));
 
-            DB::table('noteContents')->insert([
+            DB::table('notes')->insert([
                 'text' => $this->getRandText(),
-                'owner_id' => random_int(1, 3), 
-                'type_id' => random_int(1, 3),
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'target_id' => random_int(1, 3), 
+                'target_type_id' => random_int(1, 3),
+                // 'created_at' => Carbon::now(),
+                // 'updated_at' => Carbon::now(),
                 'create_by_id' => $data[$rand_keys]->id
             ]);
         }
@@ -47,5 +52,93 @@ class NoteContentsSeeder extends Seeder
 
         return $retstr;
     }
+
+
+    public function insertRoleData(){
+        $default_role_data = [
+            [
+                'name' => 'dddaa',
+                'description' => "aa@aa.aa",
+                'permission_type' => 'tester',
+            ],
+        ];
+        DB::table('roles')->insert($default_role_data);
+    }
+
+    public function insertUserData(){
+
+        $this->insertRoleData();
+
+        $default_users_data = [
+            [
+                'name' => 'persons',
+                'email' => "acca@aa.aa",
+                'status' => 'on',
+                'password' => '123456',
+                'role_id' => '1'
+
+            ],
+            [
+                'name' => 'persons2',
+                'email' => "aaca@bb.aa",
+                'status' => 'on',
+                'password' => '123456',
+                'role_id' => '1'
+
+            ],
+            [
+                'name' => 'persons3',
+                'email' => "aqqa@cc.aa",
+                'status' => 'on',
+                'password' => '123456',
+                'role_id' => '1'
+
+            ],
+        ];
+
+        DB::table('users')->insert($default_users_data);
+    }
+
+    public function insertPersonData(){
+
+
+        $default_person_data = [
+            [
+                'name' => 'cus1',
+                'emails' => json_encode([
+                    "value" => "aa@aa.aa",
+                    "label" => "work"
+                ])
+            ],
+            [
+                'name' => 'cus2',
+                'emails' => json_encode([
+                    "value" => "bb@bb.bb",
+                    "label" => "work"
+                ])
+            ],
+            [
+                'name' => 'cus3',
+                'emails' => json_encode([
+                    "value" => "bb@cc.bb",
+                    "label" => "work"
+                ])
+            ]
+        ];
+
+        DB::table('persons')->insert($default_person_data);
+    }
+
+    public function insertOrganizationData(){
+        $default_Organization_data = [
+            ['name' => 'dddaa'],
+            ['name' => 'dddasdaa'],
+            ['name' => 'ddasdsdaa']
+        ];
+
+        DB::table('organizations')->insert($default_Organization_data);
+
+    }
+
 }
  

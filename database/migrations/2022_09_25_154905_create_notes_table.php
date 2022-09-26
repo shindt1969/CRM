@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateNoteContentsTable extends Migration
+class CreateNotesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,20 +13,18 @@ class CreateNoteContentsTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('noteContents')){
-            Schema::create('noteContents', function (Blueprint $table) {
+        if (!Schema::hasTable('notes')){
+            Schema::create('notes', function (Blueprint $table) {
                 $table->id();
                 $table->text('text');
-                $table->unsignedBigInteger('owner_id');
-                $table->unsignedBigInteger('type_id');
+                $table->unsignedBigInteger('target_id');
+                $table->unsignedBigInteger('target_type_id');
                 $table->unsignedInteger('create_by_id');
                 $table->timestamps();
     
-                $table->foreign('type_id')->references('id')->on('content_types');
                 $table->foreign('create_by_id')->references('id')->on('users');
             });
         }
-
     }
 
     /**
@@ -36,6 +34,6 @@ class CreateNoteContentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('contents');
+        Schema::dropIfExists('notes');
     }
 }

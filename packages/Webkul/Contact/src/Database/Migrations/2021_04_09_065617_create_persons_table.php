@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class CreatePersonsTable extends Migration
 {
@@ -22,7 +23,7 @@ class CreatePersonsTable extends Migration
             $table->integer('organization_id')->unsigned()->nullable();
             $table->foreign('organization_id')->references('id')->on('organizations')->onDelete('cascade');
             $table->timestamps();
-        });
+        }); 
     }
 
     /**
