@@ -3,8 +3,8 @@
 namespace Webkul\Admin\Http\Controllers\User;
 
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Admin\Http\Controllers\Controller;
 
 class SessionController extends Controller
@@ -46,14 +46,26 @@ class SessionController extends Controller
      */
     public function destroy()
     {
-        auth()->guard('api')->logout();
+        // auth()->guard()->logout();
 
         return $this->ReturnJsonSuccessMsg('OK');
-        // return redirect()->route('admin.session.create');
     }
 
-    public function TokenVerify(){
-        
+    public function TokenVerify()
+    {
+        Log::info("sdgsdfdsfgsf");
+        $user = auth()->user();
+        // return $this->ReturnJsonSuccessMsg($user);
+        // return "hello";
+
+
+        if (!is_null($user))
+            return $this->ReturnJsonSuccessMsg("");
+        else
+            return $this->ReturnJsonFailMsg("");
+
     }
+
+
 
 }

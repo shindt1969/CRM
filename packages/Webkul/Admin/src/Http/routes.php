@@ -23,9 +23,13 @@
 
 
         Route::get('mail/inbound-parse', 'Webkul\Admin\Http\Controllers\Mail\EmailController@inboundParse')->name('admin.mail.inbound_parse');
+        Route::get('verifyToken', 'Webkul\Admin\Http\Controllers\User\SessionController@TokenVerify')->name('admin.session.store');
+
 
         // Admin Routes
         Route::group(['middleware' => ['api']], function () {
+            // verify token
+
             Route::get('logout', 'Webkul\Admin\Http\Controllers\User\SessionController@destroy')->name('admin.session.destroy');
 
             // Dashboard Route
@@ -37,19 +41,19 @@
 
 
             // API routes
-            Route::group([
-                'prefix'    => 'api',
-            ], function () {
-                Route::group([
-                    'prefix'    => 'dashboard',
-                ], function () {
-                    Route::get('/', 'Webkul\Admin\Http\Controllers\Admin\DashboardController@getCardData')->name('admin.api.dashboard.card.index');
+            // Route::group([
+            //     'prefix'    => 'api',
+            // ], function () {
+            //     Route::group([
+            //         'prefix'    => 'dashboard',
+            //     ], function () {
+            //         Route::get('/', 'Webkul\Admin\Http\Controllers\Admin\DashboardController@getCardData')->name('admin.api.dashboard.card.index');
 
-                    Route::get('/cards', 'Webkul\Admin\Http\Controllers\Admin\DashboardController@getCards')->name('admin.api.dashboard.cards.index');
+            //         Route::get('/cards', 'Webkul\Admin\Http\Controllers\Admin\DashboardController@getCards')->name('admin.api.dashboard.cards.index');
 
-                    Route::post('/cards', 'Webkul\Admin\Http\Controllers\Admin\DashboardController@updateCards')->name('admin.api.dashboard.cards.update');
-                });
-            });
+            //         Route::post('/cards', 'Webkul\Admin\Http\Controllers\Admin\DashboardController@updateCards')->name('admin.api.dashboard.cards.update');
+            //     });
+            // });
 
             // User Routes
             Route::group([

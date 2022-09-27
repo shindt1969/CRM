@@ -21,6 +21,7 @@ class EnsureTokenIsValid
      */
     public function handle(Request $request, Closure $next)
     {
+        // Log::info("path: ".$request->path());
 
         if (! $request->hasHeader('Authorization')) {
             Log::info('no_token and request headers: ');
@@ -30,6 +31,7 @@ class EnsureTokenIsValid
         if (is_null(auth()->user())){
             return Controller::ReturnJsonFailMsg(config("app.error_code.invalid_token"));
         }
+        
         return $next($request);
     }
 }

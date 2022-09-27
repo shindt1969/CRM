@@ -50,13 +50,11 @@ class ResetPasswordController extends Controller
             ]);
 
             $token = auth()->user()->token;
-            Log::info('token'.$token);
 
             $data = array_merge(
                 request(['email', 'password', 'password_confirmation']),
                 ['token' => $token]
             );
-            Log::info($data);
 
             $response = $this->broker()->reset(
                 $data, function ($admin, $password) {

@@ -45,7 +45,6 @@ class NoteController extends Controller
 
         foreach ($data as $record) {
             $user = User::find($record->create_by_id);
-            Log::info($user);
 
             // 客戶記事
             if ($record->target_type_id == "1") {

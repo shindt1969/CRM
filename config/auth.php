@@ -36,10 +36,10 @@ return [
     */
 
     'guards' => [
-        'user' => [
-            'driver' => 'session',
-            'provider' => 'users'
-        ],
+        // 'user' => [
+        //     'driver' => 'session',
+        //     'provider' => 'users'
+        // ],
         'api' => [
             'driver' => 'jwt',
             'provider' => 'users',

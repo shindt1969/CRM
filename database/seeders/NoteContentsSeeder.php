@@ -25,19 +25,14 @@ class NoteContentsSeeder extends Seeder
         $data =  DB::select(
             "SELECT id from users;", [1]
         );
-        // Log::info($data);
 
         for ($index = 0; $index < 10; $index++) {
             $rand_keys = array_rand($data);
             
-            Log::info(gettype($rand_keys));
-
             DB::table('notes')->insert([
                 'text' => $this->getRandText(),
                 'target_id' => random_int(1, 3), 
                 'target_type_id' => random_int(1, 3),
-                // 'created_at' => Carbon::now(),
-                // 'updated_at' => Carbon::now(),
                 'create_by_id' => $data[$rand_keys]->id
             ]);
         }
