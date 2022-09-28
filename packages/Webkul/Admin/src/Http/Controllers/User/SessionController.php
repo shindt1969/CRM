@@ -20,6 +20,9 @@ class SessionController extends Controller
     // public function store(Request $request)
     public function store()
     {
+
+        Log::info("=============login user:=============");
+        Log::info(request()->headers);
         $this->validate(request(), [
             'email'    => 'required|email',
             'password' => 'required',
@@ -53,11 +56,13 @@ class SessionController extends Controller
 
     public function TokenVerify()
     {
-        Log::info("sdgsdfdsfgsf");
+        Log::info("=============TokenVerify user:=============");
         $user = auth()->user();
+        Log::info($user);
+        Log::info("=============TokenVerify header:=============");
+        Log::info(request()->headers);
         // return $this->ReturnJsonSuccessMsg($user);
         // return "hello";
-
 
         if (!is_null($user))
             return $this->ReturnJsonSuccessMsg("");

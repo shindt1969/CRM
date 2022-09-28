@@ -95,16 +95,20 @@ class NoteController extends Controller
             'target_id'       => 'required|integer',
             'target_type_id'  => 'required|integer|in:1,2,3',
             'create_by_id'    => 'required|integer|exists:users,id',
+            
         ]);
 
-        $income_data = request();
+        $income_data = [
+            'text' => request('text'),
+            'target_id' => request('target_id'),
+            'target_type_id' => request('target_type_id'),
+            'create_by_id' => request('create_by_id'),
+        ];
 
-        $content = Note::create([
-            'text' => $income_data['text'],
-            'target_id' => $income_data['target_id'],
-            'target_type_id' => $income_data['target_type_id'],
-            'create_by_id' => $income_data['create_by_id'],
-        ]);
+        if (request()->has('time'))
+            array_merge($income_data, ['created_at' => request('time')]);
+
+        $content = Note::create($income_data);
 
         $content->save();
         return $this->ReturnJsonSuccessMsg($content->id);

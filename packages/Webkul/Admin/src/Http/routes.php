@@ -23,7 +23,8 @@
 
 
         Route::get('mail/inbound-parse', 'Webkul\Admin\Http\Controllers\Mail\EmailController@inboundParse')->name('admin.mail.inbound_parse');
-        Route::get('verifyToken', 'Webkul\Admin\Http\Controllers\User\SessionController@TokenVerify')->name('admin.session.store');
+        
+        Route::get('verifyToken', 'Webkul\Admin\Http\Controllers\User\SessionController@TokenVerify')->name('admin.session.verify');
 
 
         // Admin Routes
