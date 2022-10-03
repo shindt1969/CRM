@@ -3,6 +3,8 @@
 namespace Webkul\Admin\Http\Controllers\Note;
 
 use App\Models\Note;
+use App\Models\Note_Notecategories;
+
 use App\Models\Content_type;
 use Illuminate\Http\Request;
 use Webkul\User\Models\User;
@@ -111,6 +113,17 @@ class NoteController extends Controller
         $content = Note::create($income_data);
 
         $content->save();
+        Log::info("==========================================================");
+        Log::info(request('categoryIds'));
+
+        foreach(request('categoryIds') as $categoryId){
+            $noteCategories = Note_Notecategories::create([
+                'contentId' => $content->id,
+                'noteCategoryId' => $categoryId
+            ]);
+            $noteCategories->save();
+        }
+
         return $this->ReturnJsonSuccessMsg($content->id);
     }
 
@@ -193,5 +206,22 @@ class NoteController extends Controller
         return $this->ReturnJsonSuccessMsg([
             'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.title')]),
         ]);
+    }
+
+    public function storeCategories()
+    {
+        $this->validate(request(), [
+            'noteId'   => 'required',
+        ]);
+
+        foreach(request('categoryIds') as $categoryId){
+            $noteCategories = Note_Notecategories::create([
+                'contentId' => request('noteId'),
+                'noteCategoryId' => $categoryId
+            ]);
+            $noteCategories->save();
+        }
+
+        return $this->ReturnJsonSuccessMsg($noteCategories->id);
     }
 }

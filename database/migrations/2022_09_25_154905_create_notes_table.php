@@ -24,6 +24,10 @@ class CreateNotesTable extends Migration
     
                 $table->foreign('create_by_id')->references('id')->on('users');
             });
+
+            Schema::table('notes', function (Blueprint $table) {
+                $table->softDeletes();
+            });
         }
     }
 

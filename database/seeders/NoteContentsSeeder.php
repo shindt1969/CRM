@@ -33,7 +33,10 @@ class NoteContentsSeeder extends Seeder
                 'text' => $this->getRandText(),
                 'target_id' => random_int(1, 3), 
                 'target_type_id' => random_int(1, 3),
-                'create_by_id' => $data[$rand_keys]->id
+                'create_by_id' => $data[$rand_keys]->id,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+
             ]);
         }
     }

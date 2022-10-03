@@ -17,9 +17,12 @@ class CreateNoteCategoriesTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('color')->nullable();
-            $table->integer('note_id')->unsigned();
 
             $table->timestamps();
+        });
+        
+        Schema::table('note_categories', function (Blueprint $table) {
+            $table->softDeletes();
         });
     }
 
