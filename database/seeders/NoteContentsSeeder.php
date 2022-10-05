@@ -18,9 +18,9 @@ class NoteContentsSeeder extends Seeder
     public function run()
     {
 
-        $this->insertUserData();
-        $this->insertPersonData();
-        $this->insertOrganizationData();
+        // $this->insertUserData();
+        // $this->insertPersonData();
+        // $this->insertOrganizationData();
 
         $data =  DB::select(
             "SELECT id from users;", [1]

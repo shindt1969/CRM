@@ -33,6 +33,8 @@ class NoteController extends Controller
     {
         $return_data = [];
         $show_recoreds_number = 10;
+        // Log::info("=================================================");
+        // Log::info(Note::find(29)->noteCategories);
 
         $columns = Note::select('text', 'target_id', 'target_type_id', 'create_by_id', 'created_at');
 
@@ -47,7 +49,7 @@ class NoteController extends Controller
 
         foreach ($data as $record) {
             $user = User::find($record->create_by_id);
-
+            $categories = $user->noteCategories;
             // 客戶記事
             if ($record->target_type_id == "1") {
                 $table = "persons";
@@ -71,7 +73,8 @@ class NoteController extends Controller
                 'target_name' => $name,
                 'text' => $record->text,
                 'create_by_name' => $user->name,
-                'created_at' => $created_at
+                'created_at' => $created_at,
+                'categories' => $categories
             );
         }
 
@@ -113,8 +116,6 @@ class NoteController extends Controller
         $content = Note::create($income_data);
 
         $content->save();
-        Log::info("==========================================================");
-        Log::info(request('categoryIds'));
 
         foreach(request('categoryIds') as $categoryId){
             $noteCategories = Note_Notecategories::create([
@@ -206,22 +207,5 @@ class NoteController extends Controller
         return $this->ReturnJsonSuccessMsg([
             'message' => trans('admin::app.response.destroy-success', ['name' => trans('admin::app.products.title')]),
         ]);
-    }
-
-    public function storeCategories()
-    {
-        $this->validate(request(), [
-            'noteId'   => 'required',
-        ]);
-
-        foreach(request('categoryIds') as $categoryId){
-            $noteCategories = Note_Notecategories::create([
-                'contentId' => request('noteId'),
-                'noteCategoryId' => $categoryId
-            ]);
-            $noteCategories->save();
-        }
-
-        return $this->ReturnJsonSuccessMsg($noteCategories->id);
     }
 }
